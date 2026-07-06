@@ -36,37 +36,257 @@ img{max-width:100%}
 
 .container{max-width:1160px;margin:0 auto;padding:0 24px}
 
+/* ---------- Global grid background - visible everywhere ---------- */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  background-image:
+    linear-gradient(rgba(14,107,94,.08) 1.5px, transparent 1.5px),
+    linear-gradient(90deg, rgba(14,107,94,.08) 1.5px, transparent 1.5px);
+  background-size: 32px 32px;
+  background-position: -2px -2px;
+}
+
 /* ---------- Header ---------- */
-header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-.header-inner{display:flex;align-items:center;gap:28px;height:66px}
-.logo{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:800;font-size:21px;letter-spacing:-.02em}
-.logo .mark{width:36px;height:36px;border-radius:11px;background:var(--teal);color:#fff;display:grid;place-items:center;font-size:20px;font-weight:700;padding-bottom:4px}
-.logo .ain{color:var(--teal)}
-nav.main-nav{display:flex;gap:4px;flex:1}
-.nav-link{padding:8px 14px;border-radius:10px;font-weight:500;color:var(--ink-soft);font-size:14.5px;background:none;border:none}
+header{
+  position:sticky;
+  top:0;
+  z-index:50;
+  background:rgba(255,255,255,.97);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--line);
+  box-shadow:0 1px 3px rgba(21,34,31,.04);
+}
+.header-inner{
+  display:flex;
+  align-items:center;
+  gap:32px;
+  height:68px;
+  position:relative;
+  z-index:1;
+}
+.logo{
+  display:flex;
+  align-items:center;
+  gap:0;
+  font-family:var(--font-display);
+  font-weight:800;
+  font-size:24px;
+  letter-spacing:-.02em;
+  text-decoration:none;
+  color:var(--ink);
+  transition:opacity .2s ease;
+}
+.logo:hover{opacity:0.8}
+.logo .logo-ain{color:var(--teal)}
+nav.main-nav{display:flex;gap:2px;flex:1;align-items:center;z-index:1}
+.nav-link{
+  padding:8px 16px;
+  border-radius:12px;
+  font-weight:500;
+  color:var(--ink-soft);
+  font-size:14.5px;
+  background:none;
+  border:none;
+  transition:all .2s ease;
+}
 .nav-link:hover{background:var(--mist);color:var(--ink)}
 .nav-link.active{color:var(--teal);background:var(--teal-tint);font-weight:600}
-.header-actions{display:flex;align-items:center;gap:10px}
-.lang-toggle{display:flex;border:1.5px solid var(--line);border-radius:10px;overflow:hidden}
-.lang-toggle button{padding:6px 12px;background:#fff;border:none;font-size:13px;font-weight:600;color:var(--ink-soft)}
+.header-actions{display:flex;align-items:center;gap:12px;z-index:1}
+.lang-toggle{display:flex;border:2px solid var(--line);border-radius:12px;overflow:hidden;background:var(--mist)}
+.lang-toggle button{padding:7px 14px;background:transparent;border:none;font-size:13px;font-weight:600;color:var(--ink-soft);transition:all .2s ease}
 .lang-toggle button.on{background:var(--ink);color:#fff}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 20px;border-radius:12px;font-weight:600;font-size:14.5px;border:none;transition:transform .12s ease,box-shadow .12s ease}
-.btn:hover{transform:translateY(-1px)}
-.btn-primary{background:var(--teal);color:#fff;box-shadow:0 4px 14px -4px rgba(14,107,94,.5)}
-.btn-primary:hover{background:var(--teal-dark)}
-.btn-ghost{background:#fff;border:1.5px solid var(--line);color:var(--ink)}
-.btn-ghost:hover{border-color:var(--teal);color:var(--teal)}
-.btn-sm{padding:8px 14px;font-size:13.5px;border-radius:10px}
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:11px 22px;
+  border-radius:12px;
+  font-weight:600;
+  font-size:14px;
+  border:none;
+  transition:all .2s ease;
+}
+.btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(14,107,94,.2)}
+.btn-primary{background:linear-gradient(135deg,#128978,var(--teal));color:#fff;box-shadow:0 4px 14px -4px rgba(14,107,94,.5)}
+.btn-primary:hover{background:linear-gradient(135deg,#0E6B5E,var(--teal-dark))}
+.btn-ghost{background:#fff;border:2px solid var(--line);color:var(--ink)}
+.btn-ghost:hover{border-color:var(--teal);color:var(--teal);background:var(--teal-tint)}
+.btn-sm{padding:8px 14px;font-size:13px;border-radius:10px}
+.mobile-menu-btn{display:none;background:none;border:2px solid var(--line);border-radius:10px;padding:8px 10px;font-size:20px;color:var(--ink)}
 
-/* ---------- Hero ---------- */
-.hero{position:relative;background:linear-gradient(180deg,#F7FAF9 0%,#fff 100%);border-bottom:1px solid var(--line);overflow:hidden}
-.hero-inner{position:relative;padding:76px 0 84px;text-align:center;max-width:760px;margin:0 auto}
-.hero .watermark{position:absolute;inset-inline-end:-40px;top:-60px;font-family:var(--font-display);font-weight:800;font-size:420px;line-height:1;color:var(--teal);opacity:.055;pointer-events:none;user-select:none}
+/* ---------- Hero with VERY VISIBLE grid ---------- */
+.hero{
+  position:relative;
+  border-bottom:1px solid var(--line);
+  overflow:hidden;
+  background:
+    radial-gradient(640px 320px at 12% -5%, rgba(14,107,94,.08), transparent 62%),
+    radial-gradient(560px 300px at 88% 8%, rgba(201,138,43,.07), transparent 62%),
+    linear-gradient(180deg,#F6FAF9 0%,#fff 100%);
+}
+
+/* Hero grid - VERY VISIBLE */
+.hero::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  background-image:
+    linear-gradient(rgba(14,107,94,.15) 2px, transparent 2px),
+    linear-gradient(90deg, rgba(14,107,94,.15) 2px, transparent 2px);
+  background-size: 44px 44px;
+  background-position: -3px -3px;
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.8) 30%, rgba(0,0,0,0.4) 70%, rgba(0,0,0,0.1) 100%);
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.8) 30%, rgba(0,0,0,0.4) 70%, rgba(0,0,0,0.1) 100%);
+}
+
+/* Second grid layer for more visibility */
+.hero::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  background-image:
+    linear-gradient(rgba(201,138,43,.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201,138,43,.06) 1px, transparent 1px);
+  background-size: 22px 22px;
+  background-position: -1px -1px;
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0) 100%);
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0) 100%);
+}
+
+.hero-inner{
+  position:relative;
+  padding:60px 0 80px;
+  text-align:center;
+  max-width:760px;
+  margin:0 auto;
+  z-index:1;
+}
+.hero-inner>*{animation:fadeUp .6s ease backwards}
+.hero-inner>*:nth-child(1){animation-delay:.02s}
+.hero-inner>*:nth-child(2){animation-delay:.08s}
+.hero-inner>*:nth-child(3){animation-delay:.14s}
+.hero-inner>*:nth-child(4){animation-delay:.20s}
+.hero-inner>*:nth-child(5){animation-delay:.26s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* Brand display with rings */
+.brand-display{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  margin-bottom:20px;
+  width:280px;
+  height:280px;
+}
+.orbit-ring{
+  position:absolute;
+  border:2px dashed rgba(14,107,94,.2);
+  border-radius:50%;
+  animation:orbitSpin 25s linear infinite;
+  pointer-events:none;
+}
+.orbit-ring.r1{width:200px;height:200px;top:40px;left:40px}
+.orbit-ring.r2{width:240px;height:240px;top:20px;left:20px;border-color:rgba(201,138,43,.18);animation-duration:35s;animation-direction:reverse}
+.brand-word{
+  font-family:var(--font-display);
+  font-size:clamp(48px,8vw,72px);
+  font-weight:800;
+  letter-spacing:-.02em;
+  line-height:1;
+  color:var(--ink);
+  position:relative;
+  z-index:3;
+}
+.brand-word .ain{color:var(--teal)}
+@keyframes orbitSpin{to{transform:rotate(360deg)}}
+
+.mast-line{font-size:clamp(15px,2.4vw,18px);color:var(--ink-soft);font-weight:500;margin-top:8px}
 .eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--teal-tint);color:var(--teal-dark);font-weight:600;font-size:13px;padding:6px 14px;border-radius:99px;margin-bottom:20px}
 .eyebrow .dot{width:7px;height:7px;border-radius:99px;background:var(--teal)}
-.hero h1{font-size:clamp(30px,5vw,50px);font-weight:800;letter-spacing:-.02em;margin-bottom:14px}
+
+/* ---------- Alternating float chips ---------- */
+.float-chips-container{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:2;
+  overflow:hidden;
+}
+.float-chip-set{
+  position:absolute;
+  inset:0;
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.float-chip-set.hidden{
+  opacity:0;
+  transform:translateY(30px);
+  pointer-events:none;
+}
+.float-chip-set.visible{
+  opacity:1;
+  transform:translateY(0);
+}
+.float-chip{
+  position:absolute;
+  background:#fff;
+  border:1.5px solid var(--line);
+  border-radius:14px;
+  padding:10px 16px;
+  font-size:13px;
+  font-weight:600;
+  box-shadow:var(--shadow);
+  display:flex;
+  gap:8px;
+  align-items:center;
+  animation:floaty 6s ease-in-out infinite;
+}
+.float-chip small{display:block;font-weight:500;color:var(--ink-soft);font-size:11.5px;line-height:1.3}
+
+/* Set 1 positions */
+.set1 .fc1{top:90px;inset-inline-start:3%;animation-delay:0s}
+.set1 .fc2{top:200px;inset-inline-end:3%;animation-delay:1.6s}
+.set1 .fc3{bottom:70px;inset-inline-start:8%;animation-delay:3.2s}
+
+/* Set 2 positions */
+.set2 .fc1{top:70px;inset-inline-end:5%;animation-delay:0.5s}
+.set2 .fc2{top:250px;inset-inline-start:4%;animation-delay:2s}
+.set2 .fc3{bottom:100px;inset-inline-end:6%;animation-delay:0s}
+
+/* Set 3 positions */
+.set3 .fc1{top:120px;inset-inline-start:5%;animation-delay:0.3s}
+.set3 .fc2{top:170px;inset-inline-end:7%;animation-delay:1.2s}
+.set3 .fc3{bottom:60px;inset-inline-start:3%;animation-delay:2.5s}
+
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@media(max-width:1060px){.float-chips-container{display:none}}
+
+/* Hero slider */
+.hero-slider{position:relative;max-width:660px;margin:24px auto 0;background:rgba(255,255,255,.85);backdrop-filter:blur(8px);border:1.5px solid var(--line);border-radius:20px;box-shadow:var(--shadow);overflow:hidden}
+.hs-track{display:flex;transition:transform .55s cubic-bezier(.4,0,.2,1)}
+.hs-slide{flex:0 0 100%;padding:24px 62px 16px;display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center}
+.hs-slide .ic{width:46px;height:46px;border-radius:14px;background:var(--teal-tint);display:grid;place-items:center;font-size:22px}
+.hs-slide h3{font-size:18.5px;font-weight:800;letter-spacing:-.01em}
+.hs-slide p{font-size:13.5px;color:var(--ink-soft);max-width:460px;line-height:1.55}
+.hs-arrow{position:absolute;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:50%;background:#fff;border:1.5px solid var(--line);display:grid;place-items:center;font-size:17px;line-height:1;color:var(--ink-soft);z-index:2;transition:border-color .15s,color .15s}
+.hs-arrow:hover{border-color:var(--teal);color:var(--teal)}
+.hs-prev{inset-inline-start:10px}.hs-next{inset-inline-end:10px}
+.hs-dots{display:flex;gap:7px;justify-content:center;padding:0 0 16px}
+.hs-dot{width:8px;height:8px;border-radius:99px;background:var(--line);border:none;padding:0;cursor:pointer;transition:width .25s,background .25s}
+.hs-dot.on{width:24px;background:var(--teal)}
+.hero h1{font-size:clamp(28px,4.5vw,44px);font-weight:800;letter-spacing:-.02em;margin:20px 0 14px;color:var(--ink)}
 .hero h1 em{font-style:normal;color:var(--teal)}
-.hero p.sub{color:var(--ink-soft);font-size:17px;max-width:560px;margin:0 auto 32px}
+.hero p.sub{color:var(--ink-soft);font-size:16px;max-width:560px;margin:0 auto 32px}
 .search-bar{display:flex;align-items:center;background:#fff;border:1.5px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:8px;max-width:640px;margin:0 auto 22px;gap:8px}
 .search-bar svg{flex:none;margin-inline-start:12px;color:var(--ink-soft)}
 .search-bar input{flex:1;border:none;outline:none;font-size:15.5px;padding:10px 4px;background:transparent;min-width:0}
@@ -76,28 +296,72 @@ nav.main-nav{display:flex;gap:4px;flex:1}
 .hero-stat b{display:block;font-family:var(--font-display);font-size:24px;font-weight:800;color:var(--teal-dark)}
 .hero-stat span{font-size:13px;color:var(--ink-soft)}
 
-/* ---------- Sections ---------- */
-section.block{padding:60px 0}
-section.block.alt{background:var(--mist)}
-.section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:28px;flex-wrap:wrap}
+/* Ticker */
+.ticker{background:var(--teal-dark);color:#DCEEE9;overflow:hidden;border-bottom:1px solid var(--line);position:relative;z-index:1}
+.ticker::before,.ticker::after{content:"";position:absolute;top:0;bottom:0;width:70px;z-index:1;pointer-events:none}
+.ticker::before{inset-inline-start:0;background:linear-gradient(to right,var(--teal-dark),transparent)}
+.ticker::after{inset-inline-end:0;background:linear-gradient(to left,var(--teal-dark),transparent)}
+[dir="rtl"] .ticker::before{background:linear-gradient(to left,var(--teal-dark),transparent)}
+[dir="rtl"] .ticker::after{background:linear-gradient(to right,var(--teal-dark),transparent)}
+.ticker-track{display:flex;gap:40px;width:max-content;padding:11px 0;animation:tickL 46s linear infinite}
+[dir="rtl"] .ticker-track{animation-name:tickR}
+.ticker:hover .ticker-track{animation-play-state:paused}
+@keyframes tickL{to{transform:translateX(-50%)}}
+@keyframes tickR{to{transform:translateX(50%)}}
+.tk{display:inline-flex;align-items:center;gap:9px;font-size:13px;font-weight:600;white-space:nowrap;opacity:.92}
+.tk .sep{width:5px;height:5px;border-radius:99px;background:rgba(255,255,255,.35)}
+
+/* ---------- Sections with visible grid ---------- */
+section.block{position:relative;padding:60px 0;z-index:1}
+section.block::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  background-image:
+    linear-gradient(rgba(14,107,94,.10) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(14,107,94,.10) 1px, transparent 1px);
+  background-size: 36px 36px;
+  background-position: -2px -2px;
+  -webkit-mask-image: radial-gradient(ellipse at 0% 0%, #000 20%, transparent 70%);
+  mask-image: radial-gradient(ellipse at 0% 0%, #000 20%, transparent 70%);
+}
+section.block.alt{
+  background-color:var(--mist);
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+}
+section.block.alt::before{
+  background-image:
+    linear-gradient(rgba(14,107,94,.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(14,107,94,.12) 1px, transparent 1px);
+  background-size: 32px 32px;
+  opacity: 0.8;
+}
+
+.section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:28px;flex-wrap:wrap;position:relative;z-index:1}
 .section-head h2{font-size:26px;font-weight:700;letter-spacing:-.01em}
 .section-head p{color:var(--ink-soft);font-size:14.5px;margin-top:4px}
 .link-more{color:var(--teal);font-weight:600;font-size:14px;background:none;border:none;display:inline-flex;align-items:center;gap:6px}
 .link-more:hover{text-decoration:underline}
 
 /* Industry grid */
-.industry-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.industry-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;position:relative;z-index:1}
 .industry-card{background:#fff;border:1.5px solid var(--line);border-radius:var(--radius);padding:20px 14px;text-align:center;transition:border-color .15s,transform .15s;display:block;width:100%}
 .industry-card:hover{border-color:var(--teal);transform:translateY(-2px)}
-.industry-card .icon{width:46px;height:46px;border-radius:13px;background:var(--teal-tint);display:grid;place-items:center;font-size:22px;margin:0 auto 10px}
+.industry-card .icon{width:46px;height:46px;border-radius:13px;background:var(--teal-tint);display:grid;place-items:center;font-size:22px;margin:0 auto 10px;transition:transform .18s ease}
+.industry-card:hover .icon{transform:rotate(-6deg) scale(1.08)}
 .industry-card .name{font-weight:600;font-size:13.5px;line-height:1.35}
 .industry-card .count{font-size:12px;color:var(--ink-soft)}
 
 /* Cards */
-.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;position:relative;z-index:1}
 .factory-card{background:#fff;border:1.5px solid var(--line);border-radius:var(--radius);overflow:hidden;transition:box-shadow .15s,transform .15s;text-align:start;width:100%;padding:0}
 .factory-card:hover{box-shadow:var(--shadow);transform:translateY(-2px)}
-.factory-card .cover{height:104px;position:relative}
+.factory-card .cover{height:104px;position:relative;overflow:hidden}
+.factory-card .cover::after{content:"";position:absolute;inset:0;background-image:repeating-linear-gradient(-45deg,rgba(255,255,255,.10) 0 2px,transparent 2px 16px),radial-gradient(220px 90px at 85% 0%,rgba(255,255,255,.22),transparent 70%)}
+.cover-ic{position:absolute;inset-inline-end:12px;bottom:6px;font-size:40px;opacity:.45;filter:saturate(.6);z-index:1;transform:rotate(-8deg)}
 .factory-card .flogo{position:absolute;bottom:-22px;inset-inline-start:18px;width:52px;height:52px;border-radius:14px;background:#fff;border:1.5px solid var(--line);display:grid;place-items:center;font-family:var(--font-display);font-weight:800;font-size:18px;color:var(--teal)}
 .factory-card .body{padding:32px 18px 18px}
 .factory-card h3{font-size:16px;font-weight:700;margin-bottom:2px}
@@ -111,13 +375,13 @@ section.block.alt{background:var(--mist)}
 /* Request cards */
 .request-card{background:#fff;border:1.5px solid var(--line);border-radius:var(--radius);padding:18px;transition:box-shadow .15s,transform .15s;text-align:start;width:100%}
 .request-card:hover{box-shadow:var(--shadow);transform:translateY(-2px)}
-.request-card .thumb{height:120px;border-radius:12px;margin-bottom:14px;display:grid;place-items:center;font-size:34px}
+.request-card .thumb{height:120px;border-radius:12px;margin-bottom:14px;display:grid;place-items:center;font-size:34px;background:radial-gradient(rgba(14,107,94,.08) 1.2px,transparent 1.2px) 0 0/18px 18px,linear-gradient(135deg,#EFF6F4,#E2EFEC)}
 .request-card h3{font-size:15.5px;font-weight:700;margin-bottom:4px}
 .request-card .desc{font-size:13px;color:var(--ink-soft);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:12px}
 .request-card .foot{display:flex;justify-content:space-between;font-size:12.5px;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:10px;flex-wrap:wrap;gap:6px}
 
 /* Why */
-.why-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+.why-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;position:relative;z-index:1}
 .why-card{background:#fff;border:1.5px solid var(--line);border-radius:var(--radius);padding:22px}
 .why-card .icon{width:42px;height:42px;border-radius:12px;background:var(--teal-tint);display:grid;place-items:center;font-size:20px;margin-bottom:14px}
 .why-card h3{font-size:15.5px;font-weight:700;margin-bottom:6px}
@@ -125,16 +389,38 @@ section.block.alt{background:var(--mist)}
 
 /* CTA band */
 .cta-band{background:var(--teal-dark);border-radius:22px;padding:44px 40px;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;position:relative;overflow:hidden}
-.cta-band .ain-bg{position:absolute;inset-inline-end:20px;top:-70px;font-family:var(--font-display);font-size:260px;font-weight:800;opacity:.08;line-height:1}
-.cta-band h2{font-size:26px;font-weight:800;margin-bottom:6px}
-.cta-band p{opacity:.85;font-size:14.5px;max-width:480px}
-.cta-band .btn-primary{background:#fff;color:var(--teal-dark);box-shadow:none}
+.cta-band h2{font-size:26px;font-weight:800;margin-bottom:6px;position:relative;z-index:1}
+.cta-band p{opacity:.85;font-size:14.5px;max-width:480px;position:relative;z-index:1}
+.cta-band .btn-primary{background:#fff;color:var(--teal-dark);box-shadow:none;position:relative;z-index:1}
 
-/* ---------- Directory page ---------- */
-.page-head{background:var(--mist);border-bottom:1px solid var(--line);padding:34px 0}
-.page-head h1{font-size:28px;font-weight:800;letter-spacing:-.01em}
-.page-head p{color:var(--ink-soft);font-size:14.5px;margin-top:4px}
-.dir-layout{display:grid;grid-template-columns:250px 1fr;gap:28px;padding:32px 0 64px;align-items:start}
+/* ---------- Directory page with visible grid ---------- */
+.page-head{
+  position:relative;
+  overflow:hidden;
+  border-bottom:1px solid var(--line);
+  padding:34px 0;
+  background:var(--mist);
+  z-index:1;
+}
+.page-head::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  background-image:
+    linear-gradient(rgba(14,107,94,.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(14,107,94,.12) 1px, transparent 1px);
+  background-size: 34px 34px;
+  background-position: -2px -2px;
+  -webkit-mask-image: radial-gradient(ellipse at 100% 50%, #000 25%, transparent 70%);
+  mask-image: radial-gradient(ellipse at 100% 50%, #000 25%, transparent 70%);
+}
+.page-head h1{font-size:28px;font-weight:800;letter-spacing:-.01em;position:relative;z-index:1}
+.page-head p{color:var(--ink-soft);font-size:14.5px;margin-top:4px;position:relative;z-index:1}
+.page-head .container{position:relative;z-index:1}
+
+.dir-layout{display:grid;grid-template-columns:250px 1fr;gap:28px;padding:32px 0 64px;align-items:start;z-index:1;position:relative}
 .filters{background:#fff;border:1.5px solid var(--line);border-radius:var(--radius);padding:18px;position:sticky;top:84px}
 .filters h3{font-size:14px;font-weight:700;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
 .filters .clear{font-size:12px;color:var(--teal);background:none;border:none;font-weight:600}
@@ -150,7 +436,9 @@ section.block.alt{background:var(--mist)}
 .empty .big{font-size:34px;margin-bottom:10px}
 
 /* ---------- Profile ---------- */
-.profile-cover{height:220px;position:relative}
+.profile-cover{height:220px;position:relative;overflow:hidden}
+.profile-cover::after{content:"";position:absolute;inset:0;background-image:repeating-linear-gradient(-45deg,rgba(255,255,255,.08) 0 2px,transparent 2px 18px),linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px);background-size:auto,44px 44px,44px 44px}
+.profile-cover .cover-ic{font-size:110px;opacity:.28;inset-inline-end:40px;bottom:-10px}
 .profile-top{position:relative;margin-top:-46px}
 .profile-card{background:#fff;border:1.5px solid var(--line);border-radius:20px;padding:24px;box-shadow:var(--shadow);display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}
 .profile-logo{width:84px;height:84px;border-radius:18px;background:var(--teal-tint);border:1.5px solid var(--line);display:grid;place-items:center;font-family:var(--font-display);font-weight:800;font-size:28px;color:var(--teal);flex:none}
@@ -167,7 +455,8 @@ section.block.alt{background:var(--mist)}
 .spec .k{font-size:11.5px;color:var(--ink-soft);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
 .spec .v{font-size:14px;font-weight:600;margin-top:2px}
 .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
-.gallery .ph{aspect-ratio:4/3;border-radius:12px;display:grid;place-items:center;font-size:26px;color:#fff}
+.gallery .ph{aspect-ratio:4/3;border-radius:12px;display:grid;place-items:center;font-size:26px;color:#fff;position:relative;overflow:hidden}
+.gallery .ph::after{content:"";position:absolute;inset:0;background-image:repeating-linear-gradient(-45deg,rgba(255,255,255,.10) 0 2px,transparent 2px 14px)}
 .contact-panel{position:sticky;top:84px}
 .contact-btn{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;margin-bottom:10px;font-weight:600;font-size:14px;transition:border-color .15s,background .15s;background:#fff;width:100%;text-align:start}
 .contact-btn:hover{border-color:var(--teal);background:var(--teal-tint)}
@@ -195,10 +484,11 @@ section.block.alt{background:var(--mist)}
 .req-detail-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap}
 
 /* ---------- Footer ---------- */
-footer{background:var(--ink);color:#B9C6C2;padding:48px 0 28px;margin-top:0}
+footer{background:var(--ink);color:#B9C6C2;padding:48px 0 28px;margin-top:0;position:relative;overflow:hidden;z-index:1}
+footer .container{position:relative;z-index:1}
 .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px;margin-bottom:32px}
-footer .logo{color:#fff;margin-bottom:12px}
-footer .logo .mark{background:var(--teal)}
+footer .logo-text{font-family:var(--font-display);font-weight:800;font-size:24px;color:#fff;margin-bottom:12px}
+footer .logo-text .logo-ain{color:#4FBFAE}
 footer p{font-size:13.5px;max-width:280px}
 footer h4{color:#fff;font-size:13.5px;margin-bottom:12px;font-weight:700}
 footer ul{list-style:none}
@@ -214,13 +504,24 @@ footer li button:hover{color:#fff}
   .profile-layout{grid-template-columns:1fr}
   .footer-grid{grid-template-columns:1fr 1fr}
   nav.main-nav{display:none}
+  .mobile-menu-btn{display:flex}
+  .brand-display{width:220px;height:220px}
+  .orbit-ring.r1{width:160px;height:160px;top:30px;left:30px}
+  .orbit-ring.r2{width:190px;height:190px;top:15px;left:15px}
+  .brand-word{font-size:clamp(40px,7vw,56px)}
 }
 @media(max-width:640px){
   .form-grid{grid-template-columns:1fr}
   .spec-grid{grid-template-columns:1fr}
-  .hero-inner{padding:52px 0 60px}
+  .hero-inner{padding:40px 0 50px}
   .cta-band{padding:32px 24px}
   .header-inner{gap:12px}
+  .brand-display{width:180px;height:180px}
+  .orbit-ring.r1{width:130px;height:130px;top:25px;left:25px}
+  .orbit-ring.r2{width:155px;height:155px;top:12px;left:12px}
+  .brand-word{font-size:clamp(32px,6vw,44px)}
+  .hs-slide{padding:20px 46px 12px}
+  .hs-slide p{font-size:12.5px}
 }
 </style>
 </head>
@@ -233,6 +534,12 @@ en:{
   brand:"Sonna", nav_home:"Home", nav_factories:"Factories", nav_requests:"Requests",
   login:"Log in", post_request:"Post a Request",
   eyebrow:"Egypt's manufacturing directory",
+  slides:[
+    ["🏭","Egypt's Manufacturing Directory","We connect traders, brands, and businesses with trusted manufacturers across Egypt."],
+    ["🧭","Discover Factories by Industry","Browse 14 sectors and filter by governorate, MOQ, capabilities, and export readiness."],
+    ["📣","Publish Your Manufacturing Needs","Post a request describing your product — interested factories contact you directly."],
+    ["🤝","No Middleman. No Commissions.","Every profile shows direct contact channels, so you deal with the factory itself."]
+  ],
   hero_title:'Find the Right <em>Factory</em> for Your Next Product',
   hero_sub:"Sonnaع connects traders, brands, and businesses directly with trusted Egyptian manufacturers. No middleman. No commissions.",
   search_ph:"Search products, factories, materials, or processes…",
@@ -284,12 +591,23 @@ en:{
   f_links2:["About Sonnaع","List your factory","Careers"],
   f_links3:["Help center","Contact us","Terms & privacy"],
   rights:"© 2026 Sonnaع. All rights reserved.", made:"Made for Egyptian industry 🇪🇬",
-  demo_note:"Prototype — all factory data is placeholder content."
+  demo_note:"Prototype — all factory data is placeholder content.",
+  float_sets:[
+    [["🧵","Textile factory","El Mahalla, 300 workers"],["📦","New request: 5,000 polos","2 hours ago"],["🌍","Export-ready factory","ISO 9001 certified"]],
+    [["⚙️","Metal fabricator","10th of Ramadan"],["🪑","New request: Café furniture","5 hours ago"],["🏭","50+ verified factories","14 industries"]],
+    [["🍞","Food manufacturer","Alexandria"],["🧴","New request: HDPE bottles","8 hours ago"],["💄","Cosmetics factory","ISO 22716 certified"]]
+  ]
 },
 ar:{
   brand:"صُنّا", nav_home:"الرئيسية", nav_factories:"المصانع", nav_requests:"طلبات التصنيع",
   login:"تسجيل الدخول", post_request:"انشر طلب تصنيع",
   eyebrow:"دليل التصنيع المصري",
+  slides:[
+    ["🏭","دليل التصنيع المصري","نربط التجار والعلامات التجارية والشركات بمصانع موثوقة في جميع أنحاء مصر."],
+    ["🧭","اكتشف المصانع حسب الصناعة","تصفح ١٤ قطاعًا صناعيًا وصفِّ حسب المحافظة والحد الأدنى للطلب والقدرات وجاهزية التصدير."],
+    ["📣","انشر احتياجاتك التصنيعية","انشر طلبًا يصف منتجك — وتتواصل معك المصانع المهتمة مباشرةً."],
+    ["🤝","بدون وسيط. بدون عمولات.","كل ملف يعرض قنوات تواصل مباشرة، فتتعامل مع المصنع نفسه."]
+  ],
   hero_title:'اعثر على <em>المصنع</em> المناسب لمنتجك القادم',
   hero_sub:"صُنّاع تربط التجار والعلامات التجارية والشركات مباشرةً بمصانع مصرية موثوقة. بدون وسيط. بدون عمولات.",
   search_ph:"ابحث عن منتجات، مصانع، خامات، أو عمليات تصنيع…",
@@ -341,27 +659,32 @@ ar:{
   f_links2:["عن صُنّاع","سجّل مصنعك","الوظائف"],
   f_links3:["مركز المساعدة","تواصل معنا","الشروط والخصوصية"],
   rights:"© ٢٠٢٦ صُنّاع. جميع الحقوق محفوظة.", made:"صُنع من أجل الصناعة المصرية 🇪🇬",
-  demo_note:"نموذج أولي — جميع بيانات المصانع محتوى تجريبي."
+  demo_note:"نموذج أولي — جميع بيانات المصانع محتوى تجريبي.",
+  float_sets:[
+    [["🧵","مصنع منسوجات","المحلة الكبرى، ٣٠٠ عامل"],["📦","طلب جديد: ٥٠٠٠ بولو","منذ ساعتين"],["🌍","مصنع جاهز للتصدير","حاصل على ISO 9001"]],
+    [["⚙️","مصنع تشغيل معادن","العاشر من رمضان"],["🪑","طلب جديد: أثاث كافيه","منذ ٥ ساعات"],["🏭","أكثر من ٥٠ مصنع","١٤ قطاع صناعي"]],
+    [["🍞","مصنع أغذية","الإسكندرية"],["🧴","طلب جديد: زجاجات HDPE","منذ ٨ ساعات"],["💄","مصنع مستحضرات تجميل","ISO 22716"]]
+  ]
 }
 };
 </script>
 <script>
 /* =============== Data =============== */
 const INDUSTRIES=[
- {id:"textile",  en:"Textile & Apparel",      ar:"المنسوجات والملابس",       icon:"🧵", g:["#0E6B5E","#12897A"]},
- {id:"packaging",en:"Packaging & Printing",   ar:"التعبئة والطباعة",         icon:"📦", g:["#C98A2B","#E0A94F"]},
- {id:"furniture",en:"Furniture",              ar:"الأثاث",                   icon:"🪑", g:["#7A4E2D","#A06B42"]},
- {id:"food",     en:"Food Manufacturing",     ar:"الصناعات الغذائية",        icon:"🍞", g:["#B5541C","#D97A3D"]},
- {id:"plastics", en:"Plastics",               ar:"البلاستيك",                icon:"🧴", g:["#2563A8","#3B82C9"]},
- {id:"metal",    en:"Metal Fabrication",      ar:"تشكيل المعادن",            icon:"⚙️", g:["#475569","#64748B"]},
- {id:"chemicals",en:"Chemicals",              ar:"الكيماويات",               icon:"⚗️", g:["#6D28A8","#8B44C9"]},
- {id:"cosmetics",en:"Cosmetics",              ar:"مستحضرات التجميل",         icon:"💄", g:["#B02A6A","#D14C8B"]},
- {id:"construction",en:"Construction Materials",ar:"مواد البناء",            icon:"🧱", g:["#8A4B2F","#B06A45"]},
- {id:"medical",  en:"Medical Supplies",       ar:"المستلزمات الطبية",        icon:"🩺", g:["#0E7490","#22A3BF"]},
- {id:"promo",    en:"Promotional Products",   ar:"منتجات دعائية",            icon:"🎁", g:["#B45309","#D97706"]},
- {id:"electronics",en:"Electronics",          ar:"الإلكترونيات",             icon:"🔌", g:["#1E40AF","#3B5FD9"]},
- {id:"agriculture",en:"Agriculture",          ar:"الصناعات الزراعية",        icon:"🌾", g:["#3F6212","#5C8A1E"]},
- {id:"automotive",en:"Automotive Components", ar:"مكونات السيارات",          icon:"🚗", g:["#334155","#52657E"]}
+ {id:"textile",en:"Textile & Apparel",ar:"المنسوجات والملابس",icon:"🧵",g:["#0E6B5E","#12897A"]},
+ {id:"packaging",en:"Packaging & Printing",ar:"التعبئة والطباعة",icon:"📦",g:["#C98A2B","#E0A94F"]},
+ {id:"furniture",en:"Furniture",ar:"الأثاث",icon:"🪑",g:["#7A4E2D","#A06B42"]},
+ {id:"food",en:"Food Manufacturing",ar:"الصناعات الغذائية",icon:"🍞",g:["#B5541C","#D97A3D"]},
+ {id:"plastics",en:"Plastics",ar:"البلاستيك",icon:"🧴",g:["#2563A8","#3B82C9"]},
+ {id:"metal",en:"Metal Fabrication",ar:"تشكيل المعادن",icon:"⚙️",g:["#475569","#64748B"]},
+ {id:"chemicals",en:"Chemicals",ar:"الكيماويات",icon:"⚗️",g:["#6D28A8","#8B44C9"]},
+ {id:"cosmetics",en:"Cosmetics",ar:"مستحضرات التجميل",icon:"💄",g:["#B02A6A","#D14C8B"]},
+ {id:"construction",en:"Construction Materials",ar:"مواد البناء",icon:"🧱",g:["#8A4B2F","#B06A45"]},
+ {id:"medical",en:"Medical Supplies",ar:"المستلزمات الطبية",icon:"🩺",g:["#0E7490","#22A3BF"]},
+ {id:"promo",en:"Promotional Products",ar:"منتجات دعائية",icon:"🎁",g:["#B45309","#D97706"]},
+ {id:"electronics",en:"Electronics",ar:"الإلكترونيات",icon:"🔌",g:["#1E40AF","#3B5FD9"]},
+ {id:"agriculture",en:"Agriculture",ar:"الصناعات الزراعية",icon:"🌾",g:["#3F6212","#5C8A1E"]},
+ {id:"automotive",en:"Automotive Components",ar:"مكونات السيارات",icon:"🚗",g:["#334155","#52657E"]}
 ];
 const GOVS=[
  {en:"Cairo",ar:"القاهرة"},{en:"Giza",ar:"الجيزة"},{en:"Alexandria",ar:"الإسكندرية"},
@@ -379,13 +702,13 @@ const PREFIX=[
  {en:"Canal",ar:"القناة"},{en:"Ramses",ar:"رمسيس"}
 ];
 const IND_WORD={
- textile:{en:"Textiles",ar:"للمنسوجات"}, packaging:{en:"Pack",ar:"للتعبئة والتغليف"},
- furniture:{en:"Furniture",ar:"للأثاث"}, food:{en:"Foods",ar:"للصناعات الغذائية"},
- plastics:{en:"Plast",ar:"للبلاستيك"}, metal:{en:"Metal Works",ar:"للصناعات المعدنية"},
- chemicals:{en:"Chem",ar:"للكيماويات"}, cosmetics:{en:"Cosmetics",ar:"لمستحضرات التجميل"},
- construction:{en:"Building Materials",ar:"لمواد البناء"}, medical:{en:"Medical",ar:"للمستلزمات الطبية"},
- promo:{en:"Promo Gifts",ar:"للهدايا الدعائية"}, electronics:{en:"Electronics",ar:"للإلكترونيات"},
- agriculture:{en:"Agro",ar:"للصناعات الزراعية"}, automotive:{en:"Auto Parts",ar:"لمكونات السيارات"}
+ textile:{en:"Textiles",ar:"للمنسوجات"},packaging:{en:"Pack",ar:"للتعبئة والتغليف"},
+ furniture:{en:"Furniture",ar:"للأثاث"},food:{en:"Foods",ar:"للصناعات الغذائية"},
+ plastics:{en:"Plast",ar:"للبلاستيك"},metal:{en:"Metal Works",ar:"للصناعات المعدنية"},
+ chemicals:{en:"Chem",ar:"للكيماويات"},cosmetics:{en:"Cosmetics",ar:"لمستحضرات التجميل"},
+ construction:{en:"Building Materials",ar:"لمواد البناء"},medical:{en:"Medical",ar:"للمستلزمات الطبية"},
+ promo:{en:"Promo Gifts",ar:"للهدايا الدعائية"},electronics:{en:"Electronics",ar:"للإلكترونيات"},
+ agriculture:{en:"Agro",ar:"للصناعات الزراعية"},automotive:{en:"Auto Parts",ar:"لمكونات السيارات"}
 };
 const IND_PRODUCTS={
  textile:{en:["T-shirts & polos","Denim garments","Home textiles","Uniforms & workwear"],ar:["تيشيرتات وبولو","ملابس جينز","مفروشات منزلية","زي موحد وملابس عمل"]},
@@ -421,20 +744,19 @@ const IND_CAPS={
 };
 const CERTS=["ISO 9001","ISO 14001","ISO 22000","CE","GMP","OEKO-TEX","HACCP","ISO 13485"];
 const DESC_T={
- en:(name,ind,gov,yr)=>`${name} is an Egyptian manufacturer specialized in ${ind.toLowerCase()}, operating from ${gov} since ${yr}. The factory serves local brands, traders, and export clients with consistent quality, flexible order volumes, and on-time delivery. Its team works closely with buyers from sampling through mass production.`,
- ar:(name,ind,gov,yr)=>`${name} مصنع مصري متخصص في مجال ${ind}، يعمل من ${gov} منذ عام ${yr}. يخدم المصنع العلامات التجارية المحلية والتجار وعملاء التصدير بجودة ثابتة وكميات مرنة والتزام بمواعيد التسليم، مع فريق يرافق العميل من مرحلة العينات حتى الإنتاج الكمي.`
+ en:(name,ind,gov,yr)=>`${name} is an Egyptian manufacturer specialized in ${ind.toLowerCase()}, operating from ${gov} since ${yr}.`,
+ ar:(name,ind,gov,yr)=>`${name} مصنع مصري متخصص في مجال ${ind}، يعمل من ${gov} منذ عام ${yr}.`
 };
 function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 const rng=mulberry(20260706);
 const pick=arr=>arr[Math.floor(rng()*arr.length)];
 const MOQS=[50,100,200,300,500,1000,2000,5000,10000];
-
 const FACTORIES=[];
 (function(){
  let pi=0;
  for(let i=0;i<50;i++){
    const ind=INDUSTRIES[i%INDUSTRIES.length];
-   const pre=PREFIX[pi%PREFIX.length]; pi+= (i%3===0?1:2);
+   const pre=PREFIX[pi%PREFIX.length];pi+=(i%3===0?1:2);
    const gov=GOVS[Math.floor(rng()*GOVS.length)];
    const yr=1985+Math.floor(rng()*36);
    const moq=pick(MOQS);
@@ -444,404 +766,202 @@ const FACTORIES=[];
    const emp=pick(["10–50","50–100","100–250","250–500","500+"]);
    const nameEn=`${pre.en} ${IND_WORD[ind.id].en}`;
    const nameAr=`${pre.ar} ${IND_WORD[ind.id].ar}`;
-   FACTORIES.push({
-     id:"f"+i, industry:ind.id, gov, yr, moq, exp, certs, emp,
-     name:{en:nameEn,ar:nameAr},
-     phone:"+20 10"+String(10000000+Math.floor(rng()*89999999)),
-     desc:{en:DESC_T.en(nameEn,ind.en,gov.en,yr), ar:DESC_T.ar(nameAr,ind.ar,gov.ar,yr)},
-     featured:i<6
-   });
+   FACTORIES.push({id:"f"+i,industry:ind.id,gov,yr,moq,exp,certs,emp,name:{en:nameEn,ar:nameAr},phone:"+20 10"+String(10000000+Math.floor(rng()*89999999)),desc:{en:DESC_T.en(nameEn,ind.en,gov.en,yr),ar:DESC_T.ar(nameAr,ind.ar,gov.ar,yr)},featured:i<6});
  }
 })();
-
 let REQUESTS=[
- {id:"r1",icon:"👕",days:0,qty:"5,000",budget:"250,000",
-  title:{en:"Cotton polo shirts with embroidered logo",ar:"قمصان بولو قطنية بشعار مطرز"},
-  desc:{en:"Looking for a garment factory to produce 5,000 pique polo shirts (100% Egyptian cotton, 220 gsm) in 4 colors with chest embroidery. Sizes S–XXL. Need pre-production samples first.",ar:"مطلوب مصنع ملابس لإنتاج ٥٠٠٠ قميص بولو بيكيه (قطن مصري ١٠٠٪، ٢٢٠ جم) بأربعة ألوان مع تطريز على الصدر. المقاسات S–XXL. مطلوب عينات قبل الإنتاج."},
-  material:{en:"100% Egyptian cotton pique",ar:"بيكيه قطن مصري ١٠٠٪"},
-  gov:0, by:{en:"Nour Apparel Trading",ar:"نور لتجارة الملابس"}, contact:"+20 100 555 0192 · nour@trade.example"},
- {id:"r2",icon:"🫙",days:1,qty:"20,000",budget:null,
-  title:{en:"Glass jars with printed metal lids for honey brand",ar:"برطمانات زجاجية بأغطية معدنية مطبوعة لعلامة عسل"},
-  desc:{en:"Sourcing 380 ml glass jars with custom-printed twist-off lids and adhesive labels for a honey brand launching in Q4. Delivery in two batches.",ar:"مطلوب توريد برطمانات زجاج ٣٨٠ مل بأغطية معدنية مطبوعة وملصقات لاصقة لعلامة عسل جديدة تُطلق في الربع الأخير. التسليم على دفعتين."},
-  material:{en:"Glass, tinplate lids",ar:"زجاج، أغطية صفيح"},
-  gov:2, by:{en:"Karam Foods",ar:"كرم للأغذية"}, contact:"+20 101 444 7736 · karam@foods.example"},
- {id:"r3",icon:"🪑",days:2,qty:"120",budget:"900,000",
-  title:{en:"Café furniture set — tables and chairs",ar:"أثاث كافيه — طاولات وكراسي"},
-  desc:{en:"New café chain needs 120 solid-wood chairs and 40 tables with matte lacquer finish, based on attached reference designs. Installments possible for the right partner.",ar:"سلسلة كافيهات جديدة تحتاج ١٢٠ كرسي خشب زان و٤٠ طاولة بتشطيب دوكو مطفي حسب التصميمات المرجعية المرفقة."},
-  material:{en:"Beech wood, matte lacquer",ar:"خشب زان، دوكو مطفي"},
-  gov:1, by:{en:"Bunn Café Group",ar:"مجموعة بُن للكافيهات"}, contact:"+20 106 210 8845 · bunn@cafe.example"},
- {id:"r4",icon:"🧴",days:3,qty:"50,000",budget:null,
-  title:{en:"HDPE bottles 250 ml for detergent line",ar:"زجاجات HDPE سعة ٢٥٠ مل لخط منظفات"},
-  desc:{en:"Monthly supply of 50,000 white HDPE bottles with flip-top caps. Mold available or can be produced. Long-term contract for a growing cleaning-products brand.",ar:"توريد شهري ٥٠ ألف زجاجة HDPE بيضاء بغطاء فليب توب. الاسطمبة متاحة أو يمكن تصنيعها. تعاقد طويل الأمد لعلامة منظفات."},
-  material:{en:"HDPE, PP caps",ar:"HDPE وأغطية PP"},
-  gov:5, by:{en:"Sator Clean",ar:"ساتور كلين"}, contact:"+20 122 300 4519 · sator@clean.example"},
- {id:"r5",icon:"🎁",days:4,qty:"2,000",budget:"180,000",
-  title:{en:"Corporate gift boxes for year-end campaign",ar:"علب هدايا شركات لحملة نهاية العام"},
-  desc:{en:"2,000 gift sets: rigid box, branded ceramic mug, A5 notebook, and pen — all with single-color logo. Needed before December 10.",ar:"٢٠٠٠ طقم هدايا: علبة هارد، مج سيراميك بشعار، نوت بوك A5، وقلم — بطباعة لون واحد. مطلوب قبل ١٠ ديسمبر."},
-  material:{en:"Rigid board, ceramic, PU",ar:"كرتون مقوى، سيراميك، جلد صناعي"},
-  gov:0, by:{en:"Meem Marketing",ar:"ميم للتسويق"}, contact:"+20 109 887 2210 · meem@mkt.example"},
- {id:"r6",icon:"🩺",days:6,qty:"100,000",budget:null,
-  title:{en:"Disposable non-woven gowns — export order",ar:"أرواب غير منسوجة للاستخدام الواحد — طلب تصدير"},
-  desc:{en:"Export trading office seeks a certified factory for 100k SMS non-woven gowns (35 gsm, EN 13795). CE marking required. Recurring quarterly volumes.",ar:"مكتب تصدير يبحث عن مصنع معتمد لتوريد ١٠٠ ألف روب SMS غير منسوج (٣٥ جم، مطابق EN 13795) بعلامة CE. كميات ربع سنوية متكررة."},
-  material:{en:"SMS non-woven 35 gsm",ar:"قماش SMS غير منسوج ٣٥ جم"},
-  gov:3, by:{en:"PortEx Trading",ar:"بورت إكس للتصدير"}, contact:"+20 114 652 9903 · portex@trade.example"}
+ {id:"r1",icon:"👕",days:0,qty:"5,000",budget:"250,000",title:{en:"Cotton polo shirts with embroidered logo",ar:"قمصان بولو قطنية بشعار مطرز"},desc:{en:"Looking for 5,000 pique polo shirts (100% Egyptian cotton, 220 gsm) in 4 colors.",ar:"مطلوب ٥٠٠٠ قميص بولو بيكيه (قطن مصري ١٠٠٪، ٢٢٠ جم) بأربعة ألوان."},material:{en:"100% Egyptian cotton",ar:"قطن مصري ١٠٠٪"},gov:0,by:{en:"Nour Apparel",ar:"نور للملابس"},contact:"+20 100 555 0192"},
+ {id:"r2",icon:"🫙",days:1,qty:"20,000",budget:null,title:{en:"Glass jars with printed lids",ar:"برطمانات زجاجية بأغطية مطبوعة"},desc:{en:"380 ml glass jars with custom-printed twist-off lids.",ar:"برطمانات زجاج ٣٨٠ مل بأغطية معدنية مطبوعة."},material:{en:"Glass, tinplate",ar:"زجاج، صفيح"},gov:2,by:{en:"Karam Foods",ar:"كرم للأغذية"},contact:"+20 101 444 7736"},
+ {id:"r3",icon:"🪑",days:2,qty:"120",budget:"900,000",title:{en:"Café furniture set",ar:"أثاث كافيه"},desc:{en:"120 chairs and 40 tables with matte lacquer finish.",ar:"١٢٠ كرسي و٤٠ طاولة بتشطيب دوكو مطفي."},material:{en:"Beech wood",ar:"خشب زان"},gov:1,by:{en:"Bunn Café",ar:"بُن للكافيهات"},contact:"+20 106 210 8845"},
+ {id:"r4",icon:"🧴",days:3,qty:"50,000",budget:null,title:{en:"HDPE bottles 250 ml",ar:"زجاجات HDPE ٢٥٠ مل"},desc:{en:"Monthly supply of 50,000 white HDPE bottles.",ar:"توريد شهري ٥٠ ألف زجاجة HDPE بيضاء."},material:{en:"HDPE, PP caps",ar:"HDPE وأغطية PP"},gov:5,by:{en:"Sator Clean",ar:"ساتور كلين"},contact:"+20 122 300 4519"},
+ {id:"r5",icon:"🎁",days:4,qty:"2,000",budget:"180,000",title:{en:"Corporate gift boxes",ar:"علب هدايا شركات"},desc:{en:"2,000 gift sets with branded mug and notebook.",ar:"٢٠٠٠ طقم هدايا بمج ونوت بوك بشعار."},material:{en:"Rigid board, ceramic",ar:"كرتون مقوى، سيراميك"},gov:0,by:{en:"Meem Marketing",ar:"ميم للتسويق"},contact:"+20 109 887 2210"},
+ {id:"r6",icon:"🩺",days:6,qty:"100,000",budget:null,title:{en:"Disposable non-woven gowns",ar:"أرواب غير منسوجة"},desc:{en:"100k SMS non-woven gowns (35 gsm, EN 13795).",ar:"١٠٠ ألف روب SMS غير منسوج (٣٥ جم)."},material:{en:"SMS non-woven",ar:"SMS غير منسوج"},gov:3,by:{en:"PortEx Trading",ar:"بورت إكس"},contact:"+20 114 652 9903"}
 ];
 </script>
 <script>
-/* =============== App state & helpers =============== */
+/* =============== App state =============== */
 let LANG=document.documentElement.getAttribute("data-lang")||"ar";
 let VIEW={name:"home"};
 let FILTERS={q:"",industry:"",gov:"",moq:"",exp:false,sort:"name"};
+let floatSetIndex=0;
+let floatInterval=null;
 const t=k=>STR[LANG][k];
 const L=obj=>obj[LANG];
 const ind=id=>INDUSTRIES.find(x=>x.id===id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const grad=g=>`linear-gradient(135deg,${g[0]},${g[1]})`;
 const num=n=>LANG==="ar"?Number(String(n).replace(/,/g,"")).toLocaleString("ar-EG"):Number(String(n).replace(/,/g,"")).toLocaleString("en-US");
+function setLang(l){LANG=l;document.documentElement.lang=l;document.documentElement.dir=l==="ar"?"rtl":"ltr";render();}
+function go(view){VIEW=view;render();window.scrollTo({top:0});}
+function toast(msg){const el=document.createElement("div");el.className="toast";el.textContent=msg;document.body.appendChild(el);setTimeout(()=>el.remove(),2600);}
 
-function setLang(l){
-  LANG=l;
-  document.documentElement.lang=l;
-  document.documentElement.dir=l==="ar"?"rtl":"ltr";
-  render();
-}
-function go(view){ VIEW=view; render(); window.scrollTo({top:0}); }
-function toast(msg){
-  const el=document.createElement("div");
-  el.className="toast"; el.textContent=msg;
-  document.body.appendChild(el);
-  setTimeout(()=>el.remove(),2600);
-}
-
-/* =============== Shared pieces =============== */
+/* =============== Header =============== */
 function headerHTML(){
   const links=[["home",t("nav_home")],["factories",t("nav_factories")],["requests",t("nav_requests")]];
-  return `<header><div class="container header-inner">
-    <a href="#" class="logo" onclick="go({name:'home'});return false">
-      <span class="mark">ع</span><span>${t("brand")}<span class="ain">ع</span></span>
-    </a>
-    <nav class="main-nav">${links.map(([v,l])=>`<button class="nav-link ${VIEW.name===v||VIEW.name===v.slice(0,-1)?"active":""}" onclick="go({name:'${v}'})">${l}</button>`).join("")}</nav>
+  return`<header id="mainHeader"><div class="container header-inner">
+    <a href="#" class="logo" onclick="go({name:'home'});return false">${t("brand")}<span class="logo-ain">ع</span></a>
+    <nav class="main-nav">${links.map(([v,l])=>`<button class="nav-link ${VIEW.name===v?'active':''}" onclick="go({name:'${v}'})">${l}</button>`).join("")}</nav>
     <div class="header-actions">
-      <div class="lang-toggle" role="group" aria-label="Language">
-        <button class="${LANG==='en'?'on':''}" onclick="setLang('en')">EN</button>
-        <button class="${LANG==='ar'?'on':''}" onclick="setLang('ar')">عربي</button>
-      </div>
+      <div class="lang-toggle"><button class="${LANG==='en'?'on':''}" onclick="setLang('en')">EN</button><button class="${LANG==='ar'?'on':''}" onclick="setLang('ar')">عربي</button></div>
       <button class="btn btn-ghost btn-sm">${t("login")}</button>
       <button class="btn btn-primary btn-sm" onclick="openForm()">${t("post_request")}</button>
-    </div>
-  </div></header>`;
+      <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+    </div></div></header>`;
 }
+function toggleMobileMenu(){
+  const nav=document.querySelector(".main-nav");if(!nav)return;
+  if(nav.style.display==="flex"){nav.style.display="";nav.style.position="";nav.style.top="";nav.style.left="";nav.style.right="";nav.style.background="";nav.style.padding="";nav.style.boxShadow="";nav.style.flexDirection="";nav.style.gap="";nav.style.zIndex="";}
+  else{nav.style.display="flex";nav.style.position="absolute";nav.style.top="68px";nav.style.left="0";nav.style.right="0";nav.style.background="#fff";nav.style.padding="20px";nav.style.boxShadow="var(--shadow)";nav.style.flexDirection="column";nav.style.gap="12px";nav.style.zIndex="99";nav.style.borderBottom="1.5px solid var(--line)";}
+}
+
+/* =============== Floating chips =============== */
+function floatChipsHTML(){
+  const sets=t("float_sets");
+  return sets.map((set,si)=>`
+    <div class="float-chip-set set${si+1} ${si===0?'visible':'hidden'}" data-set="${si}">
+      ${set.map(([icon,title,sub],fi)=>`
+        <div class="float-chip fc${fi+1}" aria-hidden="true">
+          ${icon}<span>${title}<small>${sub}</small></span>
+        </div>
+      `).join("")}
+    </div>
+  `).join("");
+}
+
+/* =============== Footer =============== */
 function footerHTML(){
   const col=(title,items)=>`<div><h4>${title}</h4><ul>${items.map(x=>`<li><button>${x}</button></li>`).join("")}</ul></div>`;
-  return `<footer><div class="container">
-    <div class="footer-grid">
-      <div><div class="logo"><span class="mark">ع</span><span>${t("brand")}<span class="ain" style="color:#4FBFAE">ع</span></span></div>
-      <p>${t("footer_about")}</p></div>
-      ${col(t("f_platform"),t("f_links1"))}${col(t("f_company"),t("f_links2"))}${col(t("f_support"),t("f_links3"))}
-    </div>
-    <div class="footer-bottom"><span>${t("rights")}</span><span>${t("made")}</span></div>
-  </div></footer>`;
+  return`<footer><div class="container"><div class="footer-grid"><div><div class="logo-text">${t("brand")}<span class="logo-ain">ع</span></div><p>${t("footer_about")}</p></div>${col(t("f_platform"),t("f_links1"))}${col(t("f_company"),t("f_links2"))}${col(t("f_support"),t("f_links3"))}</div><div class="footer-bottom"><span>${t("rights")}</span><span>${t("made")}</span></div></div></footer>`;
 }
 function factoryCardHTML(f){
   const i=ind(f.industry);
-  return `<button class="factory-card" onclick="go({name:'factory',id:'${f.id}'})">
-    <div class="cover" style="background:${grad(i.g)}">
-      <div class="flogo">${L(f.name).charAt(0)}</div>
-    </div>
-    <div class="body">
-      <h3>${esc(L(f.name))}</h3>
-      <div class="meta"><span>${i.icon} ${L({en:i.en,ar:i.ar})}</span> · <span>📍 ${L(f.gov)}</span></div>
-      <div class="desc">${esc(L(f.desc))}</div>
-      <div class="chip-row">
-        <span class="chip teal">${t("moq")}: ${num(f.moq)}</span>
-        ${f.exp?`<span class="chip amber">🌍 ${t("exports")}</span>`:""}
-        ${f.certs.slice(0,1).map(c=>`<span class="chip">${c}</span>`).join("")}
-      </div>
-    </div>
-  </button>`;
+  return`<button class="factory-card" onclick="go({name:'factory',id:'${f.id}'})"><div class="cover" style="background:${grad(i.g)}"><span class="cover-ic">${i.icon}</span><div class="flogo">${L(f.name).charAt(0)}</div></div><div class="body"><h3>${esc(L(f.name))}</h3><div class="meta"><span>${i.icon} ${L({en:i.en,ar:i.ar})}</span> · <span>📍 ${L(f.gov)}</span></div><div class="desc">${esc(L(f.desc))}</div><div class="chip-row"><span class="chip teal">${t("moq")}: ${num(f.moq)}</span>${f.exp?`<span class="chip amber">🌍 ${t("exports")}</span>`:""}${f.certs.slice(0,1).map(c=>`<span class="chip">${c}</span>`).join("")}</div></div></button>`;
 }
 function requestCardHTML(r){
-  const i=INDUSTRIES[0];
-  return `<button class="request-card" onclick="go({name:'request',id:'${r.id}'})">
-    <div class="thumb" style="background:var(--mist)">${r.icon}</div>
-    <h3>${esc(L(r.title))}</h3>
-    <div class="desc">${esc(L(r.desc))}</div>
-    <div class="foot">
-      <span>📦 ${t("qty")}: <b>${num(r.qty)}</b></span>
-      <span>📍 ${L(GOVS[r.gov])}</span>
-      <span>🕒 ${STR[LANG].days_ago(r.days)}</span>
-    </div>
-  </button>`;
+  return`<button class="request-card" onclick="go({name:'request',id:'${r.id}'})"><div class="thumb">${r.icon}</div><h3>${esc(L(r.title))}</h3><div class="desc">${esc(L(r.desc))}</div><div class="foot"><span>📦 ${t("qty")}: <b>${num(r.qty)}</b></span><span>📍 ${L(GOVS[r.gov])}</span><span>🕒 ${STR[LANG].days_ago(r.days)}</span></div></button>`;
 }
+function tickerItems(){return INDUSTRIES.map(i=>`<span class="tk">${i.icon} ${L({en:i.en,ar:i.ar})}<span class="sep"></span></span>`).join("");}
 
 /* =============== Views =============== */
 function homeHTML(){
   const featured=FACTORIES.filter(f=>f.featured);
-  return `
-  <div class="hero"><div class="container hero-inner">
-    <div class="watermark" aria-hidden="true">ع</div>
-    <span class="eyebrow"><span class="dot"></span>${t("eyebrow")}</span>
+  return`<div class="hero"><div class="float-chips-container">${floatChipsHTML()}</div>
+  <div class="container hero-inner">
+    <div class="brand-display"><div class="orbit-ring r1"></div><div class="orbit-ring r2"></div><div class="brand-word">${t("brand")}<span class="ain">ع</span></div></div>
+    <p class="mast-line"><span class="eyebrow" style="margin-bottom:0"><span class="dot"></span>${t("eyebrow")}</span></p>
+    <div class="hero-slider" id="heroSlider"><div class="hs-track" id="hsTrack">${t("slides").map(([ic,h,p])=>`<div class="hs-slide"><span class="ic">${ic}</span><h3>${h}</h3><p>${p}</p></div>`).join("")}</div><button class="hs-arrow hs-prev" id="hsPrev">‹</button><button class="hs-arrow hs-next" id="hsNext">›</button><div class="hs-dots" id="hsDots">${t("slides").map((_,ix)=>`<button class="hs-dot ${ix===0?"on":""}" data-ix="${ix}"></button>`).join("")}</div></div>
     <h1>${t("hero_title")}</h1>
-    <p class="sub">${t("hero_sub")}</p>
-    <form class="search-bar" onsubmit="event.preventDefault();FILTERS.q=this.q.value;go({name:'factories'})">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>
-      <input name="q" placeholder="${t("search_ph")}" aria-label="${t("search_ph")}">
-      <button class="btn btn-primary" type="submit">${LANG==='ar'?'بحث':'Search'}</button>
-    </form>
-    <div class="hero-ctas">
-      <button class="btn btn-ghost" onclick="go({name:'factories'})">🏭 ${t("browse_factories")}</button>
-      <button class="btn btn-primary" onclick="openForm()">📣 ${t("post_request")}</button>
-    </div>
-    <div class="hero-stats">
-      <div class="hero-stat"><b>${num(50)}+</b><span>${t("stat_factories")}</span></div>
-      <div class="hero-stat"><b>${num(14)}</b><span>${t("stat_industries")}</span></div>
-      <div class="hero-stat"><b>${num(16)}</b><span>${t("stat_governorates")}</span></div>
-    </div>
+    <form class="search-bar" onsubmit="event.preventDefault();FILTERS.q=this.q.value;go({name:'factories'})"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input name="q" placeholder="${t("search_ph")}"><button class="btn btn-primary" type="submit">${LANG==='ar'?'بحث':'Search'}</button></form>
+    <div class="hero-ctas"><button class="btn btn-ghost" onclick="go({name:'factories'})">🏭 ${t("browse_factories")}</button><button class="btn btn-primary" onclick="openForm()">📣 ${t("post_request")}</button></div>
+    <div class="hero-stats"><div class="hero-stat"><b>${num(50)}+</b><span>${t("stat_factories")}</span></div><div class="hero-stat"><b>${num(14)}</b><span>${t("stat_industries")}</span></div><div class="hero-stat"><b>${num(16)}</b><span>${t("stat_governorates")}</span></div></div>
   </div></div>
-
-  <section class="block"><div class="container">
-    <div class="section-head"><div><h2>${t("industries_title")}</h2><p>${t("industries_sub")}</p></div></div>
-    <div class="industry-grid">
-      ${INDUSTRIES.map(i=>{
-        const c=FACTORIES.filter(f=>f.industry===i.id).length;
-        return `<button class="industry-card" onclick="FILTERS={...FILTERS,industry:'${i.id}'};go({name:'factories'})">
-          <div class="icon">${i.icon}</div><div class="name">${L({en:i.en,ar:i.ar})}</div>
-          <div class="count">${num(c)} ${t("factories_count")}</div></button>`;
-      }).join("")}
-    </div>
-  </div></section>
-
-  <section class="block alt"><div class="container">
-    <div class="section-head"><div><h2>${t("latest_requests")}</h2><p>${t("latest_requests_sub")}</p></div>
-      <button class="link-more" onclick="go({name:'requests'})">${t("view_all")} ${LANG==='ar'?'←':'→'}</button></div>
-    <div class="card-grid">${REQUESTS.slice(0,3).map(requestCardHTML).join("")}</div>
-  </div></section>
-
-  <section class="block"><div class="container">
-    <div class="section-head"><div><h2>${t("featured")}</h2><p>${t("featured_sub")}</p></div>
-      <button class="link-more" onclick="go({name:'factories'})">${t("view_all")} ${LANG==='ar'?'←':'→'}</button></div>
-    <div class="card-grid">${featured.map(factoryCardHTML).join("")}</div>
-  </div></section>
-
-  <section class="block alt"><div class="container">
-    <div class="section-head"><div><h2>${t("why_title")}</h2></div></div>
-    <div class="why-grid">
-      ${t("why").map(([ic,h,p])=>`<div class="why-card"><div class="icon">${ic}</div><h3>${h}</h3><p>${p}</p></div>`).join("")}
-    </div>
-  </div></section>
-
-  <section class="block"><div class="container">
-    <div class="cta-band">
-      <div class="ain-bg" aria-hidden="true">ع</div>
-      <div><h2>${t("cta_title")}</h2><p>${t("cta_sub")}</p></div>
-      <button class="btn btn-primary">${t("cta_btn")}</button>
-    </div>
-  </div></section>`;
+  <div class="ticker"><div class="ticker-track">${tickerItems()}${tickerItems()}</div></div>
+  <section class="block"><div class="container"><div class="section-head"><div><h2>${t("industries_title")}</h2><p>${t("industries_sub")}</p></div></div><div class="industry-grid">${INDUSTRIES.map(i=>{const c=FACTORIES.filter(f=>f.industry===i.id).length;return`<button class="industry-card" onclick="FILTERS={...FILTERS,industry:'${i.id}'};go({name:'factories'})"><div class="icon" style="background:linear-gradient(135deg,${i.g[0]}1F,${i.g[1]}38)">${i.icon}</div><div class="name">${L({en:i.en,ar:i.ar})}</div><div class="count">${num(c)} ${t("factories_count")}</div></button>`;}).join("")}</div></div></section>
+  <section class="block alt"><div class="container"><div class="section-head"><div><h2>${t("latest_requests")}</h2><p>${t("latest_requests_sub")}</p></div><button class="link-more" onclick="go({name:'requests'})">${t("view_all")} ${LANG==='ar'?'←':'→'}</button></div><div class="card-grid">${REQUESTS.slice(0,3).map(requestCardHTML).join("")}</div></div></section>
+  <section class="block"><div class="container"><div class="section-head"><div><h2>${t("featured")}</h2><p>${t("featured_sub")}</p></div><button class="link-more" onclick="go({name:'factories'})">${t("view_all")} ${LANG==='ar'?'←':'→'}</button></div><div class="card-grid">${featured.map(factoryCardHTML).join("")}</div></div></section>
+  <section class="block alt"><div class="container"><div class="section-head"><div><h2>${t("why_title")}</h2></div></div><div class="why-grid">${t("why").map(([ic,h,p])=>`<div class="why-card"><div class="icon">${ic}</div><h3>${h}</h3><p>${p}</p></div>`).join("")}</div></div></section>
+  <section class="block"><div class="container"><div class="cta-band"><div><h2>${t("cta_title")}</h2><p>${t("cta_sub")}</p></div><button class="btn btn-primary">${t("cta_btn")}</button></div></div></section>`;
 }
 
 function factoriesHTML(){
   let list=FACTORIES.filter(f=>{
-    if(FILTERS.industry && f.industry!==FILTERS.industry) return false;
-    if(FILTERS.gov!=="" && FILTERS.gov!=null && f.gov!==GOVS[FILTERS.gov]) return false;
-    if(FILTERS.moq && f.moq>Number(FILTERS.moq)) return false;
-    if(FILTERS.exp && !f.exp) return false;
-    if(FILTERS.q){
-      const q=FILTERS.q.toLowerCase();
-      const i=ind(f.industry);
-      const hay=[f.name.en,f.name.ar,i.en,i.ar,f.gov.en,f.gov.ar,...IND_PRODUCTS[f.industry].en,...IND_PRODUCTS[f.industry].ar,...IND_CAPS[f.industry].en,...IND_CAPS[f.industry].ar].join(" ").toLowerCase();
-      if(!hay.includes(q)) return false;
-    }
+    if(FILTERS.industry&&f.industry!==FILTERS.industry)return false;
+    if(FILTERS.gov!==""&&FILTERS.gov!=null&&f.gov!==GOVS[FILTERS.gov])return false;
+    if(FILTERS.moq&&f.moq>Number(FILTERS.moq))return false;
+    if(FILTERS.exp&&!f.exp)return false;
+    if(FILTERS.q){const q=FILTERS.q.toLowerCase();const i=ind(f.industry);const hay=[f.name.en,f.name.ar,i.en,i.ar,f.gov.en,f.gov.ar,...IND_PRODUCTS[f.industry].en,...IND_PRODUCTS[f.industry].ar,...IND_CAPS[f.industry].en,...IND_CAPS[f.industry].ar].join(" ").toLowerCase();if(!hay.includes(q))return false;}
     return true;
   });
-  if(FILTERS.sort==="moq") list=[...list].sort((a,b)=>a.moq-b.moq);
+  if(FILTERS.sort==="moq")list=[...list].sort((a,b)=>a.moq-b.moq);
   else list=[...list].sort((a,b)=>L(a.name).localeCompare(L(b.name),LANG));
-
-  return `
-  <div class="page-head"><div class="container"><h1>${t("dir_title")}</h1><p>${t("dir_sub")}</p></div></div>
-  <div class="container dir-layout">
-    <aside class="filters">
-      <h3>${t("filters")} <button class="clear" onclick="FILTERS={q:'',industry:'',gov:'',moq:'',exp:false,sort:'name'};render()">${t("clear")}</button></h3>
-      <div class="f-group"><label>${LANG==='ar'?'بحث':'Search'}</label>
-        <input type="text" value="${esc(FILTERS.q)}" onchange="FILTERS.q=this.value;render()" placeholder="${t("search_ph")}"></div>
-      <div class="f-group"><label>${t("f_industry")}</label>
-        <select onchange="FILTERS.industry=this.value;render()">
-          <option value="">${t("all")}</option>
-          ${INDUSTRIES.map(i=>`<option value="${i.id}" ${FILTERS.industry===i.id?"selected":""}>${L({en:i.en,ar:i.ar})}</option>`).join("")}
-        </select></div>
-      <div class="f-group"><label>${t("f_gov")}</label>
-        <select onchange="FILTERS.gov=this.value;render()">
-          <option value="">${t("all")}</option>
-          ${GOVS.map((g,ix)=>`<option value="${ix}" ${String(FILTERS.gov)===String(ix)?"selected":""}>${L(g)}</option>`).join("")}
-        </select></div>
-      <div class="f-group"><label>${t("f_moq")}</label>
-        <input type="number" min="0" value="${esc(FILTERS.moq)}" onchange="FILTERS.moq=this.value;render()" placeholder="${LANG==='ar'?'مثال: ٥٠٠':'e.g. 500'}"></div>
-      <div class="f-group"><label class="f-check"><input type="checkbox" ${FILTERS.exp?"checked":""} onchange="FILTERS.exp=this.checked;render()"> ${t("f_export")}</label></div>
-    </aside>
-    <div>
-      <div class="results-bar">
-        <span class="count"><b>${num(list.length)}</b> ${t("results")}</span>
-        <label style="font-size:13px;color:var(--ink-soft)">${t("sort")}:
-          <select style="padding:7px 10px;border:1.5px solid var(--line);border-radius:9px;margin-inline-start:6px" onchange="FILTERS.sort=this.value;render()">
-            <option value="name" ${FILTERS.sort==="name"?"selected":""}>${t("sort_name")}</option>
-            <option value="moq" ${FILTERS.sort==="moq"?"selected":""}>${t("sort_moq")}</option>
-          </select></label>
-      </div>
-      ${list.length?`<div class="card-grid">${list.map(factoryCardHTML).join("")}</div>`
-        :`<div class="empty"><div class="big">🔍</div><b>${t("no_results")}</b><p>${t("no_results_sub")}</p></div>`}
-    </div>
-  </div>`;
+  return`<div class="page-head"><div class="container"><h1>${t("dir_title")}</h1><p>${t("dir_sub")}</p></div></div><div class="container dir-layout"><aside class="filters"><h3>${t("filters")} <button class="clear" onclick="FILTERS={q:'',industry:'',gov:'',moq:'',exp:false,sort:'name'};render()">${t("clear")}</button></h3><div class="f-group"><label>${LANG==='ar'?'بحث':'Search'}</label><input type="text" value="${esc(FILTERS.q)}" onchange="FILTERS.q=this.value;render()" placeholder="${t("search_ph")}"></div><div class="f-group"><label>${t("f_industry")}</label><select onchange="FILTERS.industry=this.value;render()"><option value="">${t("all")}</option>${INDUSTRIES.map(i=>`<option value="${i.id}" ${FILTERS.industry===i.id?"selected":""}>${L({en:i.en,ar:i.ar})}</option>`).join("")}</select></div><div class="f-group"><label>${t("f_gov")}</label><select onchange="FILTERS.gov=this.value;render()"><option value="">${t("all")}</option>${GOVS.map((g,ix)=>`<option value="${ix}" ${String(FILTERS.gov)===String(ix)?"selected":""}>${L(g)}</option>`).join("")}</select></div><div class="f-group"><label>${t("f_moq")}</label><input type="number" min="0" value="${esc(FILTERS.moq)}" onchange="FILTERS.moq=this.value;render()" placeholder="${LANG==='ar'?'مثال: ٥٠٠':'e.g. 500'}"></div><div class="f-group"><label class="f-check"><input type="checkbox" ${FILTERS.exp?"checked":""} onchange="FILTERS.exp=this.checked;render()"> ${t("f_export")}</label></div></aside><div><div class="results-bar"><span class="count"><b>${num(list.length)}</b> ${t("results")}</span><label style="font-size:13px;color:var(--ink-soft)">${t("sort")}:<select style="padding:7px 10px;border:1.5px solid var(--line);border-radius:9px;margin-inline-start:6px" onchange="FILTERS.sort=this.value;render()"><option value="name" ${FILTERS.sort==="name"?"selected":""}>${t("sort_name")}</option><option value="moq" ${FILTERS.sort==="moq"?"selected":""}>${t("sort_moq")}</option></select></label></div>${list.length?`<div class="card-grid">${list.map(factoryCardHTML).join("")}</div>`:`<div class="empty"><div class="big">🔍</div><b>${t("no_results")}</b><p>${t("no_results_sub")}</p></div>`}</div></div>`;
 }
 
 function factoryProfileHTML(id){
-  const f=FACTORIES.find(x=>x.id===id); if(!f) return homeHTML();
-  const i=ind(f.industry);
-  const prods=IND_PRODUCTS[f.industry], caps=IND_CAPS[f.industry];
+  const f=FACTORIES.find(x=>x.id===id);if(!f)return homeHTML();
+  const i=ind(f.industry);const prods=IND_PRODUCTS[f.industry],caps=IND_CAPS[f.industry];
   const cIcon=(bg,em)=>`<span class="ci" style="background:${bg}">${em}</span>`;
   const slug=f.name.en.toLowerCase().replace(/[^a-z]+/g,"");
-  return `
-  <div class="container"><button class="back-btn" onclick="go({name:'factories'})">${LANG==='ar'?'→':'←'} ${t("back")}</button></div>
-  <div class="container" style="margin-top:14px">
-    <div class="profile-cover" style="background:${grad(i.g)};border-radius:20px"></div>
-    <div class="profile-top">
-      <div class="profile-card">
-        <div class="profile-logo">${L(f.name).charAt(0)}</div>
-        <div class="profile-main">
-          <h1>${esc(L(f.name))}</h1>
-          <div class="meta" style="color:var(--ink-soft);font-size:13.5px">${i.icon} ${L({en:i.en,ar:i.ar})} · 📍 ${L(f.gov)} · ${t("est")} ${num(f.yr)}</div>
-          <div class="badge-row">
-            <span class="chip teal">${t("moq")}: ${num(f.moq)} ${t("units")}</span>
-            ${f.exp?`<span class="chip amber">🌍 ${t("exports")}</span>`:""}
-            ${f.certs.map(c=>`<span class="chip">✔ ${c}</span>`).join("")}
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="profile-layout">
-      <div>
-        <div class="panel"><h2>${t("about")}</h2><p>${esc(L(f.desc))}</p></div>
-        <div class="panel"><h2>${t("products")}</h2>
-          <div class="chip-row">${L(prods).map(p=>`<span class="chip" style="font-size:13px;padding:7px 14px">${p}</span>`).join("")}</div></div>
-        <div class="panel"><h2>${t("capabilities")}</h2>
-          <div class="chip-row">${L(caps).map(p=>`<span class="chip teal" style="font-size:13px;padding:7px 14px">${p}</span>`).join("")}</div></div>
-        <div class="panel"><h2>${t("gallery")}</h2>
-          <div class="gallery">${[0,1,2,3,4,5].map(n=>`<div class="ph" style="background:${grad(i.g)};opacity:${1-n*0.09}">${n<3?"📷":i.icon}</div>`).join("")}</div></div>
-        <div class="panel"><h2>${t("details")}</h2>
-          <div class="spec-grid">
-            <div class="spec"><div class="k">${t("established")}</div><div class="v">${num(f.yr)}</div></div>
-            <div class="spec"><div class="k">${t("employees")}</div><div class="v">${f.emp}</div></div>
-            <div class="spec"><div class="k">${t("location")}</div><div class="v">📍 ${L(f.gov)}</div></div>
-            <div class="spec"><div class="k">${t("hours")}</div><div class="v">${t("hours_val")}</div></div>
-            <div class="spec"><div class="k">${t("moq")}</div><div class="v">${num(f.moq)} ${t("units")}</div></div>
-            <div class="spec"><div class="k">${t("certifications")}</div><div class="v">${f.certs.length?f.certs.join(" · "):"—"}</div></div>
-          </div></div>
-      </div>
-      <aside class="contact-panel">
-        <div class="panel">
-          <h2>${t("contact_title")}</h2>
-          <p style="margin-bottom:14px;font-size:13px">${t("contact_sub")}</p>
-          <a class="contact-btn" href="tel:${f.phone.replace(/\s/g,'')}">${cIcon("var(--teal-tint)","📞")}<span>${t("call")}<small dir="ltr">${f.phone}</small></span></a>
-          <a class="contact-btn" href="#" onclick="return false">${cIcon("#E7F6EC","💬")}<span>${t("whatsapp")}<small dir="ltr">${f.phone}</small></span></a>
-          <a class="contact-btn" href="mailto:info@${slug}.example">${cIcon("#FDF0E0","✉️")}<span>${t("email")}<small dir="ltr">info@${slug}.example</small></span></a>
-          <a class="contact-btn" href="#" onclick="return false">${cIcon("#E8EEFB","🌐")}<span>${t("website")}<small dir="ltr">${slug}.example.com</small></span></a>
-          <div class="chip-row" style="margin-top:8px">
-            <span class="chip">Facebook</span><span class="chip">Instagram</span><span class="chip">LinkedIn</span>
-          </div>
-        </div>
-      </aside>
-    </div>
-  </div>`;
+  return`<div class="container"><button class="back-btn" onclick="go({name:'factories'})">${LANG==='ar'?'→':'←'} ${t("back")}</button></div><div class="container" style="margin-top:14px"><div class="profile-cover" style="background:${grad(i.g)};border-radius:20px"><span class="cover-ic">${i.icon}</span></div><div class="profile-top"><div class="profile-card"><div class="profile-logo">${L(f.name).charAt(0)}</div><div class="profile-main"><h1>${esc(L(f.name))}</h1><div class="meta" style="color:var(--ink-soft);font-size:13.5px">${i.icon} ${L({en:i.en,ar:i.ar})} · 📍 ${L(f.gov)} · ${t("est")} ${num(f.yr)}</div><div class="badge-row"><span class="chip teal">${t("moq")}: ${num(f.moq)} ${t("units")}</span>${f.exp?`<span class="chip amber">🌍 ${t("exports")}</span>`:""}${f.certs.map(c=>`<span class="chip">✔ ${c}</span>`).join("")}</div></div></div></div><div class="profile-layout"><div><div class="panel"><h2>${t("about")}</h2><p>${esc(L(f.desc))}</p></div><div class="panel"><h2>${t("products")}</h2><div class="chip-row">${L(prods).map(p=>`<span class="chip" style="font-size:13px;padding:7px 14px">${p}</span>`).join("")}</div></div><div class="panel"><h2>${t("capabilities")}</h2><div class="chip-row">${L(caps).map(p=>`<span class="chip teal" style="font-size:13px;padding:7px 14px">${p}</span>`).join("")}</div></div><div class="panel"><h2>${t("gallery")}</h2><div class="gallery">${[0,1,2,3,4,5].map(n=>`<div class="ph" style="background:${grad(i.g)};opacity:${1-n*0.09}">${n<3?"📷":i.icon}</div>`).join("")}</div></div><div class="panel"><h2>${t("details")}</h2><div class="spec-grid"><div class="spec"><div class="k">${t("established")}</div><div class="v">${num(f.yr)}</div></div><div class="spec"><div class="k">${t("employees")}</div><div class="v">${f.emp}</div></div><div class="spec"><div class="k">${t("location")}</div><div class="v">📍 ${L(f.gov)}</div></div><div class="spec"><div class="k">${t("hours")}</div><div class="v">${t("hours_val")}</div></div><div class="spec"><div class="k">${t("moq")}</div><div class="v">${num(f.moq)} ${t("units")}</div></div><div class="spec"><div class="k">${t("certifications")}</div><div class="v">${f.certs.length?f.certs.join(" · "):"—"}</div></div></div></div></div><aside class="contact-panel"><div class="panel"><h2>${t("contact_title")}</h2><p style="margin-bottom:14px;font-size:13px">${t("contact_sub")}</p><a class="contact-btn" href="tel:${f.phone.replace(/\s/g,'')}">${cIcon("var(--teal-tint)","📞")}<span>${t("call")}<small dir="ltr">${f.phone}</small></span></a><a class="contact-btn" href="#" onclick="return false">${cIcon("#E7F6EC","💬")}<span>${t("whatsapp")}<small dir="ltr">${f.phone}</small></span></a><a class="contact-btn" href="mailto:info@${slug}.example">${cIcon("#FDF0E0","✉️")}<span>${t("email")}<small dir="ltr">info@${slug}.example</small></span></a><a class="contact-btn" href="#" onclick="return false">${cIcon("#E8EEFB","🌐")}<span>${t("website")}<small dir="ltr">${slug}.example.com</small></span></a><div class="chip-row" style="margin-top:8px"><span class="chip">Facebook</span><span class="chip">Instagram</span><span class="chip">LinkedIn</span></div></div></aside></div></div>`;
 }
 
 function requestsHTML(){
-  return `
-  <div class="page-head"><div class="container" style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap">
-    <div><h1>${t("req_title")}</h1><p>${t("req_sub")}</p></div>
-    <button class="btn btn-primary" onclick="openForm()">📣 ${t("post_request")}</button>
-  </div></div>
-  <div class="container req-layout"><div class="card-grid">${REQUESTS.map(requestCardHTML).join("")}</div></div>`;
+  return`<div class="page-head"><div class="container" style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap"><div><h1>${t("req_title")}</h1><p>${t("req_sub")}</p></div><button class="btn btn-primary" onclick="openForm()">📣 ${t("post_request")}</button></div></div><div class="container req-layout"><div class="card-grid">${REQUESTS.map(requestCardHTML).join("")}</div></div>`;
 }
 
 function requestDetailHTML(id){
-  const r=REQUESTS.find(x=>x.id===id); if(!r) return requestsHTML();
-  return `
-  <div class="container"><button class="back-btn" onclick="go({name:'requests'})">${LANG==='ar'?'→':'←'} ${t("req_title")}</button></div>
-  <div class="container" style="padding:18px 24px 64px;max-width:860px">
-    <div class="panel">
-      <div class="req-detail-head">
-        <div style="display:flex;gap:14px;align-items:center">
-          <div style="width:56px;height:56px;border-radius:14px;background:var(--mist);display:grid;place-items:center;font-size:26px">${r.icon}</div>
-          <div><h1 style="font-size:22px;font-weight:800">${esc(L(r.title))}</h1>
-          <span style="font-size:13px;color:var(--ink-soft)">${t("posted")} ${STR[LANG].days_ago(r.days)} · ${t("by")} <b>${esc(L(r.by))}</b></span></div>
-        </div>
-      </div>
-      <p style="margin:18px 0;color:var(--ink);font-size:14.5px">${esc(L(r.desc))}</p>
-      <div class="spec-grid">
-        <div class="spec"><div class="k">${t("qty")}</div><div class="v">${num(r.qty)} ${t("units")}</div></div>
-        <div class="spec"><div class="k">${t("budget")}</div><div class="v">${r.budget?num(r.budget)+" "+t("egp"):t("budget_na")}</div></div>
-        <div class="spec"><div class="k">${t("materials")}</div><div class="v">${esc(L(r.material))}</div></div>
-        <div class="spec"><div class="k">${t("deliver_to")}</div><div class="v">📍 ${L(GOVS[r.gov])}</div></div>
-      </div>
-      <div class="panel" style="margin:18px 0 0;background:var(--teal-tint);border-color:transparent">
-        <h2>${t("contact_requester")}</h2>
-        <p style="font-weight:600;color:var(--ink)" dir="ltr">${esc(r.contact)}</p>
-        <p style="font-size:12.5px;margin-top:8px">${t("req_note")}</p>
-      </div>
-    </div>
-  </div>`;
+  const r=REQUESTS.find(x=>x.id===id);if(!r)return requestsHTML();
+  return`<div class="container"><button class="back-btn" onclick="go({name:'requests'})">${LANG==='ar'?'→':'←'} ${t("req_title")}</button></div><div class="container" style="padding:18px 24px 64px;max-width:860px"><div class="panel"><div class="req-detail-head"><div style="display:flex;gap:14px;align-items:center"><div style="width:56px;height:56px;border-radius:14px;background:var(--mist);display:grid;place-items:center;font-size:26px">${r.icon}</div><div><h1 style="font-size:22px;font-weight:800">${esc(L(r.title))}</h1><span style="font-size:13px;color:var(--ink-soft)">${t("posted")} ${STR[LANG].days_ago(r.days)} · ${t("by")} <b>${esc(L(r.by))}</b></span></div></div></div><p style="margin:18px 0;color:var(--ink);font-size:14.5px">${esc(L(r.desc))}</p><div class="spec-grid"><div class="spec"><div class="k">${t("qty")}</div><div class="v">${num(r.qty)} ${t("units")}</div></div><div class="spec"><div class="k">${t("budget")}</div><div class="v">${r.budget?num(r.budget)+" "+t("egp"):t("budget_na")}</div></div><div class="spec"><div class="k">${t("materials")}</div><div class="v">${esc(L(r.material))}</div></div><div class="spec"><div class="k">${t("deliver_to")}</div><div class="v">📍 ${L(GOVS[r.gov])}</div></div></div><div class="panel" style="margin:18px 0 0;background:var(--teal-tint);border-color:transparent"><h2>${t("contact_requester")}</h2><p style="font-weight:600;color:var(--ink)" dir="ltr">${esc(r.contact)}</p><p style="font-size:12.5px;margin-top:8px">${t("req_note")}</p></div></div></div>`;
 }
 
 /* =============== Request form =============== */
 function openForm(){
-  const bd=document.createElement("div");
-  bd.className="modal-backdrop";
+  const bd=document.createElement("div");bd.className="modal-backdrop";
   bd.addEventListener("click",e=>{if(e.target===bd)bd.remove()});
-  bd.innerHTML=`<div class="modal" role="dialog" aria-modal="true">
-    <h2>${t("new_req")}</h2><p class="sub">${t("new_req_sub")}</p>
-    <div class="form-grid">
-      <div class="form-field full"><label>${t("fr_title")} *</label><input id="fq_title" placeholder="${t("fr_title_ph")}"></div>
-      <div class="form-field full"><label>${t("fr_desc")} *</label><textarea id="fq_desc" placeholder="${t("fr_desc_ph")}"></textarea></div>
-      <div class="form-field"><label>${t("fr_qty")} *</label><input id="fq_qty" type="number" min="1" placeholder="1000"></div>
-      <div class="form-field"><label>${t("fr_material")} <span class="opt">(${t("optional")})</span></label><input id="fq_mat" placeholder="${t("fr_material_ph")}"></div>
-      <div class="form-field"><label>${t("fr_budget")} <span class="opt">(${t("optional")})</span></label><input id="fq_budget" type="number" min="0" placeholder="${t("fr_budget_ph")}"></div>
-      <div class="form-field"><label>${t("fr_gov")} *</label>
-        <select id="fq_gov">${GOVS.map((g,ix)=>`<option value="${ix}">${L(g)}</option>`).join("")}</select></div>
-      <div class="form-field full"><label>${t("fr_contact")} *</label><input id="fq_contact" placeholder="${t("fr_contact_ph")}"></div>
-      <div class="form-field full"><label>${t("fr_files")} <span class="opt">(${t("optional")})</span></label>
-        <div class="upload-box">${t("fr_files_note")}</div></div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" id="fq_cancel">${t("cancel")}</button>
-      <button class="btn btn-primary" id="fq_submit">${t("publish")}</button>
-    </div>
-  </div>`;
+  bd.innerHTML=`<div class="modal"><h2>${t("new_req")}</h2><p class="sub">${t("new_req_sub")}</p><div class="form-grid"><div class="form-field full"><label>${t("fr_title")} *</label><input id="fq_title" placeholder="${t("fr_title_ph")}"></div><div class="form-field full"><label>${t("fr_desc")} *</label><textarea id="fq_desc" placeholder="${t("fr_desc_ph")}"></textarea></div><div class="form-field"><label>${t("fr_qty")} *</label><input id="fq_qty" type="number" min="1" placeholder="1000"></div><div class="form-field"><label>${t("fr_material")} <span class="opt">(${t("optional")})</span></label><input id="fq_mat" placeholder="${t("fr_material_ph")}"></div><div class="form-field"><label>${t("fr_budget")} <span class="opt">(${t("optional")})</span></label><input id="fq_budget" type="number" min="0" placeholder="${t("fr_budget_ph")}"></div><div class="form-field"><label>${t("fr_gov")} *</label><select id="fq_gov">${GOVS.map((g,ix)=>`<option value="${ix}">${L(g)}</option>`).join("")}</select></div><div class="form-field full"><label>${t("fr_contact")} *</label><input id="fq_contact" placeholder="${t("fr_contact_ph")}"></div><div class="form-field full"><label>${t("fr_files")} <span class="opt">(${t("optional")})</span></label><div class="upload-box">${t("fr_files_note")}</div></div></div><div class="modal-actions"><button class="btn btn-ghost" id="fq_cancel">${t("cancel")}</button><button class="btn btn-primary" id="fq_submit">${t("publish")}</button></div></div>`;
   document.body.appendChild(bd);
   bd.querySelector("#fq_cancel").onclick=()=>bd.remove();
   bd.querySelector("#fq_submit").onclick=()=>{
     const v=id=>bd.querySelector(id).value.trim();
     const title=v("#fq_title"),desc=v("#fq_desc"),qty=v("#fq_qty"),contact=v("#fq_contact");
     if(!title||!desc||!qty||!contact){toast(t("fill_required"));return;}
-    const mat=v("#fq_mat")||"—", budget=v("#fq_budget")||null, gov=Number(bd.querySelector("#fq_gov").value);
-    REQUESTS.unshift({id:"r"+Date.now(),icon:"📝",days:0,qty,budget,
-      title:{en:title,ar:title},desc:{en:desc,ar:desc},material:{en:mat,ar:mat},
-      gov,by:{en:LANG==='ar'?"مستخدم صُنّاع":"Sonnaع user",ar:"مستخدم صُنّاع"},contact});
-    bd.remove(); toast(t("published")); go({name:"requests"});
+    const mat=v("#fq_mat")||"—",budget=v("#fq_budget")||null,gov=Number(bd.querySelector("#fq_gov").value);
+    REQUESTS.unshift({id:"r"+Date.now(),icon:"📝",days:0,qty,budget,title:{en:title,ar:title},desc:{en:desc,ar:desc},material:{en:mat,ar:mat},gov,by:{en:"Sonnaع user",ar:"مستخدم صُنّاع"},contact});
+    bd.remove();toast(t("published"));go({name:"requests"});
   };
+}
+
+/* =============== Hero interactivity =============== */
+let rotTimer=null;
+const REDUCED=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function initHero(){
+  clearInterval(rotTimer);
+  const track=document.getElementById("hsTrack"),slider=document.getElementById("heroSlider");
+  if(track&&slider){
+    const n=t("slides").length,dots=[...slider.querySelectorAll(".hs-dot")];let ix=0;
+    const sign=LANG==="ar"?1:-1;
+    const show=i=>{ix=(i+n)%n;track.style.transform=`translateX(${sign*ix*100}%)`;dots.forEach((d,k)=>d.classList.toggle("on",k===ix));};
+    const play=()=>{if(REDUCED)return;clearInterval(rotTimer);rotTimer=setInterval(()=>show(ix+1),4200);};
+    slider.querySelector("#hsPrev").addEventListener("click",()=>{show(ix-1);play();});
+    slider.querySelector("#hsNext").addEventListener("click",()=>{show(ix+1);play();});
+    dots.forEach(d=>d.addEventListener("click",()=>{show(Number(d.dataset.ix));play();}));
+    slider.addEventListener("mouseenter",()=>clearInterval(rotTimer));slider.addEventListener("mouseleave",play);
+    let tx=null;slider.addEventListener("touchstart",e=>{tx=e.touches[0].clientX},{passive:true});
+    slider.addEventListener("touchend",e=>{if(tx==null)return;const dx=e.changedTouches[0].clientX-tx;tx=null;if(Math.abs(dx)<40)return;const fwd=LANG==="ar"?dx>0:dx<0;show(ix+(fwd?1:-1));play();},{passive:true});
+    show(0);play();
+  }
+  initFloatRotation();
+}
+
+function initFloatRotation(){
+  clearInterval(floatInterval);
+  const container=document.querySelector(".float-chips-container");
+  if(!container)return;
+  const sets=container.querySelectorAll(".float-chip-set");
+  if(sets.length<2)return;
+  floatSetIndex=0;
+  floatInterval=setInterval(()=>{
+    const currentSet=sets[floatSetIndex];
+    const nextIndex=(floatSetIndex+1)%sets.length;
+    const nextSet=sets[nextIndex];
+    if(currentSet){currentSet.classList.remove("visible");currentSet.classList.add("hidden");}
+    if(nextSet){nextSet.classList.remove("hidden");nextSet.classList.add("visible");}
+    floatSetIndex=nextIndex;
+  },3500);
 }
 
 /* =============== Render =============== */
 function render(){
-  document.documentElement.lang=LANG;
-  document.documentElement.dir=LANG==="ar"?"rtl":"ltr";
+  document.documentElement.lang=LANG;document.documentElement.dir=LANG==="ar"?"rtl":"ltr";
+  clearInterval(floatInterval);
   let body="";
   if(VIEW.name==="home")body=homeHTML();
   else if(VIEW.name==="factories")body=factoriesHTML();
   else if(VIEW.name==="factory")body=factoryProfileHTML(VIEW.id);
   else if(VIEW.name==="requests")body=requestsHTML();
   else if(VIEW.name==="request")body=requestDetailHTML(VIEW.id);
-  document.getElementById("app").innerHTML=
-    headerHTML()+`<main>${body}</main>`+
-    `<div class="container" style="padding:0 24px 28px"><p style="font-size:12px;color:var(--ink-soft);text-align:center">${t("demo_note")}</p></div>`+
-    footerHTML();
+  document.getElementById("app").innerHTML=headerHTML()+`<main>${body}</main><div class="container" style="padding:0 24px 28px"><p style="font-size:12px;color:var(--ink-soft);text-align:center">${t("demo_note")}</p></div>`+footerHTML();
+  if(VIEW.name==="home")initHero();else clearInterval(rotTimer);
 }
 render();
 </script>
