@@ -6,7 +6,7 @@
 <title>Sonnaع — Egypt's Manufacturing Directory</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Cairo:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
   --ink:#15221F;
@@ -20,9 +20,10 @@
   --amber:#C98A2B;
   --radius:16px;
   --shadow:0 1px 2px rgba(21,34,31,.05),0 8px 24px -12px rgba(21,34,31,.12);
-  --font-display:'Alexandria',sans-serif;
-  --font-body:'IBM Plex Sans Arabic',sans-serif;
-  --font-mono:'IBM Plex Mono','IBM Plex Sans Arabic',monospace;
+  --font-brand:'Alexandria', 'Cairo', sans-serif;
+  --font-display:'DM Sans', 'Cairo', sans-serif;
+  --font-body:'DM Sans', 'Cairo', sans-serif;
+  --font-mono:'JetBrains Mono', 'Cairo', monospace;
 
   /* ---- Blueprint grid system ---- */
   --grid-fine:rgba(14,107,94,.045);
@@ -75,13 +76,14 @@ header{
   height:68px;
   position:relative;
   z-index:1;
+  gap:24px;
 }
 
 .logo{
   display:flex;
   align-items:center;
-  gap:0;
-  font-family:var(--font-display);
+  gap:4px;
+  font-family:var(--font-brand);
   font-weight:800;
   font-size:24px;
   letter-spacing:-.02em;
@@ -91,16 +93,25 @@ header{
   flex-shrink:0;
 }
 .logo:hover{opacity:0.8}
-.logo .logo-ain{color:var(--teal)}
+.logo .logo-text-brand{color:var(--ink)}
+.logo .logo-ain{color:var(--teal);margin-inline-start:-2px}
 
-nav.main-nav{display:flex;gap:2px;align-items:center;z-index:1}
+/* CHANGED: Logo hidden on homepage */
+.logo.home-hidden{display:none}
+
+nav.main-nav{display:flex;gap:2px;align-items:center;z-index:1;flex:1;justify-content:center}
 .nav-link{padding:8px 16px;border-radius:12px;font-weight:500;color:var(--ink-soft);font-size:14.5px;background:none;border:none;transition:all .2s ease}
 .nav-link:hover{background:var(--mist);color:var(--ink)}
 .nav-link.active{color:var(--teal);background:var(--teal-tint);font-weight:600}
 
+/* CHANGED: Homepage nav more spacious */
+.home-nav{justify-content:center;gap:8px}
+
 .header-actions{display:flex;align-items:center;gap:12px;z-index:1;flex-shrink:0}
+.header-quick-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:10px;font-weight:500;font-size:13px;border:none;background:var(--mist);color:var(--ink-soft);transition:all .2s ease}
+.header-quick-btn:hover{background:var(--teal-tint);color:var(--teal)}
 .lang-toggle{display:flex;border:2px solid var(--line);border-radius:12px;overflow:hidden;background:var(--mist)}
-.lang-toggle button{padding:7px 14px;background:transparent;border:none;font-size:13px;font-weight:600;color:var(--ink-soft);transition:all .2s ease}
+.lang-toggle button{padding:7px 12px;background:transparent;border:none;font-size:12px;font-weight:600;color:var(--ink-soft);transition:all .2s ease}
 .lang-toggle button.on{background:var(--ink);color:#fff}
 
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 22px;border-radius:12px;font-weight:600;font-size:14px;border:none;transition:all .2s ease}
@@ -115,6 +126,7 @@ nav.main-nav{display:flex;gap:2px;align-items:center;z-index:1}
 .mobile-menu-btn:hover{border-color:var(--teal);color:var(--teal)}
 
 .desktop-only{display:inline-flex}
+.desktop-only-flex{display:flex}
 
 /* Mobile menu overlay */
 .mobile-menu-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(21,34,31,.5);z-index:200}
@@ -138,9 +150,7 @@ nav.main-nav{display:flex;gap:2px;align-items:center;z-index:1}
 
 /* Hero */
 .hero{position:relative;border-bottom:1px solid var(--line);overflow:hidden;background:radial-gradient(680px 360px at 50% 6%, rgba(14,107,94,.09), transparent 60%),radial-gradient(560px 300px at 88% 4%, rgba(201,138,43,.06), transparent 62%),linear-gradient(180deg,#F6FAF9 0%,#fff 100%)}
-/* blueprint grid that carries all the way through the search area — edge vignette only */
 .hero::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;background-image:var(--grid-node),linear-gradient(var(--grid-bold) 1px, transparent 1px),linear-gradient(90deg, var(--grid-bold) 1px, transparent 1px),linear-gradient(var(--grid-fine) 1px, transparent 1px),linear-gradient(90deg, var(--grid-fine) 1px, transparent 1px);background-size:120px 120px,120px 120px,120px 120px,30px 30px,30px 30px;background-position:center top;-webkit-mask-image:radial-gradient(140% 130% at 50% 30%, #000 62%, transparent 100%);mask-image:radial-gradient(140% 130% at 50% 30%, #000 62%, transparent 100%)}
-/* soft teal glow behind the wordmark */
 .hero::after{content:"";position:absolute;left:50%;top:-30px;width:640px;height:440px;transform:translateX(-50%);pointer-events:none;z-index:0;background:radial-gradient(closest-side, rgba(14,107,94,.13), transparent 72%)}
 .hero-inner{position:relative;padding:60px 0 80px;text-align:center;max-width:760px;margin:0 auto;z-index:1}
 .hero-inner>*{animation:fadeUp .6s ease backwards}
@@ -151,7 +161,6 @@ nav.main-nav{display:flex;gap:2px;align-items:center;z-index:1}
 .hero-inner>*:nth-child(5){animation-delay:.26s}
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 
-/* live "active nodes" pulsing on the schematic */
 .hero-node{position:absolute;z-index:1;width:9px;height:9px;border-radius:50%;background:var(--teal);box-shadow:0 0 0 0 rgba(14,107,94,.45);animation:ping 3.4s ease-out infinite;pointer-events:none}
 .hero-node.n1{top:120px;inset-inline-start:13%;animation-delay:0s}
 .hero-node.n2{top:232px;inset-inline-end:15%;animation-delay:1.1s;background:var(--amber);box-shadow:0 0 0 0 rgba(201,138,43,.4)}
@@ -163,7 +172,7 @@ nav.main-nav{display:flex;gap:2px;align-items:center;z-index:1}
 .orbit-ring{position:absolute;border:2px dashed rgba(14,107,94,.2);border-radius:50%;animation:orbitSpin 25s linear infinite;pointer-events:none}
 .orbit-ring.r1{width:200px;height:200px;top:40px;left:40px}
 .orbit-ring.r2{width:240px;height:240px;top:20px;left:20px;border-color:rgba(201,138,43,.18);animation-duration:35s;animation-direction:reverse}
-.brand-word{font-family:var(--font-display);font-size:clamp(48px,8vw,72px);font-weight:800;letter-spacing:-.02em;line-height:1;color:var(--ink);position:relative;z-index:3}
+.brand-word{font-family:var(--font-brand);font-size:clamp(48px,8vw,72px);font-weight:800;letter-spacing:-.02em;line-height:1;color:var(--ink);position:relative;z-index:3}
 .brand-word .ain{color:var(--teal)}
 @keyframes orbitSpin{to{transform:rotate(360deg)}}
 
@@ -191,7 +200,8 @@ nav.main-nav{display:flex;gap:2px;align-items:center;z-index:1}
 @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 @media(max-width:1060px){.float-chips-container{display:none}}
 
-.hero-slider{position:relative;max-width:660px;margin:24px auto 0;background:rgba(255,255,255,.85);backdrop-filter:blur(8px);border:1.5px solid var(--line);border-radius:20px;box-shadow:var(--shadow);overflow:hidden}
+/* CHANGED: Hero slider moved below search bar */
+.hero-slider{position:relative;max-width:660px;margin:32px auto 0;background:rgba(255,255,255,.85);backdrop-filter:blur(8px);border:1.5px solid var(--line);border-radius:20px;box-shadow:var(--shadow);overflow:hidden}
 .hs-track{display:flex;transition:transform .55s cubic-bezier(.4,0,.2,1)}
 .hs-slide{flex:0 0 100%;padding:24px 62px 16px;display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center}
 .hs-slide .ic{width:46px;height:46px;border-radius:14px;background:var(--teal-tint);display:grid;place-items:center;font-size:22px}
@@ -206,13 +216,13 @@ nav.main-nav{display:flex;gap:2px;align-items:center;z-index:1}
 .hero h1{font-size:clamp(28px,4.5vw,44px);font-weight:800;letter-spacing:-.02em;margin:20px 0 14px;color:var(--ink)}
 .hero h1 em{font-style:normal;color:var(--teal)}
 .hero p.sub{color:var(--ink-soft);font-size:16px;max-width:560px;margin:0 auto 32px}
-.search-bar{display:flex;align-items:center;background:rgba(255,255,255,.92);border:1.5px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:8px;max-width:640px;margin:0 auto 22px;gap:8px;position:relative;backdrop-filter:blur(8px)}
+.search-bar{display:flex;align-items:center;background:rgba(255,255,255,.92);border:1.5px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:8px;max-width:640px;margin:0 auto;gap:8px;position:relative;backdrop-filter:blur(8px)}
 .search-bar::before,.search-bar::after{content:"";position:absolute;width:12px;height:12px;border:2px solid var(--teal);opacity:.5;pointer-events:none}
 .search-bar::before{top:-6px;left:-6px;border-right:0;border-bottom:0}
 .search-bar::after{bottom:-6px;right:-6px;border-left:0;border-top:0}
 .search-bar svg{flex:none;margin-inline-start:12px;color:var(--ink-soft)}
 .search-bar input{flex:1;border:none;outline:none;font-size:15.5px;padding:10px 4px;background:transparent;min-width:0}
-.hero-ctas{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.hero-ctas{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:28px}
 .hero-stats{display:flex;gap:0;justify-content:center;margin-top:44px;flex-wrap:wrap}
 .hero-stat{text-align:center;padding:0 30px;position:relative}
 .hero-stat+.hero-stat::before{content:"";position:absolute;inset-inline-start:0;top:8px;bottom:8px;width:1px;background:var(--line)}
@@ -232,6 +242,144 @@ nav.main-nav{display:flex;gap:2px;align-items:center;z-index:1}
 @keyframes tickR{to{transform:translateX(50%)}}
 .tk{display:inline-flex;align-items:center;gap:9px;font-size:13px;font-weight:600;white-space:nowrap;opacity:.92}
 .tk .sep{width:5px;height:5px;border-radius:99px;background:rgba(255,255,255,.35)}
+
+/* ========== CHANGED: DISTINCT INDUSTRIES SECTION BACKGROUND ========== */
+.industries-section{position:relative;padding:100px 0;overflow:hidden;
+  background:
+    /* Warm amber glow top-right */
+    radial-gradient(ellipse 700px 450px at 80% 5%, rgba(201,138,43,.12) 0%, transparent 55%),
+    /* Teal glow bottom-left */
+    radial-gradient(ellipse 550px 380px at 20% 95%, rgba(14,107,94,.10) 0%, transparent 55%),
+    /* Diagonal hatch pattern */
+    repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(14,107,94,.02) 3px, rgba(14,107,94,.02) 8px),
+    repeating-linear-gradient(-45deg, transparent, transparent 3px, rgba(201,138,43,.015) 3px, rgba(201,138,43,.015) 8px),
+    /* Subtle paper texture */
+    linear-gradient(178deg, #FDFDFC 0%, #F5F7F6 30%, #F2F4F3 70%, #F8FAF9 100%);
+  border-top:2px solid rgba(14,107,94,.08);
+  border-bottom:2px solid rgba(14,107,94,.08);
+}
+
+/* Decorative corner elements */
+.industries-section::before{
+  content:"";
+  position:absolute;
+  top:-60px;inset-inline-end:-40px;
+  width:350px;height:350px;
+  background:radial-gradient(circle at 70% 30%, rgba(14,107,94,.06) 0%, transparent 65%);
+  pointer-events:none;
+  z-index:0;
+  border-radius:50%;
+}
+.industries-section::after{
+  content:"";
+  position:absolute;
+  bottom:-50px;inset-inline-start:-50px;
+  width:300px;height:300px;
+  background:radial-gradient(circle at 30% 70%, rgba(201,138,43,.05) 0%, transparent 65%);
+  pointer-events:none;
+  z-index:0;
+  border-radius:50%;
+}
+
+/* Floating orbs decoration */
+.industries-orb{
+  position:absolute;
+  border-radius:50%;
+  pointer-events:none;
+  z-index:0;
+  opacity:.4;
+}
+.industries-orb.o1{width:200px;height:200px;top:60px;inset-inline-start:3%;background:radial-gradient(circle, rgba(14,107,94,.07), transparent);animation:orbFloat 9s ease-in-out infinite}
+.industries-orb.o2{width:140px;height:140px;bottom:100px;inset-inline-end:6%;background:radial-gradient(circle, rgba(201,138,43,.06), transparent);animation:orbFloat 11s ease-in-out infinite reverse}
+.industries-orb.o3{width:100px;height:100px;top:40%;inset-inline-start:50%;background:radial-gradient(circle, rgba(14,107,94,.04), transparent);animation:orbFloat 13s ease-in-out infinite;animation-delay:4s}
+@keyframes orbFloat{0%,100%{transform:translate(0,0)}50%{transform:translate(25px,-25px)}}
+
+/* Subtle dot grid overlay */
+.industries-grid-overlay{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  background-image:radial-gradient(circle, rgba(14,107,94,.06) 1px, transparent 1px);
+  background-size:24px 24px;
+  opacity:0.5;
+}
+
+.industries-intro{text-align:center;max-width:700px;margin:0 auto 56px;position:relative;z-index:1}
+.industries-intro .section-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;background:rgba(255,255,255,.9);border:1.5px solid rgba(14,107,94,.15);border-radius:99px;font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--teal-dark);letter-spacing:.06em;text-transform:uppercase;margin-bottom:24px;backdrop-filter:blur(4px);box-shadow:0 1px 3px rgba(0,0,0,.03)}
+.industries-intro .section-badge .badge-dot{width:6px;height:6px;border-radius:50%;background:var(--teal);animation:blink 2s ease-in-out infinite}
+.industries-intro h2{font-size:clamp(32px,4vw,44px);font-weight:700;letter-spacing:-.02em;margin-bottom:16px;color:var(--ink);line-height:1.2}
+.industries-intro h2 .highlight{color:var(--teal);position:relative;display:inline-block}
+.industries-intro h2 .highlight::after{content:"";position:absolute;bottom:2px;left:0;right:0;height:4px;background:rgba(14,107,94,.15);border-radius:2px;z-index:-1}
+.industries-intro p{font-size:16px;color:var(--ink-soft);line-height:1.7;max-width:560px;margin:0 auto 32px}
+.industries-grid-new{display:grid;grid-template-columns:repeat(7,1fr);gap:12px;margin-bottom:48px;position:relative;z-index:1}
+.industry-card-new{position:relative;background:rgba(255,255,255,.75);backdrop-filter:blur(10px);border:1.5px solid rgba(14,107,94,.12);border-radius:16px;padding:24px 16px;text-align:center;transition:all .3s cubic-bezier(.4,0,.2,1);cursor:pointer;overflow:hidden;display:flex;flex-direction:column;align-items:center;gap:12px}
+.industry-card-new::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,var(--teal-tint) 0%,transparent 70%);opacity:0;transition:opacity .3s ease}
+.industry-card-new:hover{transform:translateY(-4px);box-shadow:0 12px 32px -8px rgba(14,107,94,.15);border-color:var(--teal);background:rgba(255,255,255,.98)}
+.industry-card-new:hover::before{opacity:1}
+.industry-card-new .ind-icon{width:56px;height:56px;border-radius:16px;display:grid;place-items:center;font-size:28px;position:relative;transition:transform .3s ease}
+.industry-card-new:hover .ind-icon{transform:scale(1.1) rotate(-5deg)}
+.industry-card-new .ind-name{font-size:13px;font-weight:600;color:var(--ink);position:relative;line-height:1.3}
+.industry-card-new .ind-count{font-size:11px;color:var(--ink-soft);position:relative;font-family:var(--font-mono)}
+.industries-cta{text-align:center;position:relative;z-index:1}
+
+/* ========== NEW REQUESTS SECTION ========== */
+.requests-section{position:relative;padding:80px 0;background:linear-gradient(180deg,var(--mist) 0%,rgba(244,247,246,.5) 100%);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.requests-section::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 30% 20%,rgba(14,107,94,.04) 0%,transparent 60%);pointer-events:none}
+.requests-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:48px;gap:20px;flex-wrap:wrap;position:relative}
+.requests-header .section-label{font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--amber);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.requests-header .section-label::before{content:"";width:20px;height:2px;background:var(--amber);border-radius:1px}
+.requests-header h2{font-size:clamp(28px,3.5vw,38px);font-weight:700;letter-spacing:-.01em;color:var(--ink)}
+.requests-header p{font-size:15px;color:var(--ink-soft);margin-top:8px}
+.requests-carousel{position:relative;overflow:hidden;margin-bottom:40px}
+.requests-track{display:flex;gap:20px;transition:transform .6s cubic-bezier(.4,0,.2,1)}
+.request-card-new{flex:0 0 calc(33.333% - 14px);background:#fff;border:1.5px solid var(--line);border-radius:20px;padding:28px;position:relative;transition:all .3s ease;display:flex;flex-direction:column;gap:16px;cursor:pointer}
+.request-card-new:hover{transform:translateY(-4px);box-shadow:0 16px 40px -12px rgba(21,34,31,.15);border-color:rgba(14,107,94,.3)}
+.request-card-new .req-meta{display:flex;justify-content:space-between;align-items:center}
+.request-card-new .req-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;background:#FBF1E2;color:#8A5A12;border-radius:99px;font-size:11px;font-weight:600}
+.request-card-new .req-badge .pulse{width:6px;height:6px;border-radius:50%;background:#C98A2B;animation:blink 2s ease-in-out infinite}
+.request-card-new .req-time{font-size:11px;color:var(--ink-soft);font-family:var(--font-mono)}
+.request-card-new .req-icon{width:60px;height:60px;border-radius:16px;display:grid;place-items:center;font-size:30px}
+.request-card-new h3{font-size:17px;font-weight:700;color:var(--ink);line-height:1.35}
+.request-card-new p{font-size:13.5px;color:var(--ink-soft);line-height:1.6;flex:1}
+.request-card-new .req-footer{display:flex;justify-content:space-between;align-items:center;padding-top:16px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink-soft)}
+.request-card-new .req-footer strong{color:var(--ink);font-weight:600}
+.carousel-controls{display:flex;gap:8px;justify-content:center;align-items:center}
+.carousel-dot{width:10px;height:10px;border-radius:50%;border:2px solid var(--line);background:transparent;cursor:pointer;padding:0;transition:all .3s ease}
+.carousel-dot.active{background:var(--teal);border-color:var(--teal);width:28px;border-radius:99px}
+.carousel-arrow{width:40px;height:40px;border-radius:50%;border:2px solid var(--line);background:#fff;display:grid;place-items:center;cursor:pointer;font-size:18px;color:var(--ink-soft);transition:all .2s ease}
+.carousel-arrow:hover{border-color:var(--teal);color:var(--teal);background:var(--teal-tint)}
+
+/* ========== NEW FEATURED FACTORIES SECTION ========== */
+.featured-section{position:relative;padding:80px 0}
+.featured-section::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,rgba(201,138,43,.03) 0%,transparent 60%);pointer-events:none}
+.featured-header{text-align:center;max-width:600px;margin:0 auto 56px}
+.featured-header .featured-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;background:rgba(201,138,43,.1);border:1.5px solid rgba(201,138,43,.2);border-radius:99px;font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--amber);letter-spacing:.06em;text-transform:uppercase;margin-bottom:24px}
+.featured-header .featured-badge .star{animation:rotateStar 4s linear infinite}
+@keyframes rotateStar{to{transform:rotate(360deg)}}
+.featured-header h2{font-size:clamp(32px,4vw,44px);font-weight:700;letter-spacing:-.02em;margin-bottom:16px}
+.featured-header p{font-size:16px;color:var(--ink-soft)}
+.featured-showcase{position:relative;max-width:900px;margin:0 auto}
+.featured-card-large{background:#fff;border:2px solid var(--line);border-radius:24px;overflow:hidden;transition:opacity .5s ease,transform .5s ease;display:grid;grid-template-columns:1fr 1fr;box-shadow:0 4px 24px -8px rgba(21,34,31,.08)}
+.featured-card-large.fade-out{opacity:0;transform:scale(.98)}
+.featured-card-large .fc-visual{position:relative;min-height:320px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.featured-card-large .fc-visual .fc-icon{font-size:120px;opacity:.15;position:absolute;inset-inline-end:-20px;bottom:-20px;transform:rotate(-10deg)}
+.featured-card-large .fc-visual .fc-pattern{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.1) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.1) 1px,transparent 1px);background-size:20px 20px}
+.featured-card-large .fc-visual .fc-badge{position:absolute;top:20px;inset-inline-start:20px;padding:6px 14px;background:rgba(255,255,255,.95);border-radius:99px;font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--ink);letter-spacing:.06em;z-index:1}
+.featured-card-large .fc-visual .fc-logo{width:120px;height:120px;border-radius:24px;background:rgba(255,255,255,.95);display:grid;place-items:center;font-size:48px;font-weight:800;position:relative;z-index:1;box-shadow:0 8px 32px rgba(0,0,0,.1);font-family:var(--font-brand)}
+.featured-card-large .fc-content{padding:40px;display:flex;flex-direction:column;justify-content:center;gap:20px}
+.featured-card-large .fc-content .fc-industry{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:var(--teal);margin-bottom:4px}
+.featured-card-large .fc-content h3{font-size:28px;font-weight:700;letter-spacing:-.01em;color:var(--ink)}
+.featured-card-large .fc-content p{font-size:14.5px;color:var(--ink-soft);line-height:1.7}
+.featured-card-large .fc-content .fc-stats{display:flex;gap:24px;flex-wrap:wrap}
+.featured-card-large .fc-content .fc-stat{display:flex;flex-direction:column;gap:4px}
+.featured-card-large .fc-content .fc-stat .stat-value{font-family:var(--font-mono);font-size:22px;font-weight:500;color:var(--teal-dark)}
+.featured-card-large .fc-content .fc-stat .stat-label{font-size:11px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em}
+.featured-controls{display:flex;gap:12px;justify-content:center;align-items:center;margin-top:40px}
+.featured-thumbs{display:flex;gap:12px;align-items:center}
+.featured-thumb{width:56px;height:56px;border-radius:14px;border:2px solid transparent;display:grid;place-items:center;font-size:24px;cursor:pointer;transition:all .3s ease;position:relative}
+.featured-thumb:hover{border-color:var(--teal);transform:translateY(-2px)}
+.featured-thumb.active{border-color:var(--teal);box-shadow:0 0 0 4px var(--teal-tint)}
 
 section.block{position:relative;padding:60px 0;z-index:1}
 section.block::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(14,107,94,.10) 1px, transparent 1px),linear-gradient(90deg, rgba(14,107,94,.10) 1px, transparent 1px);background-size:36px 36px;background-position:-2px -2px;-webkit-mask-image:radial-gradient(ellipse at 0% 0%, #000 20%, transparent 70%);mask-image:radial-gradient(ellipse at 0% 0%, #000 20%, transparent 70%)}
@@ -255,7 +403,6 @@ section.block.alt::before{background-image:linear-gradient(rgba(14,107,94,.12) 1
 .card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;position:relative;z-index:1}
 .factory-card{position:relative;background:#fff;border:1.5px solid var(--line);border-radius:var(--radius);overflow:hidden;transition:box-shadow .15s,transform .15s;text-align:start;width:100%;padding:0}
 .factory-card:hover{box-shadow:var(--shadow);transform:translateY(-2px)}
-/* technical corner-brackets on hover */
 .factory-card::before,.factory-card::after{content:"";position:absolute;width:18px;height:18px;border:2px solid var(--teal);opacity:0;transition:opacity .18s, top .18s, bottom .18s, left .18s, right .18s;z-index:3;pointer-events:none}
 .factory-card::before{top:12px;left:12px;border-right:0;border-bottom:0}
 .factory-card::after{bottom:12px;right:12px;border-left:0;border-top:0}
@@ -265,7 +412,7 @@ section.block.alt::before{background-image:linear-gradient(rgba(14,107,94,.12) 1
 .factory-card .cover::after{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.12) 1px,transparent 1px),radial-gradient(220px 90px at 85% 0%,rgba(255,255,255,.20),transparent 70%);background-size:22px 22px,22px 22px,auto}
 .factory-card .fcode{position:absolute;top:10px;inset-inline-start:12px;z-index:2;font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;color:rgba(255,255,255,.92)}
 .cover-ic{position:absolute;inset-inline-end:12px;bottom:6px;font-size:40px;opacity:.45;filter:saturate(.6);z-index:1;transform:rotate(-8deg)}
-.factory-card .flogo{position:absolute;bottom:-22px;inset-inline-start:18px;width:52px;height:52px;border-radius:14px;background:#fff;border:1.5px solid var(--line);display:grid;place-items:center;font-family:var(--font-display);font-weight:800;font-size:18px;color:var(--teal);z-index:2}
+.factory-card .flogo{position:absolute;bottom:-22px;inset-inline-start:18px;width:52px;height:52px;border-radius:14px;background:#fff;border:1.5px solid var(--line);display:grid;place-items:center;font-family:var(--font-brand);font-weight:800;font-size:18px;color:var(--teal);z-index:2}
 .factory-card .body{padding:32px 18px 18px}
 .factory-card h3{font-size:16px;font-weight:700;margin-bottom:2px}
 .factory-card .meta{font-size:12.5px;color:var(--ink-soft);display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
@@ -321,7 +468,7 @@ section.block.alt::before{background-image:linear-gradient(rgba(14,107,94,.12) 1
 .profile-cover .pcode{position:absolute;top:16px;inset-inline-start:20px;font-family:var(--font-mono);font-size:12px;letter-spacing:.08em;color:rgba(255,255,255,.9);z-index:2}
 .profile-top{position:relative;margin-top:-46px}
 .profile-card{background:#fff;border:1.5px solid var(--line);border-radius:20px;padding:24px;box-shadow:var(--shadow);display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}
-.profile-logo{width:84px;height:84px;border-radius:18px;background:var(--teal-tint);border:1.5px solid var(--line);display:grid;place-items:center;font-family:var(--font-display);font-weight:800;font-size:28px;color:var(--teal);flex:none}
+.profile-logo{width:84px;height:84px;border-radius:18px;background:var(--teal-tint);border:1.5px solid var(--line);display:grid;place-items:center;font-family:var(--font-brand);font-weight:800;font-size:28px;color:var(--teal);flex:none}
 .profile-main{flex:1;min-width:240px}
 .profile-main h1{font-size:24px;font-weight:800;margin-bottom:4px}
 .badge-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
@@ -366,7 +513,7 @@ footer{background:var(--ink);color:#B9C6C2;padding:48px 0 28px;margin-top:0;posi
 footer::before{content:"";position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:32px 32px;-webkit-mask-image:radial-gradient(ellipse at 0% 0%, #000 15%, transparent 60%);mask-image:radial-gradient(ellipse at 0% 0%, #000 15%, transparent 60%)}
 footer .container{position:relative;z-index:1}
 .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px;margin-bottom:32px}
-footer .logo-text{font-family:var(--font-display);font-weight:800;font-size:24px;color:#fff;margin-bottom:12px}
+footer .logo-text{font-family:var(--font-brand);font-weight:800;font-size:24px;color:#fff;margin-bottom:12px}
 footer .logo-text .logo-ain{color:#4FBFAE}
 footer p{font-size:13.5px;max-width:280px}
 footer h4{color:#fff;font-size:13.5px;margin-bottom:12px;font-weight:700}
@@ -377,11 +524,13 @@ footer li button:hover{color:#fff}
 .footer-bottom{border-top:1px solid rgba(255,255,255,.12);padding-top:20px;font-size:12.5px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
 
 @media(max-width:920px){
-  .desktop-only{display:none !important}
+  .desktop-only,.desktop-only-flex{display:none !important}
+  .header-quick-btn{display:none}
   .lang-toggle{display:none}
   .mobile-menu-btn{display:flex}
   nav.main-nav{display:none}
   .header-inner{justify-content:space-between}
+  .logo.home-hidden{display:flex}
   
   .dir-layout{grid-template-columns:1fr}
   .filters{position:static}
@@ -391,6 +540,13 @@ footer li button:hover{color:#fff}
   .orbit-ring.r1{width:140px;height:140px;top:20px;left:20px}
   .orbit-ring.r2{width:170px;height:170px;top:5px;left:5px}
   .brand-word{font-size:clamp(32px,6vw,48px)}
+
+  .industries-grid-new{grid-template-columns:repeat(4,1fr);gap:10px}
+  .request-card-new{flex:0 0 calc(50% - 10px)}
+  .featured-card-large{grid-template-columns:1fr}
+  .featured-card-large .fc-visual{min-height:200px}
+  .industries-orb{display:none}
+  .industries-grid-overlay{background-size:16px 16px}
 
   :root{--grid-fine:rgba(14,107,94,.035);--grid-bold:rgba(14,107,94,.07)}
   section.block::before{background-image:linear-gradient(rgba(14,107,94,.05) 1px, transparent 1px),linear-gradient(90deg, rgba(14,107,94,.05) 1px, transparent 1px);background-size:40px 40px}
@@ -415,6 +571,10 @@ footer li button:hover{color:#fff}
   .hero-stat{padding:0 20px}
   .hero-stat b{font-size:22px}
   .hero-stat span{font-size:12px}
+  
+  .industries-section,.requests-section,.featured-section{padding:48px 0}
+  .industries-intro h2,.featured-header h2{font-size:clamp(26px,3vw,34px)}
+  .requests-header h2{font-size:clamp(24px,3vw,30px)}
 }
 
 @media(max-width:640px){
@@ -424,6 +584,14 @@ footer li button:hover{color:#fff}
   .orbit-ring.r1{width:110px;height:110px;top:15px;left:15px}
   .orbit-ring.r2{width:135px;height:135px;top:2px;left:2px}
   .brand-word{font-size:clamp(26px,5vw,36px)}
+
+  .industries-grid-new{grid-template-columns:repeat(3,1fr);gap:8px}
+  .industry-card-new{padding:16px 10px}
+  .industry-card-new .ind-icon{width:44px;height:44px;font-size:22px;border-radius:12px}
+  .request-card-new{flex:0 0 calc(100% - 0px);padding:20px}
+  .featured-card-large .fc-content{padding:24px}
+  .featured-card-large .fc-content h3{font-size:22px}
+
   :root{--grid-fine:rgba(14,107,94,.03);--grid-bold:rgba(14,107,94,.055)}
   .btn{padding:8px 14px;font-size:12.5px;border-radius:8px}
   .btn-sm{padding:6px 10px;font-size:11.5px;border-radius:8px}
@@ -450,6 +618,9 @@ footer li button:hover{color:#fff}
   .hs-slide .ic{width:36px;height:36px;font-size:18px;border-radius:10px}
   .hs-slide h3{font-size:15px}
   .hs-slide p{font-size:12px}
+  
+  .industries-section,.requests-section,.featured-section{padding:36px 0}
+  .industries-intro h2,.featured-header h2{font-size:clamp(22px,3vw,28px)}
 }
 </style>
 </head>
@@ -466,9 +637,22 @@ en:{
   hero_sub:"Sonnaع connects traders, brands, and businesses directly with trusted Egyptian manufacturers. No middleman. No commissions.",
   search_ph:"Search products, factories, materials, or processes…",
   browse_factories:"Browse Factories", stat_factories:"Verified factories", stat_industries:"Industries", stat_governorates:"Governorates",
-  industries_title:"Browse by Industry", industries_sub:"Explore Egypt's manufacturing sectors", factories_count:"factories",
-  latest_requests:"Latest Manufacturing Requests", latest_requests_sub:"Recently posted sourcing needs from buyers", view_all:"View all",
-  featured:"Featured Factories", featured_sub:"Highlighted manufacturers across Egypt",
+  industries_badge:"MANUFACTURING SECTORS",
+  industries_title:'Egypt\'s <span class="highlight">Manufacturing</span> Landscape',
+  industries_desc:"From Alexandria's textile mills to 10th of Ramadan's industrial zone, explore 14 specialized sectors. Each category connects you directly with verified factories ready for production.",
+  industries_cta:"Explore Full Directory",
+  factories_count:"factories",
+  requests_label:"LIVE SOURCING",
+  requests_title:"Latest Manufacturing Requests",
+  requests_sub:"Real-time sourcing needs posted by buyers across Egypt",
+  requests_view_all:"View All Requests",
+  requests_new:"New",
+  requests_qty:"Qty",
+  requests_location:"Delivery",
+  featured_badge:"PREMIUM PARTNERS",
+  featured_title:"Featured <span style='color:var(--amber)'>Factories</span>",
+  featured_desc:"Handpicked manufacturers with proven track records and export capabilities",
+  featured_view:"View Profile",
   why_title:"Why Sonnaع?",
   why:[["🏭","Trusted manufacturers","Find verified Egyptian factories with real capabilities and clear profiles."],["🧭","Discover by industry","Browse 14 manufacturing sectors, from textiles to electronics."],["📣","Publish your needs","Post a manufacturing request and let interested factories reach you."],["🤝","Contact directly","No middleman and no commissions — talk to factories on their own channels."]],
   cta_title:"Own a factory in Egypt?", cta_sub:"Get listed on Sonnaع and receive qualified leads from traders, brands, and businesses looking for production partners.", cta_btn:"List Your Factory",
@@ -514,9 +698,22 @@ ar:{
   hero_sub:"صُنّاع تربط التجار والعلامات التجارية والشركات مباشرةً بمصانع مصرية موثوقة. بدون وسيط. بدون عمولات.",
   search_ph:"ابحث عن منتجات، مصانع، خامات، أو عمليات تصنيع…",
   browse_factories:"تصفح المصانع", stat_factories:"مصنع موثّق", stat_industries:"صناعة", stat_governorates:"محافظة",
-  industries_title:"تصفح حسب الصناعة", industries_sub:"استكشف قطاعات التصنيع في مصر", factories_count:"مصنع",
-  latest_requests:"أحدث طلبات التصنيع", latest_requests_sub:"احتياجات توريد منشورة حديثًا من المشترين", view_all:"عرض الكل",
-  featured:"مصانع مميزة", featured_sub:"مصانع مختارة من مختلف المحافظات",
+  industries_badge:"القطاعات الصناعية",
+  industries_title:'مشهد <span class="highlight">التصنيع</span> في مصر',
+  industries_desc:"من مصانع النسيج في الإسكندرية إلى المنطقة الصناعية في العاشر من رمضان، استكشف ١٤ قطاعًا متخصصًا. كل فئة تصلك مباشرة بمصانع موثوقة جاهزة للإنتاج.",
+  industries_cta:"استكشف الدليل الكامل",
+  factories_count:"مصنع",
+  requests_label:"طلبات مباشرة",
+  requests_title:"أحدث طلبات التصنيع",
+  requests_sub:"احتياجات توريد مباشرة من مشترين في جميع أنحاء مصر",
+  requests_view_all:"عرض كل الطلبات",
+  requests_new:"جديد",
+  requests_qty:"الكمية",
+  requests_location:"التسليم",
+  featured_badge:"شركاء متميزون",
+  featured_title:"مصانع <span style='color:var(--amber)'>مميزة</span>",
+  featured_desc:"مصانع مختارة بعناية ذات سجل حافل وقدرات تصديرية",
+  featured_view:"عرض الملف",
   why_title:"لماذا صُنّاع؟",
   why:[["🏭","مصانع موثوقة","اعثر على مصانع مصرية موثّقة بقدرات حقيقية وملفات تعريفية واضحة."],["🧭","اكتشف حسب الصناعة","تصفح ١٤ قطاعًا صناعيًا، من المنسوجات إلى الإلكترونيات."],["📣","انشر احتياجاتك","انشر طلب تصنيع ودَع المصانع المهتمة تتواصل معك."],["🤝","تواصل مباشر","بدون وسيط وبدون عمولات — تواصل مع المصانع عبر قنواتها المباشرة."]],
   cta_title:"تمتلك مصنعًا في مصر؟", cta_sub:"سجّل مصنعك على صُنّاع واحصل على عملاء جادّين من التجار والعلامات التجارية الباحثين عن شركاء إنتاج.", cta_btn:"سجّل مصنعك",
@@ -578,6 +775,9 @@ let VIEW={name:"home"};
 let FILTERS={q:"",industry:"",gov:"",moq:"",exp:false,sort:"name"};
 let floatSetIndex=0;
 let floatInterval=null;
+let featuredIndex=0;
+let featuredInterval=null;
+let requestsCarouselPage=0;
 const t=k=>STR[LANG][k];
 const L=obj=>obj[LANG];
 const ind=id=>INDUSTRIES.find(x=>x.id===id);
@@ -600,21 +800,25 @@ function closeMobileMenu(){
   document.body.style.overflow="";
 }
 
+// CHANGED: Logo hidden on homepage, visible on other pages
 function headerHTML(){
+  const isHome=VIEW.name==="home";
   return`<header id="mainHeader"><div class="container header-inner">
-    <a href="#" class="logo" onclick="go({name:'home'});return false">${t("brand")}<span class="logo-ain">ع</span></a>
-    <nav class="main-nav">
-      <button class="nav-link ${VIEW.name==='home'?'active':''}" onclick="go({name:'home'})">${t("nav_home")}</button>
+    <a href="#" class="logo ${isHome?'home-hidden':''}" onclick="go({name:'home'});return false"><span class="logo-text-brand">${t("brand")}</span><span class="logo-ain">ع</span></a>
+    <nav class="main-nav ${isHome?'home-nav':''}">
+      <button class="nav-link ${isHome?'active':''}" onclick="go({name:'home'})">${t("nav_home")}</button>
       <button class="nav-link ${VIEW.name==='factories'?'active':''}" onclick="go({name:'factories'})">${t("nav_factories")}</button>
       <button class="nav-link ${VIEW.name==='requests'?'active':''}" onclick="go({name:'requests'})">${t("nav_requests")}</button>
+      <button class="nav-link" onclick="openForm()">📣 ${t("post_request")}</button>
     </nav>
     <div class="header-actions">
-      <div class="lang-toggle">
+      <button class="header-quick-btn desktop-only-flex" onclick="go({name:'factories'})">🏭</button>
+      <button class="header-quick-btn desktop-only-flex" onclick="go({name:'requests'})">📋</button>
+      <div class="lang-toggle desktop-only-flex">
         <button class="${LANG==='en'?'on':''}" onclick="setLang('en')">EN</button>
         <button class="${LANG==='ar'?'on':''}" onclick="setLang('ar')">عربي</button>
       </div>
       <button class="btn btn-ghost btn-sm desktop-only">${t("login")}</button>
-      <button class="btn btn-primary btn-sm desktop-only" onclick="openForm()">${t("post_request")}</button>
       <button class="mobile-menu-btn" onclick="openMobileMenu()" aria-label="Menu">☰</button>
     </div></div></header>`;
 }
@@ -623,7 +827,7 @@ function mobileMenuHTML(){
   return`<div class="mobile-menu-overlay" id="mobileOverlay" onclick="closeMobileMenu()"></div>
   <div class="mobile-menu-panel" id="mobilePanel">
     <button class="mobile-menu-close" onclick="closeMobileMenu()">✕</button>
-    <div style="font-family:var(--font-display);font-weight:800;font-size:20px;margin-bottom:16px">${t("brand")}<span style="color:var(--teal)">ع</span></div>
+    <div style="font-family:var(--font-brand);font-weight:800;font-size:20px;margin-bottom:16px">${t("brand")}<span style="color:var(--teal)">ع</span></div>
     <div class="mobile-lang-toggle">
       <button class="${LANG==='en'?'on':''}" onclick="setLang('en');closeMobileMenu()">English</button>
       <button class="${LANG==='ar'?'on':''}" onclick="setLang('ar');closeMobileMenu()">العربية</button>
@@ -646,13 +850,82 @@ function footerHTML(){
   const col=(title,items)=>`<div><h4>${title}</h4><ul>${items.map(x=>`<li><button>${x}</button></li>`).join("")}</ul></div>`;
   return`<footer><div class="container"><div class="footer-grid"><div><div class="logo-text">${t("brand")}<span class="logo-ain">ع</span></div><p>${t("footer_about")}</p></div>${col(t("f_platform"),t("f_links1"))}${col(t("f_company"),t("f_links2"))}${col(t("f_support"),t("f_links3"))}</div><div class="footer-bottom"><span>${t("rights")}</span><span>${t("made")}</span></div></div></footer>`;
 }
-function factoryCardHTML(f){const i=ind(f.industry);return`<button class="factory-card" onclick="go({name:'factory',id:'${f.id}'})"><div class="cover" style="background:${grad(i.g)}"><span class="fcode">${factoryCode(f)}</span><span class="cover-ic">${i.icon}</span><div class="flogo">${L(f.name).charAt(0)}</div></div><div class="body"><h3>${esc(L(f.name))}</h3><div class="meta"><span>${i.icon} ${L({en:i.en,ar:i.ar})}</span> · <span>📍 ${L(f.gov)}</span></div><div class="desc">${esc(L(f.desc))}</div><div class="chip-row"><span class="chip teal">${t("moq")}: ${num(f.moq)}</span>${f.exp?`<span class="chip amber">🌍 ${t("exports")}</span>`:""}${f.certs.slice(0,1).map(c=>`<span class="chip">${c}</span>`).join("")}</div></div></button>`;}
-function requestCardHTML(r){return`<button class="request-card" onclick="go({name:'request',id:'${r.id}'})"><div class="thumb">${r.icon}</div><h3>${esc(L(r.title))}</h3><div class="desc">${esc(L(r.desc))}</div><div class="foot"><span>📦 ${t("qty")}: <b>${num(r.qty)}</b></span><span>📍 ${L(GOVS[r.gov])}</span><span>🕒 ${STR[LANG].days_ago(r.days)}</span></div></button>`;}
-function tickerItems(){return INDUSTRIES.map(i=>`<span class="tk">${i.icon} ${L({en:i.en,ar:i.ar})}<span class="sep"></span></span>`).join("");}
 
+// CHANGED: Hero slider moved below search bar and CTAs
 function homeHTML(){
   const featured=FACTORIES.filter(f=>f.featured);
-  return`<div class="hero"><div class="float-chips-container">${floatChipsHTML()}</div><span class="hero-node n1"></span><span class="hero-node n2"></span><span class="hero-node n3"></span><div class="container hero-inner"><div class="brand-display"><div class="orbit-ring r1"></div><div class="orbit-ring r2"></div><div class="brand-word">${t("brand")}<span class="ain">ع</span></div></div><p class="mast-line"><span class="eyebrow" style="margin-bottom:0"><span class="dot"></span>${t("eyebrow")}</span></p><div class="hero-slider" id="heroSlider"><div class="hs-track" id="hsTrack">${t("slides").map(([ic,h,p])=>`<div class="hs-slide"><span class="ic">${ic}</span><h3>${h}</h3><p>${p}</p></div>`).join("")}</div><button class="hs-arrow hs-prev" id="hsPrev">‹</button><button class="hs-arrow hs-next" id="hsNext">›</button><div class="hs-dots" id="hsDots">${t("slides").map((_,ix)=>`<button class="hs-dot ${ix===0?"on":""}" data-ix="${ix}"></button>`).join("")}</div></div><h1>${t("hero_title")}</h1><form class="search-bar" onsubmit="event.preventDefault();FILTERS.q=this.q.value;go({name:'factories'})"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input name="q" placeholder="${t("search_ph")}"><button class="btn btn-primary" type="submit">${LANG==='ar'?'بحث':'Search'}</button></form><div class="hero-ctas"><button class="btn btn-ghost" onclick="go({name:'factories'})">🏭 ${t("browse_factories")}</button><button class="btn btn-primary" onclick="openForm()">📣 ${t("post_request")}</button></div><div class="hero-stats"><div class="hero-stat"><b>${num(50)}+</b><span>${t("stat_factories")}</span></div><div class="hero-stat"><b>${num(14)}</b><span>${t("stat_industries")}</span></div><div class="hero-stat"><b>${num(16)}</b><span>${t("stat_governorates")}</span></div></div></div></div><div class="ticker"><div class="ticker-track">${tickerItems()}${tickerItems()}</div></div><section class="block"><div class="container"><div class="section-head"><div><h2>${t("industries_title")}</h2><p>${t("industries_sub")}</p></div></div><div class="industry-grid">${INDUSTRIES.map(i=>{const c=FACTORIES.filter(f=>f.industry===i.id).length;return`<button class="industry-card" onclick="FILTERS={...FILTERS,industry:'${i.id}'};go({name:'factories'})"><div class="icon" style="background:linear-gradient(135deg,${i.g[0]}1F,${i.g[1]}38)">${i.icon}</div><div class="name">${L({en:i.en,ar:i.ar})}</div><div class="count">${num(c)} ${t("factories_count")}</div></button>`;}).join("")}</div></div></section><section class="block alt"><div class="container"><div class="section-head"><div><h2>${t("latest_requests")}</h2><p>${t("latest_requests_sub")}</p></div><button class="link-more" onclick="go({name:'requests'})">${t("view_all")} ${LANG==='ar'?'←':'→'}</button></div><div class="card-grid">${REQUESTS.slice(0,3).map(requestCardHTML).join("")}</div></div></section><section class="block"><div class="container"><div class="section-head"><div><h2>${t("featured")}</h2><p>${t("featured_sub")}</p></div><button class="link-more" onclick="go({name:'factories'})">${t("view_all")} ${LANG==='ar'?'←':'→'}</button></div><div class="card-grid">${featured.map(factoryCardHTML).join("")}</div></div></section><section class="block alt"><div class="container"><div class="section-head"><div><h2>${t("why_title")}</h2></div></div><div class="why-grid">${t("why").map(([ic,h,p])=>`<div class="why-card"><div class="icon">${ic}</div><h3>${h}</h3><p>${p}</p></div>`).join("")}</div></div></section><section class="block"><div class="container"><div class="cta-band"><div><h2>${t("cta_title")}</h2><p>${t("cta_sub")}</p></div><button class="btn btn-primary">${t("cta_btn")}</button></div></div></section>`;
+  return`<div class="hero"><div class="float-chips-container">${floatChipsHTML()}</div><span class="hero-node n1"></span><span class="hero-node n2"></span><span class="hero-node n3"></span><div class="container hero-inner"><div class="brand-display"><div class="orbit-ring r1"></div><div class="orbit-ring r2"></div><div class="brand-word">${t("brand")}<span class="ain">ع</span></div></div><p class="mast-line"><span class="eyebrow" style="margin-bottom:0"><span class="dot"></span>${t("eyebrow")}</span></p><h1>${t("hero_title")}</h1><p class="sub">${t("hero_sub")}</p><form class="search-bar" onsubmit="event.preventDefault();FILTERS.q=this.q.value;go({name:'factories'})"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input name="q" placeholder="${t("search_ph")}"><button class="btn btn-primary" type="submit">${LANG==='ar'?'بحث':'Search'}</button></form><div class="hero-ctas"><button class="btn btn-ghost" onclick="go({name:'factories'})">🏭 ${t("browse_factories")}</button><button class="btn btn-primary" onclick="openForm()">📣 ${t("post_request")}</button></div>
+  <!-- CHANGED: Slider now after search bar -->
+  <div class="hero-slider" id="heroSlider"><div class="hs-track" id="hsTrack">${t("slides").map(([ic,h,p])=>`<div class="hs-slide"><span class="ic">${ic}</span><h3>${h}</h3><p>${p}</p></div>`).join("")}</div><button class="hs-arrow hs-prev" id="hsPrev">‹</button><button class="hs-arrow hs-next" id="hsNext">›</button><div class="hs-dots" id="hsDots">${t("slides").map((_,ix)=>`<button class="hs-dot ${ix===0?"on":""}" data-ix="${ix}"></button>`).join("")}</div></div>
+  <div class="hero-stats"><div class="hero-stat"><b>${num(50)}+</b><span>${t("stat_factories")}</span></div><div class="hero-stat"><b>${num(14)}</b><span>${t("stat_industries")}</span></div><div class="hero-stat"><b>${num(16)}</b><span>${t("stat_governorates")}</span></div></div></div></div><div class="ticker"><div class="ticker-track">${tickerItems()}${tickerItems()}</div></div>
+  
+  <!-- CHANGED: Distinct background for Egypt's Manufacturing Landscape -->
+  <section class="industries-section">
+    <div class="industries-grid-overlay"></div>
+    <span class="industries-orb o1"></span>
+    <span class="industries-orb o2"></span>
+    <span class="industries-orb o3"></span>
+    <div class="container">
+      <div class="industries-intro">
+        <div class="section-badge"><span class="badge-dot"></span>${t("industries_badge")}</div>
+        <h2>${t("industries_title")}</h2>
+        <p>${t("industries_desc")}</p>
+      </div>
+      <div class="industries-grid-new">
+        ${INDUSTRIES.map(i=>{const c=FACTORIES.filter(f=>f.industry===i.id).length;return`<button class="industry-card-new" onclick="FILTERS={...FILTERS,industry:'${i.id}'};go({name:'factories'})"><div class="ind-icon" style="background:linear-gradient(135deg,${i.g[0]}15,${i.g[1]}25)">${i.icon}</div><div class="ind-name">${L({en:i.en,ar:i.ar})}</div><div class="ind-count">${num(c)} ${t("factories_count")}</div></button>`;}).join("")}
+      </div>
+      <div class="industries-cta">
+        <button class="btn btn-primary" onclick="go({name:'factories'})">${t("industries_cta")} ${LANG==='ar'?'←':'→'}</button>
+      </div>
+    </div>
+  </section>
+  
+  <!-- NEW REQUESTS SECTION -->
+  <section class="requests-section"><div class="container"><div class="requests-header"><div><div class="section-label">${t("requests_label")}</div><h2>${t("requests_title")}</h2><p>${t("requests_sub")}</p></div><button class="btn btn-ghost btn-sm" onclick="go({name:'requests'})">${t("requests_view_all")} ${LANG==='ar'?'←':'→'}</button></div><div class="requests-carousel" id="reqCarousel"><div class="requests-track" id="reqTrack">${REQUESTS.map(r=>`<button class="request-card-new" onclick="go({name:'request',id:'${r.id}'})"><div class="req-meta"><span class="req-badge"><span class="pulse"></span>${t("requests_new")}</span><span class="req-time">${STR[LANG].days_ago(r.days)}</span></div><div class="req-icon" style="background:radial-gradient(rgba(14,107,94,.08) 1.2px,transparent 1.2px) 0 0/18px 18px,linear-gradient(135deg,#EFF6F4,#E2EFEC)">${r.icon}</div><h3>${esc(L(r.title))}</h3><p>${esc(L(r.desc))}</p><div class="req-footer"><span>📦 ${t("requests_qty")}: <strong>${num(r.qty)}</strong></span><span>📍 ${t("requests_location")}: ${L(GOVS[r.gov])}</span></div></button>`).join("")}</div></div><div class="carousel-controls"><button class="carousel-arrow" id="reqPrev">‹</button>${Array.from({length:Math.ceil(REQUESTS.length/3)},(_,i)=>`<button class="carousel-dot ${i===0?'active':''}" data-page="${i}"></button>`).join("")}<button class="carousel-arrow" id="reqNext">›</button></div></div></section>
+  
+  <!-- NEW FEATURED SECTION -->
+  <section class="featured-section"><div class="container"><div class="featured-header"><div class="featured-badge"><span class="star">✦</span>${t("featured_badge")}</div><h2>${t("featured_title")}</h2><p>${t("featured_desc")}</p></div><div class="featured-showcase" id="featuredShowcase">${featured.map((f,i)=>{const indData=ind(f.industry);return`<div class="featured-card-large ${i!==0?'fade-out':''}" data-fi="${i}" style="${i!==0?'display:none':''}"><div class="fc-visual" style="background:${grad(indData.g)}"><div class="fc-pattern"></div><span class="fc-badge">${factoryCode(f)}</span><span class="fc-icon">${indData.icon}</span><div class="fc-logo" style="color:${indData.g[0]}">${L(f.name).charAt(0)}</div></div><div class="fc-content"><span class="fc-industry">${indData.icon} ${L({en:indData.en,ar:indData.ar})}</span><h3>${esc(L(f.name))}</h3><p>${esc(L(f.desc))}</p><div class="fc-stats"><div class="fc-stat"><span class="stat-value">${num(f.moq)}+</span><span class="stat-label">${t("moq")} (${t("units")})</span></div><div class="fc-stat"><span class="stat-value">${f.emp}</span><span class="stat-label">${t("employees")}</span></div><div class="fc-stat"><span class="stat-value">${num(f.yr)}</span><span class="stat-label">${t("established")}</span></div>${f.exp?`<div class="fc-stat"><span class="stat-value">🌍</span><span class="stat-label">${t("exports")}</span></div>`:""}</div><button class="btn btn-primary" onclick="go({name:'factory',id:'${f.id}'})">${t("featured_view")} ${LANG==='ar'?'←':'→'}</button></div></div>`}).join("")}</div><div class="featured-controls"><div class="featured-thumbs">${featured.map((f,i)=>{const indData=ind(f.industry);return`<button class="featured-thumb ${i===0?'active':''}" style="background:linear-gradient(135deg,${indData.g[0]}15,${indData.g[1]}25)" data-fi="${i}" onclick="showFeatured(${i})">${indData.icon}</button>`}).join("")}</div></div></div></section>
+
+  <section class="block alt"><div class="container"><div class="section-head"><div><h2>${t("why_title")}</h2></div></div><div class="why-grid">${t("why").map(([ic,h,p])=>`<div class="why-card"><div class="icon">${ic}</div><h3>${h}</h3><p>${p}</p></div>`).join("")}</div></div></section><section class="block"><div class="container"><div class="cta-band"><div><h2>${t("cta_title")}</h2><p>${t("cta_sub")}</p></div><button class="btn btn-primary">${t("cta_btn")}</button></div></div></section>`;
+}
+
+function showFeatured(index){
+  const cards=document.querySelectorAll("#featuredShowcase .featured-card-large");
+  const thumbs=document.querySelectorAll(".featured-thumb");
+  cards.forEach(c=>{c.style.display="none";c.classList.add("fade-out");});
+  thumbs.forEach(t=>t.classList.remove("active"));
+  const target=cards[index];
+  if(target){target.style.display="";setTimeout(()=>target.classList.remove("fade-out"),50);}
+  if(thumbs[index])thumbs[index].classList.add("active");
+  featuredIndex=index;
+}
+
+function initFeaturedRotation(){
+  clearInterval(featuredInterval);
+  const cards=document.querySelectorAll("#featuredShowcase .featured-card-large");
+  if(cards.length<2)return;
+  featuredInterval=setInterval(()=>{featuredIndex=(featuredIndex+1)%cards.length;showFeatured(featuredIndex);},5000);
+}
+
+function initRequestsCarousel(){
+  const track=document.getElementById("reqTrack");
+  const carousel=document.getElementById("reqCarousel");
+  if(!track||!carousel)return;
+  const cards=track.querySelectorAll(".request-card-new");
+  const dots=carousel.parentElement.querySelectorAll(".carousel-dot");
+  const totalPages=Math.ceil(cards.length/3);
+  const sign=LANG==="ar"?1:-1;
+  
+  function goToPage(page){
+    requestsCarouselPage=Math.max(0,Math.min(page,totalPages-1));
+    track.style.transform=`translateX(${sign*requestsCarouselPage*100}%)`;
+    dots.forEach((d,i)=>d.classList.toggle("active",i===requestsCarouselPage));
+  }
+  
+  document.getElementById("reqPrev").addEventListener("click",()=>goToPage(requestsCarouselPage-1));
+  document.getElementById("reqNext").addEventListener("click",()=>goToPage(requestsCarouselPage+1));
+  dots.forEach(d=>d.addEventListener("click",()=>goToPage(Number(d.dataset.page))));
+  goToPage(0);
 }
 
 function factoriesHTML(){
@@ -660,6 +933,8 @@ function factoriesHTML(){
   if(FILTERS.sort==="moq")list=[...list].sort((a,b)=>a.moq-b.moq);else list=[...list].sort((a,b)=>L(a.name).localeCompare(L(b.name),LANG));
   return`<div class="page-head"><div class="container"><h1>${t("dir_title")}</h1><p>${t("dir_sub")}</p></div></div><div class="container dir-layout"><aside class="filters"><h3>${t("filters")} <button class="clear" onclick="FILTERS={q:'',industry:'',gov:'',moq:'',exp:false,sort:'name'};render()">${t("clear")}</button></h3><div class="f-group"><label>${LANG==='ar'?'بحث':'Search'}</label><input type="text" value="${esc(FILTERS.q)}" onchange="FILTERS.q=this.value;render()" placeholder="${t("search_ph")}"></div><div class="f-group"><label>${t("f_industry")}</label><select onchange="FILTERS.industry=this.value;render()"><option value="">${t("all")}</option>${INDUSTRIES.map(i=>`<option value="${i.id}" ${FILTERS.industry===i.id?"selected":""}>${L({en:i.en,ar:i.ar})}</option>`).join("")}</select></div><div class="f-group"><label>${t("f_gov")}</label><select onchange="FILTERS.gov=this.value;render()"><option value="">${t("all")}</option>${GOVS.map((g,ix)=>`<option value="${ix}" ${String(FILTERS.gov)===String(ix)?"selected":""}>${L(g)}</option>`).join("")}</select></div><div class="f-group"><label>${t("f_moq")}</label><input type="number" min="0" value="${esc(FILTERS.moq)}" onchange="FILTERS.moq=this.value;render()" placeholder="${LANG==='ar'?'مثال: ٥٠٠':'e.g. 500'}"></div><div class="f-group"><label class="f-check"><input type="checkbox" ${FILTERS.exp?"checked":""} onchange="FILTERS.exp=this.checked;render()"> ${t("f_export")}</label></div></aside><div><div class="results-bar"><span class="count"><b>${num(list.length)}</b> ${t("results")}</span><label style="font-size:13px;color:var(--ink-soft)">${t("sort")}:<select style="padding:7px 10px;border:1.5px solid var(--line);border-radius:9px;margin-inline-start:6px" onchange="FILTERS.sort=this.value;render()"><option value="name" ${FILTERS.sort==="name"?"selected":""}>${t("sort_name")}</option><option value="moq" ${FILTERS.sort==="moq"?"selected":""}>${t("sort_moq")}</option></select></label></div>${list.length?`<div class="card-grid">${list.map(factoryCardHTML).join("")}</div>`:`<div class="empty"><div class="big">🔍</div><b>${t("no_results")}</b><p>${t("no_results_sub")}</p></div>`}</div></div>`;
 }
+
+function factoryCardHTML(f){const i=ind(f.industry);return`<button class="factory-card" onclick="go({name:'factory',id:'${f.id}'})"><div class="cover" style="background:${grad(i.g)}"><span class="fcode">${factoryCode(f)}</span><span class="cover-ic">${i.icon}</span><div class="flogo">${L(f.name).charAt(0)}</div></div><div class="body"><h3>${esc(L(f.name))}</h3><div class="meta"><span>${i.icon} ${L({en:i.en,ar:i.ar})}</span> · <span>📍 ${L(f.gov)}</span></div><div class="desc">${esc(L(f.desc))}</div><div class="chip-row"><span class="chip teal">${t("moq")}: ${num(f.moq)}</span>${f.exp?`<span class="chip amber">🌍 ${t("exports")}</span>`:""}${f.certs.slice(0,1).map(c=>`<span class="chip">${c}</span>`).join("")}</div></div></button>`;}
 
 function factoryProfileHTML(id){
   const f=FACTORIES.find(x=>x.id===id);if(!f)return homeHTML();
@@ -669,7 +944,7 @@ function factoryProfileHTML(id){
   return`<div class="container"><button class="back-btn" onclick="go({name:'factories'})">${LANG==='ar'?'→':'←'} ${t("back")}</button></div><div class="container" style="margin-top:14px"><div class="profile-cover" style="background:${grad(i.g)};border-radius:20px"><span class="pcode">${factoryCode(f)}</span><span class="cover-ic">${i.icon}</span></div><div class="profile-top"><div class="profile-card"><div class="profile-logo">${L(f.name).charAt(0)}</div><div class="profile-main"><h1>${esc(L(f.name))}</h1><div class="meta" style="color:var(--ink-soft);font-size:13.5px">${i.icon} ${L({en:i.en,ar:i.ar})} · 📍 ${L(f.gov)} · ${t("est")} ${num(f.yr)}</div><div class="badge-row"><span class="chip teal">${t("moq")}: ${num(f.moq)} ${t("units")}</span>${f.exp?`<span class="chip amber">🌍 ${t("exports")}</span>`:""}${f.certs.map(c=>`<span class="chip">✔ ${c}</span>`).join("")}</div></div></div></div><div class="profile-layout"><div><div class="panel"><h2>${t("about")}</h2><p>${esc(L(f.desc))}</p></div><div class="panel"><h2>${t("products")}</h2><div class="chip-row">${L(prods).map(p=>`<span class="chip" style="font-size:13px;padding:7px 14px">${p}</span>`).join("")}</div></div><div class="panel"><h2>${t("capabilities")}</h2><div class="chip-row">${L(caps).map(p=>`<span class="chip teal" style="font-size:13px;padding:7px 14px">${p}</span>`).join("")}</div></div><div class="panel"><h2>${t("gallery")}</h2><div class="gallery">${[0,1,2,3,4,5].map(n=>`<div class="ph" style="background:${grad(i.g)};opacity:${1-n*0.09}">${n<3?"📷":i.icon}</div>`).join("")}</div></div><div class="panel"><h2>${t("details")}</h2><div class="spec-grid"><div class="spec"><div class="k">${t("established")}</div><div class="v">${num(f.yr)}</div></div><div class="spec"><div class="k">${t("employees")}</div><div class="v">${f.emp}</div></div><div class="spec"><div class="k">${t("location")}</div><div class="v">📍 ${L(f.gov)}</div></div><div class="spec"><div class="k">${t("hours")}</div><div class="v">${t("hours_val")}</div></div><div class="spec"><div class="k">${t("moq")}</div><div class="v">${num(f.moq)} ${t("units")}</div></div><div class="spec"><div class="k">${t("certifications")}</div><div class="v">${f.certs.length?f.certs.join(" · "):"—"}</div></div></div></div></div><aside class="contact-panel"><div class="panel"><h2>${t("contact_title")}</h2><p style="margin-bottom:14px;font-size:13px">${t("contact_sub")}</p><a class="contact-btn" href="tel:${f.phone.replace(/\s/g,'')}">${cIcon("var(--teal-tint)","📞")}<span>${t("call")}<small dir="ltr">${f.phone}</small></span></a><a class="contact-btn" href="#" onclick="return false">${cIcon("#E7F6EC","💬")}<span>${t("whatsapp")}<small dir="ltr">${f.phone}</small></span></a><a class="contact-btn" href="mailto:info@${slug}.example">${cIcon("#FDF0E0","✉️")}<span>${t("email")}<small dir="ltr">info@${slug}.example</small></span></a><a class="contact-btn" href="#" onclick="return false">${cIcon("#E8EEFB","🌐")}<span>${t("website")}<small dir="ltr">${slug}.example.com</small></span></a><div class="chip-row" style="margin-top:8px"><span class="chip">Facebook</span><span class="chip">Instagram</span><span class="chip">LinkedIn</span></div></div></aside></div></div>`;
 }
 
-function requestsHTML(){return`<div class="page-head"><div class="container" style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap"><div><h1>${t("req_title")}</h1><p>${t("req_sub")}</p></div><button class="btn btn-primary" onclick="openForm()">📣 ${t("post_request")}</button></div></div><div class="container req-layout"><div class="card-grid">${REQUESTS.map(requestCardHTML).join("")}</div></div>`;}
+function requestsHTML(){return`<div class="page-head"><div class="container" style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap"><div><h1>${t("req_title")}</h1><p>${t("req_sub")}</p></div><button class="btn btn-primary" onclick="openForm()">📣 ${t("post_request")}</button></div></div><div class="container req-layout"><div class="card-grid">${REQUESTS.map(r=>`<button class="request-card" onclick="go({name:'request',id:'${r.id}'})"><div class="thumb">${r.icon}</div><h3>${esc(L(r.title))}</h3><div class="desc">${esc(L(r.desc))}</div><div class="foot"><span>📦 ${t("qty")}: <b>${num(r.qty)}</b></span><span>📍 ${L(GOVS[r.gov])}</span><span>🕒 ${STR[LANG].days_ago(r.days)}</span></div></button>`).join("")}</div></div>`;}
 
 function requestDetailHTML(id){
   const r=REQUESTS.find(x=>x.id===id);if(!r)return requestsHTML();
@@ -684,6 +959,8 @@ function openForm(){
   bd.querySelector("#fq_cancel").onclick=()=>bd.remove();
   bd.querySelector("#fq_submit").onclick=()=>{const v=id=>bd.querySelector(id).value.trim();const title=v("#fq_title"),desc=v("#fq_desc"),qty=v("#fq_qty"),contact=v("#fq_contact");if(!title||!desc||!qty||!contact){toast(t("fill_required"));return;}const mat=v("#fq_mat")||"—",budget=v("#fq_budget")||null,gov=Number(bd.querySelector("#fq_gov").value);REQUESTS.unshift({id:"r"+Date.now(),icon:"📝",days:0,qty,budget,title:{en:title,ar:title},desc:{en:desc,ar:desc},material:{en:mat,ar:mat},gov,by:{en:"Sonnaع user",ar:"مستخدم صُنّاع"},contact});bd.remove();toast(t("published"));go({name:"requests"});};
 }
+
+function tickerItems(){return INDUSTRIES.map(i=>`<span class="tk">${i.icon} ${L({en:i.en,ar:i.ar})}<span class="sep"></span></span>`).join("");}
 
 let rotTimer=null;
 const REDUCED=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -716,6 +993,7 @@ function initFloatRotation(){
 function render(){
   document.documentElement.lang=LANG;document.documentElement.dir=LANG==="ar"?"rtl":"ltr";
   clearInterval(floatInterval);
+  clearInterval(featuredInterval);
   let body="";
   if(VIEW.name==="home")body=homeHTML();
   else if(VIEW.name==="factories")body=factoriesHTML();
@@ -723,7 +1001,13 @@ function render(){
   else if(VIEW.name==="requests")body=requestsHTML();
   else if(VIEW.name==="request")body=requestDetailHTML(VIEW.id);
   document.getElementById("app").innerHTML=headerHTML()+mobileMenuHTML()+`<main>${body}</main><div class="container" style="padding:0 24px 28px"><p style="font-size:12px;color:var(--ink-soft);text-align:center">${t("demo_note")}</p></div>`+footerHTML();
-  if(VIEW.name==="home")initHero();else clearInterval(rotTimer);
+  if(VIEW.name==="home"){
+    initHero();
+    initFeaturedRotation();
+    initRequestsCarousel();
+  }else{
+    clearInterval(rotTimer);
+  }
 }
 render();
 </script>
