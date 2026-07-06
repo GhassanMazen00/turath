@@ -886,7 +886,7 @@ function headerHTML(){
     <a href="#" class="logo" onclick="go({name:'home'});return false">${t("brand")}<span class="logo-ain">ع</span></a>
     <nav class="main-nav">${links.map(([v,l])=>`<button class="nav-link ${VIEW.name===v?'active':''}" onclick="go({name:'${v}'})">${l}</button>`).join("")}</nav>
     <div class="header-actions">
-      <div class="lang-toggle"><button class="${LANG==='en'?'on':''}" onclick="setLang('en')">EN</button><button class="${LANG==='ar'?'on':''}" onclick="setLang('ar')">عربي</button></div>
+      <div class="lang-toggle"><button class="${LANG==='en'?'on':''}" onclick="setLang('en')">EN</button><button class="${LANG==='ar'?'on':''}" onclick="setLang('ar')">ع</button></div>
       <button class="btn btn-ghost btn-sm">${t("login")}</button>
       <button class="btn btn-primary btn-sm" onclick="openForm()">${t("post_request")}</button>
       <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
