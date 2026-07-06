@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sonnaع — Egypt's Manufacturing Directory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#15221F;
+  --ink-soft:#4A5A56;
+  --paper:#FFFFFF;
+  --mist:#F4F7F6;
+  --teal:#0E6B5E;
+  --teal-dark:#0A4A42;
+  --teal-tint:#E4F0EE;
+  --line:#E2E9E7;
+  --amber:#C98A2B;
+  --radius:16px;
+  --shadow:0 1px 2px rgba(21,34,31,.05),0 8px 24px -12px rgba(21,34,31,.12);
+  --font-display:'Alexandria',sans-serif;
+  --font-body:'IBM Plex Sans Arabic',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);color:var(--ink);background:var(--paper);line-height:1.6;font-size:15px}
+h1,h2,h3,h4{font-family:var(--font-display);line-height:1.25}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit;font-size:14px}
+a{color:inherit;text-decoration:none}
+img{max-width:100%}
+:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+.container{max-width:1160px;margin:0 auto;padding:0 24px}
+
+/* ---------- Header ---------- */
+header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.header-inner{display:flex;align-items:center;gap:28px;height:66px}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:800;font-size:21px;letter-spacing:-.02em}
+.logo .mark{width:36px;height:36px;border-radius:11px;background:var(--teal);color:#fff;display:grid;place-items:center;font-size:20px;font-weight:700;padding-bottom:4px}
+.logo .ain{color:var(--teal)}
+nav.main-nav{display:flex;gap:4px;flex:1}
+.nav-link{padding:8px 14px;border-radius:10px;font-weight:500;color:var(--ink-soft);font-size:14.5px;background:none;border:none}
+.nav-link:hover{background:var(--mist);color:var(--ink)}
+.nav-link.active{color:var(--teal);background:var(--teal-tint);font-weight:600}
+.header-actions{display:flex;align-items:center;gap:10px}
+.lang-toggle{display:flex;border:1.5px solid var(--line);border-radius:10px;overflow:hidden}
+.lang-toggle button{padding:6px 12px;background:#fff;border:none;font-size:13px;font-weight:600;color:var(--ink-soft)}
+.lang-toggle button.on{background:var(--ink);color:#fff}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 20px;border-radius:12px;font-weight:600;font-size:14.5px;border:none;transition:transform .12s ease,box-shadow .12s ease}
+.btn:hover{transform:translateY(-1px)}
+.btn-primary{background:var(--teal);color:#fff;box-shadow:0 4px 14px -4px rgba(14,107,94,.5)}
+.btn-primary:hover{background:var(--teal-dark)}
+.btn-ghost{background:#fff;border:1.5px solid var(--line);color:var(--ink)}
+.btn-ghost:hover{border-color:var(--teal);color:var(--teal)}
+.btn-sm{padding:8px 14px;font-size:13.5px;border-radius:10px}
+
+/* ---------- Hero ---------- */
+.hero{position:relative;background:linear-gradient(180deg,#F7FAF9 0%,#fff 100%);border-bottom:1px solid var(--line);overflow:hidden}
+.hero-inner{position:relative;padding:76px 0 84px;text-align:center;max-width:760px;margin:0 auto}
+.hero .watermark{position:absolute;inset-inline-end:-40px;top:-60px;font-family:var(--font-display);font-weight:800;font-size:420px;line-height:1;color:var(--teal);opacity:.055;pointer-events:none;user-select:none}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--teal-tint);color:var(--teal-dark);font-weight:600;font-size:13px;padding:6px 14px;border-radius:99px;margin-bottom:20px}
+.eyebrow .dot{width:7px;height:7px;border-radius:99px;background:var(--teal)}
+.hero h1{font-size:clamp(30px,5vw,50px);font-weight:800;letter-spacing:-.02em;margin-bottom:14px}
+.hero h1 em{font-style:normal;color:var(--teal)}
+.hero p.sub{color:var(--ink-soft);font-size:17px;max-width:560px;margin:0 auto 32px}
+.search-bar{display:flex;align-items:center;background:#fff;border:1.5px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:8px;max-width:640px;margin:0 auto 22px;gap:8px}
+.search-bar svg{flex:none;margin-inline-start:12px;color:var(--ink-soft)}
+.search-bar input{flex:1;border:none;outline:none;font-size:15.5px;padding:10px 4px;background:transparent;min-width:0}
+.hero-ctas{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.hero-stats{display:flex;gap:36px;justify-content:center;margin-top:44px;flex-wrap:wrap}
+.hero-stat{text-align:center}
+.hero-stat b{display:block;font-family:var(--font-display);font-size:24px;font-weight:800;color:var(--teal-dark)}
+.hero-stat span{font-size:13px;color:var(--ink-soft)}
+
+/* ---------- Sections ---------- */
+section.block{padding:60px 0}
+section.block.alt{background:var(--mist)}
+.section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:28px;flex-wrap:wrap}
+.section-head h2{font-size:26px;font-weight:700;letter-spacing:-.01em}
+.section-head p{color:var(--ink-soft);font-size:14.5px;margin-top:4px}
+.link-more{color:var(--teal);font-weight:600;font-size:14px;background:none;border:none;display:inline-flex;align-items:center;gap:6px}
+.link-more:hover{text-decoration:underline}
+
+/* Industry grid */
+.industry-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.industry-card{background:#fff;border:1.5px solid var(--line);border-radius:var(--radius);padding:20px 14px;text-align:center;transition:border-color .15s,transform .15s;display:block;width:100%}
+.industry-card:hover{border-color:var(--teal);transform:translateY(-2px)}
+.industry-card .icon{width:46px;height:46px;border-radius:13px;background:var(--teal-tint);display:grid;place-items:center;font-size:22px;margin:0 auto 10px}
+.industry-card .name{font-weight:600;font-size:13.5px;line-height:1.35}
+.industry-card .count{font-size:12px;color:var(--ink-soft)}
+
+/* Cards */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
+.factory-card{background:#fff;border:1.5px solid var(--line);border-radius:var(--radius);overflow:hidden;transition:box-shadow .15s,transform .15s;text-align:start;width:100%;padding:0}
+.factory-card:hover{box-shadow:var(--shadow);transform:translateY(-2px)}
+.factory-card .cover{height:104px;position:relative}
+.factory-card .flogo{position:absolute;bottom:-22px;inset-inline-start:18px;width:52px;height:52px;border-radius:14px;background:#fff;border:1.5px solid var(--line);display:grid;place-items:center;font-family:var(--font-display);font-weight:800;font-size:18px;color:var(--teal)}
+.factory-card .body{padding:32px 18px 18px}
+.factory-card h3{font-size:16px;font-weight:700;margin-bottom:2px}
+.factory-card .meta{font-size:12.5px;color:var(--ink-soft);display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.factory-card .desc{font-size:13px;color:var(--ink-soft);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:12px}
+.chip-row{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-size:11.5px;font-weight:600;background:var(--mist);color:var(--ink-soft);padding:4px 10px;border-radius:99px}
+.chip.teal{background:var(--teal-tint);color:var(--teal-dark)}
+.chip.amber{background:#FBF1E2;color:#8A5A12}
+
+/* Request cards */
+.request-card{background:#fff;border:1.5px solid var(--line);border-radius:var(--radius);padding:18px;transition:box-shadow .15s,transform .15s;text-align:start;width:100%}
+.request-card:hover{box-shadow:var(--shadow);transform:translateY(-2px)}
+.request-card .thumb{height:120px;border-radius:12px;margin-bottom:14px;display:grid;place-items:center;font-size:34px}
+.request-card h3{font-size:15.5px;font-weight:700;margin-bottom:4px}
+.request-card .desc{font-size:13px;color:var(--ink-soft);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:12px}
+.request-card .foot{display:flex;justify-content:space-between;font-size:12.5px;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:10px;flex-wrap:wrap;gap:6px}
+
+/* Why */
+.why-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+.why-card{background:#fff;border:1.5px solid var(--line);border-radius:var(--radius);padding:22px}
+.why-card .icon{width:42px;height:42px;border-radius:12px;background:var(--teal-tint);display:grid;place-items:center;font-size:20px;margin-bottom:14px}
+.why-card h3{font-size:15.5px;font-weight:700;margin-bottom:6px}
+.why-card p{font-size:13.5px;color:var(--ink-soft)}
+
+/* CTA band */
+.cta-band{background:var(--teal-dark);border-radius:22px;padding:44px 40px;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;position:relative;overflow:hidden}
+.cta-band .ain-bg{position:absolute;inset-inline-end:20px;top:-70px;font-family:var(--font-display);font-size:260px;font-weight:800;opacity:.08;line-height:1}
+.cta-band h2{font-size:26px;font-weight:800;margin-bottom:6px}
+.cta-band p{opacity:.85;font-size:14.5px;max-width:480px}
+.cta-band .btn-primary{background:#fff;color:var(--teal-dark);box-shadow:none}
+
+/* ---------- Directory page ---------- */
+.page-head{background:var(--mist);border-bottom:1px solid var(--line);padding:34px 0}
+.page-head h1{font-size:28px;font-weight:800;letter-spacing:-.01em}
+.page-head p{color:var(--ink-soft);font-size:14.5px;margin-top:4px}
+.dir-layout{display:grid;grid-template-columns:250px 1fr;gap:28px;padding:32px 0 64px;align-items:start}
+.filters{background:#fff;border:1.5px solid var(--line);border-radius:var(--radius);padding:18px;position:sticky;top:84px}
+.filters h3{font-size:14px;font-weight:700;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
+.filters .clear{font-size:12px;color:var(--teal);background:none;border:none;font-weight:600}
+.f-group{margin-bottom:16px}
+.f-group label{display:block;font-size:12.5px;font-weight:600;color:var(--ink-soft);margin-bottom:6px}
+.f-group select,.f-group input[type=text],.f-group input[type=number]{width:100%;padding:9px 10px;border:1.5px solid var(--line);border-radius:10px;background:#fff}
+.f-check{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:500}
+.f-check input{accent-color:var(--teal);width:16px;height:16px}
+.results-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:12px;flex-wrap:wrap}
+.results-bar .count{font-size:13.5px;color:var(--ink-soft)}
+.results-bar .count b{color:var(--ink)}
+.empty{background:#fff;border:1.5px dashed var(--line);border-radius:var(--radius);padding:48px 24px;text-align:center;color:var(--ink-soft)}
+.empty .big{font-size:34px;margin-bottom:10px}
+
+/* ---------- Profile ---------- */
+.profile-cover{height:220px;position:relative}
+.profile-top{position:relative;margin-top:-46px}
+.profile-card{background:#fff;border:1.5px solid var(--line);border-radius:20px;padding:24px;box-shadow:var(--shadow);display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}
+.profile-logo{width:84px;height:84px;border-radius:18px;background:var(--teal-tint);border:1.5px solid var(--line);display:grid;place-items:center;font-family:var(--font-display);font-weight:800;font-size:28px;color:var(--teal);flex:none}
+.profile-main{flex:1;min-width:240px}
+.profile-main h1{font-size:24px;font-weight:800;margin-bottom:4px}
+.badge-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.profile-layout{display:grid;grid-template-columns:1fr 320px;gap:24px;padding:28px 0 64px;align-items:start}
+.panel{background:#fff;border:1.5px solid var(--line);border-radius:var(--radius);padding:22px;margin-bottom:18px}
+.panel h2{font-size:16.5px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.panel h2::before{content:"";width:4px;height:18px;border-radius:4px;background:var(--teal)}
+.panel p{font-size:14px;color:var(--ink-soft)}
+.spec-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.spec{background:var(--mist);border-radius:12px;padding:12px 14px}
+.spec .k{font-size:11.5px;color:var(--ink-soft);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.spec .v{font-size:14px;font-weight:600;margin-top:2px}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+.gallery .ph{aspect-ratio:4/3;border-radius:12px;display:grid;place-items:center;font-size:26px;color:#fff}
+.contact-panel{position:sticky;top:84px}
+.contact-btn{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;margin-bottom:10px;font-weight:600;font-size:14px;transition:border-color .15s,background .15s;background:#fff;width:100%;text-align:start}
+.contact-btn:hover{border-color:var(--teal);background:var(--teal-tint)}
+.contact-btn .ci{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:16px;flex:none}
+.contact-btn small{display:block;font-weight:400;color:var(--ink-soft);font-size:12px}
+.back-btn{background:none;border:none;color:var(--teal);font-weight:600;font-size:14px;display:inline-flex;align-items:center;gap:6px;margin:20px 0 0}
+
+/* ---------- Requests page & form ---------- */
+.req-layout{padding:32px 0 64px}
+.modal-backdrop{position:fixed;inset:0;background:rgba(21,34,31,.45);z-index:100;display:grid;place-items:center;padding:20px}
+.modal{background:#fff;border-radius:20px;max-width:620px;width:100%;max-height:88vh;overflow:auto;padding:28px}
+.modal h2{font-size:20px;font-weight:800;margin-bottom:4px}
+.modal .sub{color:var(--ink-soft);font-size:13.5px;margin-bottom:20px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-field{display:flex;flex-direction:column;gap:6px}
+.form-field.full{grid-column:1/-1}
+.form-field label{font-size:13px;font-weight:600}
+.form-field label .opt{color:var(--ink-soft);font-weight:400;font-size:12px}
+.form-field input,.form-field select,.form-field textarea{padding:10px 12px;border:1.5px solid var(--line);border-radius:11px}
+.form-field textarea{resize:vertical;min-height:90px}
+.upload-box{border:1.5px dashed var(--line);border-radius:12px;padding:18px;text-align:center;color:var(--ink-soft);font-size:13px;background:var(--mist)}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+.toast{position:fixed;bottom:24px;inset-inline-start:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 22px;border-radius:12px;font-weight:600;font-size:14px;z-index:200;box-shadow:var(--shadow)}
+[dir="rtl"] .toast{transform:translateX(50%)}
+.req-detail-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap}
+
+/* ---------- Footer ---------- */
+footer{background:var(--ink);color:#B9C6C2;padding:48px 0 28px;margin-top:0}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px;margin-bottom:32px}
+footer .logo{color:#fff;margin-bottom:12px}
+footer .logo .mark{background:var(--teal)}
+footer p{font-size:13.5px;max-width:280px}
+footer h4{color:#fff;font-size:13.5px;margin-bottom:12px;font-weight:700}
+footer ul{list-style:none}
+footer li{margin-bottom:8px;font-size:13.5px}
+footer li button{background:none;border:none;color:#B9C6C2;font-size:13.5px;padding:0}
+footer li button:hover{color:#fff}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.12);padding-top:20px;font-size:12.5px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+
+/* ---------- Responsive ---------- */
+@media(max-width:920px){
+  .dir-layout{grid-template-columns:1fr}
+  .filters{position:static}
+  .profile-layout{grid-template-columns:1fr}
+  .footer-grid{grid-template-columns:1fr 1fr}
+  nav.main-nav{display:none}
+}
+@media(max-width:640px){
+  .form-grid{grid-template-columns:1fr}
+  .spec-grid{grid-template-columns:1fr}
+  .hero-inner{padding:52px 0 60px}
+  .cta-band{padding:32px 24px}
+  .header-inner{gap:12px}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* =============== i18n =============== */
+const STR = {
+en:{
+  brand:"Sonna", nav_home:"Home", nav_factories:"Factories", nav_requests:"Requests",
+  login:"Log in", post_request:"Post a Request",
+  eyebrow:"Egypt's manufacturing directory",
+  hero_title:'Find the Right <em>Factory</em> for Your Next Product',
+  hero_sub:"Sonnaع connects traders, brands, and businesses directly with trusted Egyptian manufacturers. No middleman. No commissions.",
+  search_ph:"Search products, factories, materials, or processes…",
+  browse_factories:"Browse Factories", stat_factories:"Verified factories", stat_industries:"Industries", stat_governorates:"Governorates",
+  industries_title:"Browse by Industry", industries_sub:"Explore Egypt's manufacturing sectors",
+  factories_count:"factories",
+  latest_requests:"Latest Manufacturing Requests", latest_requests_sub:"Recently posted sourcing needs from buyers",
+  view_all:"View all",
+  featured:"Featured Factories", featured_sub:"Highlighted manufacturers across Egypt",
+  why_title:"Why Sonnaع?",
+  why:[
+    ["🏭","Trusted manufacturers","Find verified Egyptian factories with real capabilities and clear profiles."],
+    ["🧭","Discover by industry","Browse 14 manufacturing sectors, from textiles to electronics."],
+    ["📣","Publish your needs","Post a manufacturing request and let interested factories reach you."],
+    ["🤝","Contact directly","No middleman and no commissions — talk to factories on their own channels."]
+  ],
+  cta_title:"Own a factory in Egypt?",
+  cta_sub:"Get listed on Sonnaع and receive qualified leads from traders, brands, and businesses looking for production partners.",
+  cta_btn:"List Your Factory",
+  dir_title:"Factory Directory", dir_sub:"Browse and filter manufacturers across Egypt",
+  filters:"Filters", clear:"Clear all", f_industry:"Industry", f_gov:"Governorate", f_moq:"Max. MOQ (units)", f_export:"Exports available", all:"All",
+  results:"factories found", sort:"Sort", sort_name:"Name", sort_moq:"Lowest MOQ",
+  no_results:"No factories match your filters", no_results_sub:"Try clearing a filter or broadening your search.",
+  moq:"MOQ", units:"units", exports:"Exports", est:"Est.",
+  about:"About the Factory", capabilities:"Manufacturing Capabilities", products:"Products Manufactured",
+  gallery:"Sample Products & Factory Photos", details:"Factory Details",
+  certifications:"Certifications", location:"Location", hours:"Business Hours", employees:"Employees", established:"Established",
+  hours_val:"Sun–Thu, 9:00 AM – 5:00 PM",
+  contact_title:"Contact this Factory", contact_sub:"Reach out directly — Sonnaع doesn't handle messaging.",
+  call:"Call", whatsapp:"WhatsApp", email:"Email", website:"Website",
+  back:"Back to results",
+  req_title:"Manufacturing Requests", req_sub:"Buyers publish what they need — factories contact them directly.",
+  qty:"Quantity", budget:"Target budget", budget_na:"Open to offers", deliver_to:"Deliver to", posted:"Posted", materials:"Preferred materials",
+  by:"by", contact_requester:"Contact information", req_note:"Manufacturers: contact the requester directly using the details above. There is no bidding or in-platform messaging.",
+  new_req:"Post a Manufacturing Request", new_req_sub:"Describe what you want manufactured. Your request will be publicly visible so factories can contact you.",
+  fr_title:"Product title", fr_title_ph:"e.g. Cotton polo shirts with embroidered logo",
+  fr_desc:"Detailed description", fr_desc_ph:"Specifications, sizes, colors, finishing, quality requirements…",
+  fr_qty:"Quantity required", fr_material:"Preferred materials", fr_material_ph:"e.g. 100% Egyptian cotton",
+  fr_budget:"Target budget (EGP)", fr_budget_ph:"Optional",
+  fr_gov:"Delivery location", fr_contact:"Contact info", fr_contact_ph:"Phone / WhatsApp / email",
+  fr_files:"Images, files, or reference designs", fr_files_note:"📎 Drag files here or click to upload (prototype)",
+  cancel:"Cancel", publish:"Publish Request", published:"✓ Your request is now live",
+  optional:"optional", required:"required", fill_required:"Please fill in all required fields",
+  days_ago:d=>d===0?"today":d===1?"yesterday":`${d} days ago`,
+  egp:"EGP",
+  footer_about:"A modern platform connecting traders, brands, and businesses with manufacturers across Egypt.",
+  f_platform:"Platform", f_company:"Company", f_support:"Support",
+  f_links1:["Browse factories","Manufacturing requests","Industries"],
+  f_links2:["About Sonnaع","List your factory","Careers"],
+  f_links3:["Help center","Contact us","Terms & privacy"],
+  rights:"© 2026 Sonnaع. All rights reserved.", made:"Made for Egyptian industry 🇪🇬",
+  demo_note:"Prototype — all factory data is placeholder content."
+},
+ar:{
+  brand:"صُنّا", nav_home:"الرئيسية", nav_factories:"المصانع", nav_requests:"طلبات التصنيع",
+  login:"تسجيل الدخول", post_request:"انشر طلب تصنيع",
+  eyebrow:"دليل التصنيع المصري",
+  hero_title:'اعثر على <em>المصنع</em> المناسب لمنتجك القادم',
+  hero_sub:"صُنّاع تربط التجار والعلامات التجارية والشركات مباشرةً بمصانع مصرية موثوقة. بدون وسيط. بدون عمولات.",
+  search_ph:"ابحث عن منتجات، مصانع، خامات، أو عمليات تصنيع…",
+  browse_factories:"تصفح المصانع", stat_factories:"مصنع موثّق", stat_industries:"صناعة", stat_governorates:"محافظة",
+  industries_title:"تصفح حسب الصناعة", industries_sub:"استكشف قطاعات التصنيع في مصر",
+  factories_count:"مصنع",
+  latest_requests:"أحدث طلبات التصنيع", latest_requests_sub:"احتياجات توريد منشورة حديثًا من المشترين",
+  view_all:"عرض الكل",
+  featured:"مصانع مميزة", featured_sub:"مصانع مختارة من مختلف المحافظات",
+  why_title:"لماذا صُنّاع؟",
+  why:[
+    ["🏭","مصانع موثوقة","اعثر على مصانع مصرية موثّقة بقدرات حقيقية وملفات تعريفية واضحة."],
+    ["🧭","اكتشف حسب الصناعة","تصفح ١٤ قطاعًا صناعيًا، من المنسوجات إلى الإلكترونيات."],
+    ["📣","انشر احتياجاتك","انشر طلب تصنيع ودَع المصانع المهتمة تتواصل معك."],
+    ["🤝","تواصل مباشر","بدون وسيط وبدون عمولات — تواصل مع المصانع عبر قنواتها المباشرة."]
+  ],
+  cta_title:"تمتلك مصنعًا في مصر؟",
+  cta_sub:"سجّل مصنعك على صُنّاع واحصل على عملاء جادّين من التجار والعلامات التجارية الباحثين عن شركاء إنتاج.",
+  cta_btn:"سجّل مصنعك",
+  dir_title:"دليل المصانع", dir_sub:"تصفح وصفّي المصانع في جميع أنحاء مصر",
+  filters:"التصفية", clear:"مسح الكل", f_industry:"الصناعة", f_gov:"المحافظة", f_moq:"أقصى حد أدنى للطلب", f_export:"يتوفر تصدير", all:"الكل",
+  results:"مصنع", sort:"ترتيب", sort_name:"الاسم", sort_moq:"أقل حد أدنى للطلب",
+  no_results:"لا توجد مصانع مطابقة", no_results_sub:"جرّب إزالة أحد الفلاتر أو توسيع نطاق البحث.",
+  moq:"الحد الأدنى للطلب", units:"قطعة", exports:"تصدير", est:"تأسس",
+  about:"عن المصنع", capabilities:"القدرات التصنيعية", products:"المنتجات",
+  gallery:"عينات المنتجات وصور المصنع", details:"بيانات المصنع",
+  certifications:"الشهادات", location:"الموقع", hours:"مواعيد العمل", employees:"عدد العاملين", established:"سنة التأسيس",
+  hours_val:"الأحد–الخميس، ٩ صباحًا – ٥ مساءً",
+  contact_title:"تواصل مع المصنع", contact_sub:"التواصل يتم مباشرةً — صُنّاع لا توفر مراسلات داخلية.",
+  call:"اتصال", whatsapp:"واتساب", email:"بريد إلكتروني", website:"الموقع الإلكتروني",
+  back:"العودة للنتائج",
+  req_title:"طلبات التصنيع", req_sub:"ينشر المشترون احتياجاتهم — وتتواصل المصانع معهم مباشرةً.",
+  qty:"الكمية", budget:"الميزانية المستهدفة", budget_na:"مفتوحة للعروض", deliver_to:"التسليم إلى", posted:"نُشر", materials:"الخامات المفضلة",
+  by:"بواسطة", contact_requester:"بيانات التواصل", req_note:"للمصانع: تواصلوا مع صاحب الطلب مباشرةً عبر البيانات أعلاه. لا يوجد نظام مزايدة أو مراسلات داخل المنصة.",
+  new_req:"انشر طلب تصنيع", new_req_sub:"صِف المنتج الذي تريد تصنيعه. سيكون طلبك مرئيًا للجميع حتى تتمكن المصانع من التواصل معك.",
+  fr_title:"عنوان المنتج", fr_title_ph:"مثال: قمصان بولو قطنية بشعار مطرز",
+  fr_desc:"وصف تفصيلي", fr_desc_ph:"المواصفات، المقاسات، الألوان، التشطيب، متطلبات الجودة…",
+  fr_qty:"الكمية المطلوبة", fr_material:"الخامات المفضلة", fr_material_ph:"مثال: قطن مصري ١٠٠٪",
+  fr_budget:"الميزانية المستهدفة (جنيه)", fr_budget_ph:"اختياري",
+  fr_gov:"مكان التسليم", fr_contact:"بيانات التواصل", fr_contact_ph:"هاتف / واتساب / بريد إلكتروني",
+  fr_files:"صور أو ملفات أو تصميمات مرجعية", fr_files_note:"📎 اسحب الملفات هنا أو اضغط للرفع (نموذج أولي)",
+  cancel:"إلغاء", publish:"نشر الطلب", published:"✓ تم نشر طلبك بنجاح",
+  optional:"اختياري", required:"مطلوب", fill_required:"يرجى استكمال الحقول المطلوبة",
+  days_ago:d=>d===0?"اليوم":d===1?"أمس":`منذ ${d} أيام`,
+  egp:"ج.م",
+  footer_about:"منصة حديثة تربط التجار والعلامات التجارية والشركات بالمصانع في جميع أنحاء مصر.",
+  f_platform:"المنصة", f_company:"الشركة", f_support:"الدعم",
+  f_links1:["تصفح المصانع","طلبات التصنيع","الصناعات"],
+  f_links2:["عن صُنّاع","سجّل مصنعك","الوظائف"],
+  f_links3:["مركز المساعدة","تواصل معنا","الشروط والخصوصية"],
+  rights:"© ٢٠٢٦ صُنّاع. جميع الحقوق محفوظة.", made:"صُنع من أجل الصناعة المصرية 🇪🇬",
+  demo_note:"نموذج أولي — جميع بيانات المصانع محتوى تجريبي."
+}
+};
+</script>
+<script>
+/* =============== Data =============== */
+const INDUSTRIES=[
+ {id:"textile",  en:"Textile & Apparel",      ar:"المنسوجات والملابس",       icon:"🧵", g:["#0E6B5E","#12897A"]},
+ {id:"packaging",en:"Packaging & Printing",   ar:"التعبئة والطباعة",         icon:"📦", g:["#C98A2B","#E0A94F"]},
+ {id:"furniture",en:"Furniture",              ar:"الأثاث",                   icon:"🪑", g:["#7A4E2D","#A06B42"]},
+ {id:"food",     en:"Food Manufacturing",     ar:"الصناعات الغذائية",        icon:"🍞", g:["#B5541C","#D97A3D"]},
+ {id:"plastics", en:"Plastics",               ar:"البلاستيك",                icon:"🧴", g:["#2563A8","#3B82C9"]},
+ {id:"metal",    en:"Metal Fabrication",      ar:"تشكيل المعادن",            icon:"⚙️", g:["#475569","#64748B"]},
+ {id:"chemicals",en:"Chemicals",              ar:"الكيماويات",               icon:"⚗️", g:["#6D28A8","#8B44C9"]},
+ {id:"cosmetics",en:"Cosmetics",              ar:"مستحضرات التجميل",         icon:"💄", g:["#B02A6A","#D14C8B"]},
+ {id:"construction",en:"Construction Materials",ar:"مواد البناء",            icon:"🧱", g:["#8A4B2F","#B06A45"]},
+ {id:"medical",  en:"Medical Supplies",       ar:"المستلزمات الطبية",        icon:"🩺", g:["#0E7490","#22A3BF"]},
+ {id:"promo",    en:"Promotional Products",   ar:"منتجات دعائية",            icon:"🎁", g:["#B45309","#D97706"]},
+ {id:"electronics",en:"Electronics",          ar:"الإلكترونيات",             icon:"🔌", g:["#1E40AF","#3B5FD9"]},
+ {id:"agriculture",en:"Agriculture",          ar:"الصناعات الزراعية",        icon:"🌾", g:["#3F6212","#5C8A1E"]},
+ {id:"automotive",en:"Automotive Components", ar:"مكونات السيارات",          icon:"🚗", g:["#334155","#52657E"]}
+];
+const GOVS=[
+ {en:"Cairo",ar:"القاهرة"},{en:"Giza",ar:"الجيزة"},{en:"Alexandria",ar:"الإسكندرية"},
+ {en:"Port Said",ar:"بورسعيد"},{en:"Damietta",ar:"دمياط"},{en:"Sharqia (10th of Ramadan)",ar:"الشرقية (العاشر من رمضان)"},
+ {en:"Gharbia (El Mahalla)",ar:"الغربية (المحلة)"},{en:"Suez",ar:"السويس"},{en:"Ismailia",ar:"الإسماعيلية"},
+ {en:"Dakahlia (Mansoura)",ar:"الدقهلية (المنصورة)"},{en:"Menoufia (Sadat City)",ar:"المنوفية (مدينة السادات)"},
+ {en:"Qalyubia",ar:"القليوبية"},{en:"Beheira (Borg El Arab)",ar:"البحيرة (برج العرب)"},{en:"Fayoum",ar:"الفيوم"},
+ {en:"Beni Suef",ar:"بني سويف"},{en:"Assiut",ar:"أسيوط"}
+];
+const PREFIX=[
+ {en:"El Nil",ar:"النيل"},{en:"Delta",ar:"الدلتا"},{en:"Misr",ar:"مصر"},{en:"Pyramids",ar:"الأهرام"},
+ {en:"Lotus",ar:"اللوتس"},{en:"Horus",ar:"حورس"},{en:"Golden Star",ar:"النجمة الذهبية"},{en:"Modern",ar:"الحديثة"},
+ {en:"United",ar:"المتحدة"},{en:"National",ar:"الوطنية"},{en:"Crown",ar:"التاج"},{en:"Oasis",ar:"الواحة"},
+ {en:"Sphinx",ar:"أبو الهول"},{en:"Papyrus",ar:"البردي"},{en:"Cleopatra",ar:"كليوباترا"},{en:"Rosetta",ar:"رشيد"},
+ {en:"Canal",ar:"القناة"},{en:"Ramses",ar:"رمسيس"}
+];
+const IND_WORD={
+ textile:{en:"Textiles",ar:"للمنسوجات"}, packaging:{en:"Pack",ar:"للتعبئة والتغليف"},
+ furniture:{en:"Furniture",ar:"للأثاث"}, food:{en:"Foods",ar:"للصناعات الغذائية"},
+ plastics:{en:"Plast",ar:"للبلاستيك"}, metal:{en:"Metal Works",ar:"للصناعات المعدنية"},
+ chemicals:{en:"Chem",ar:"للكيماويات"}, cosmetics:{en:"Cosmetics",ar:"لمستحضرات التجميل"},
+ construction:{en:"Building Materials",ar:"لمواد البناء"}, medical:{en:"Medical",ar:"للمستلزمات الطبية"},
+ promo:{en:"Promo Gifts",ar:"للهدايا الدعائية"}, electronics:{en:"Electronics",ar:"للإلكترونيات"},
+ agriculture:{en:"Agro",ar:"للصناعات الزراعية"}, automotive:{en:"Auto Parts",ar:"لمكونات السيارات"}
+};
+const IND_PRODUCTS={
+ textile:{en:["T-shirts & polos","Denim garments","Home textiles","Uniforms & workwear"],ar:["تيشيرتات وبولو","ملابس جينز","مفروشات منزلية","زي موحد وملابس عمل"]},
+ packaging:{en:["Corrugated boxes","Flexible pouches","Printed labels","Paper bags"],ar:["كراتين مضلعة","أكياس مرنة","ملصقات مطبوعة","أكياس ورقية"]},
+ furniture:{en:["Office furniture","Wooden bedrooms","Upholstered sofas","Café & hotel furniture"],ar:["أثاث مكتبي","غرف نوم خشبية","أنتريهات منجدة","أثاث كافيهات وفنادق"]},
+ food:{en:["Baked goods","Frozen vegetables","Tomato paste & sauces","Tahini & halva"],ar:["مخبوزات","خضروات مجمدة","صلصة ومعجون طماطم","طحينة وحلاوة"]},
+ plastics:{en:["Injection-molded parts","PET bottles","Household plasticware","Plastic pallets"],ar:["قطع حقن بلاستيك","زجاجات PET","أدوات منزلية بلاستيكية","بالتات بلاستيك"]},
+ metal:{en:["Steel structures","Sheet-metal enclosures","Aluminum profiles","Stainless kitchen equipment"],ar:["هياكل معدنية","صاج مُشكَّل","قطاعات ألوميتال","تجهيزات مطابخ استانلس"]},
+ chemicals:{en:["Detergents","Industrial adhesives","Paints & coatings","Water-treatment chemicals"],ar:["منظفات","مواد لاصقة صناعية","دهانات وطلاءات","كيماويات معالجة مياه"]},
+ cosmetics:{en:["Skincare creams","Hair-care products","Perfumes & body sprays","Private-label lines"],ar:["كريمات عناية بالبشرة","منتجات عناية بالشعر","عطور وبادي سبراي","خطوط علامة خاصة"]},
+ construction:{en:["Cement bricks","Ceramic tiles","Gypsum boards","Interlock paving"],ar:["طوب أسمنتي","سيراميك وبلاط","ألواح جبس","إنترلوك"]},
+ medical:{en:["Disposable gowns & masks","Syringes","Cotton & gauze","Medical furniture"],ar:["أرواب وكمامات","سرنجات","قطن وشاش طبي","أثاث طبي"]},
+ promo:{en:["Branded mugs & bottles","Printed notebooks","Tote bags","Corporate gift sets"],ar:["أكواب وزجاجات بشعار","نوت بوك مطبوع","شنط قماش","أطقم هدايا شركات"]},
+ electronics:{en:["LED lighting","PCB assembly","Home appliances parts","Power supplies"],ar:["إضاءة ليد","تجميع لوحات إلكترونية","قطع أجهزة منزلية","وحدات تغذية كهربائية"]},
+ agriculture:{en:["Dried herbs & spices","Dates processing","Frozen fruits","Animal feed"],ar:["أعشاب وتوابل مجففة","تصنيع تمور","فواكه مجمدة","أعلاف"]},
+ automotive:{en:["Rubber & plastic parts","Wire harnesses","Filters","Seat components"],ar:["قطع كاوتش وبلاستيك","ضفائر أسلاك","فلاتر","مكونات مقاعد"]}
+};
+const IND_CAPS={
+ textile:{en:["Knitting & weaving","Dyeing & finishing","Embroidery & printing","Full CMT production"],ar:["تريكو ونسيج","صباغة وتجهيز","تطريز وطباعة","تشغيل كامل CMT"]},
+ packaging:{en:["Offset & flexo printing","Die cutting","Lamination","Custom structural design"],ar:["طباعة أوفست وفلكسو","تقطيع بالقوالب","سلوفان ولامينيشن","تصميم هيكلي مخصص"]},
+ furniture:{en:["CNC wood cutting","Veneer & lacquer finishing","Upholstery","Custom joinery"],ar:["قص خشب CNC","قشرة ودوكو","تنجيد","نجارة حسب الطلب"]},
+ food:{en:["Automated filling lines","Cold storage","Private labeling","HACCP production"],ar:["خطوط تعبئة آلية","تخزين مبرد","تعبئة بعلامة خاصة","إنتاج وفق HACCP"]},
+ plastics:{en:["Injection molding","Blow molding","Mold design & making","Recycled material lines"],ar:["حقن بلاستيك","نفخ بلاستيك","تصميم وتصنيع اسطمبات","خطوط خامات معاد تدويرها"]},
+ metal:{en:["Laser cutting","CNC bending","MIG/TIG welding","Powder coating"],ar:["قص ليزر","ثني CNC","لحام ميج/تيج","دهان إلكتروستاتيك"]},
+ chemicals:{en:["Batch blending","Filling & bottling","Formulation lab","Custom formulations"],ar:["خلط دفعات","تعبئة وتغليف","معمل تركيبات","تركيبات حسب الطلب"]},
+ cosmetics:{en:["Emulsion production","Filling & capping","Stability testing","Private-label development"],ar:["إنتاج مستحلبات","تعبئة وغلق","اختبارات ثبات","تطوير علامات خاصة"]},
+ construction:{en:["Automated pressing","Kiln firing","Quality lab testing","Bulk delivery"],ar:["كبس آلي","حرق بالأفران","اختبارات معملية","توريد بالجملة"]},
+ medical:{en:["Cleanroom production","ETO sterilization","Automated assembly","Batch traceability"],ar:["إنتاج بغرف نظيفة","تعقيم بغاز ETO","تجميع آلي","تتبع التشغيلات"]},
+ promo:{en:["Screen & pad printing","Laser engraving","Sublimation","Custom packaging"],ar:["طباعة سلك سكرين وباد","حفر ليزر","طباعة سبليميشن","تغليف مخصص"]},
+ electronics:{en:["SMT assembly","Through-hole soldering","Functional testing","Enclosure assembly"],ar:["تجميع SMT","لحام يدوي","اختبار وظيفي","تجميع نهائي"]},
+ agriculture:{en:["Sorting & grading","Drying & dehydration","IQF freezing","Fumigation"],ar:["فرز وتدريج","تجفيف","تجميد سريع IQF","تبخير"]},
+ automotive:{en:["Rubber compression molding","Precision machining","Assembly lines","PPAP documentation"],ar:["كبس كاوتش","تشغيل دقيق","خطوط تجميع","توثيق PPAP"]}
+};
+const CERTS=["ISO 9001","ISO 14001","ISO 22000","CE","GMP","OEKO-TEX","HACCP","ISO 13485"];
+const DESC_T={
+ en:(name,ind,gov,yr)=>`${name} is an Egyptian manufacturer specialized in ${ind.toLowerCase()}, operating from ${gov} since ${yr}. The factory serves local brands, traders, and export clients with consistent quality, flexible order volumes, and on-time delivery. Its team works closely with buyers from sampling through mass production.`,
+ ar:(name,ind,gov,yr)=>`${name} مصنع مصري متخصص في مجال ${ind}، يعمل من ${gov} منذ عام ${yr}. يخدم المصنع العلامات التجارية المحلية والتجار وعملاء التصدير بجودة ثابتة وكميات مرنة والتزام بمواعيد التسليم، مع فريق يرافق العميل من مرحلة العينات حتى الإنتاج الكمي.`
+};
+function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const rng=mulberry(20260706);
+const pick=arr=>arr[Math.floor(rng()*arr.length)];
+const MOQS=[50,100,200,300,500,1000,2000,5000,10000];
+
+const FACTORIES=[];
+(function(){
+ let pi=0;
+ for(let i=0;i<50;i++){
+   const ind=INDUSTRIES[i%INDUSTRIES.length];
+   const pre=PREFIX[pi%PREFIX.length]; pi+= (i%3===0?1:2);
+   const gov=GOVS[Math.floor(rng()*GOVS.length)];
+   const yr=1985+Math.floor(rng()*36);
+   const moq=pick(MOQS);
+   const exp=rng()>0.45;
+   const certCount=Math.floor(rng()*3);
+   const certs=[...CERTS].sort(()=>rng()-.5).slice(0,certCount);
+   const emp=pick(["10–50","50–100","100–250","250–500","500+"]);
+   const nameEn=`${pre.en} ${IND_WORD[ind.id].en}`;
+   const nameAr=`${pre.ar} ${IND_WORD[ind.id].ar}`;
+   FACTORIES.push({
+     id:"f"+i, industry:ind.id, gov, yr, moq, exp, certs, emp,
+     name:{en:nameEn,ar:nameAr},
+     phone:"+20 10"+String(10000000+Math.floor(rng()*89999999)),
+     desc:{en:DESC_T.en(nameEn,ind.en,gov.en,yr), ar:DESC_T.ar(nameAr,ind.ar,gov.ar,yr)},
+     featured:i<6
+   });
+ }
+})();
+
+let REQUESTS=[
+ {id:"r1",icon:"👕",days:0,qty:"5,000",budget:"250,000",
+  title:{en:"Cotton polo shirts with embroidered logo",ar:"قمصان بولو قطنية بشعار مطرز"},
+  desc:{en:"Looking for a garment factory to produce 5,000 pique polo shirts (100% Egyptian cotton, 220 gsm) in 4 colors with chest embroidery. Sizes S–XXL. Need pre-production samples first.",ar:"مطلوب مصنع ملابس لإنتاج ٥٠٠٠ قميص بولو بيكيه (قطن مصري ١٠٠٪، ٢٢٠ جم) بأربعة ألوان مع تطريز على الصدر. المقاسات S–XXL. مطلوب عينات قبل الإنتاج."},
+  material:{en:"100% Egyptian cotton pique",ar:"بيكيه قطن مصري ١٠٠٪"},
+  gov:0, by:{en:"Nour Apparel Trading",ar:"نور لتجارة الملابس"}, contact:"+20 100 555 0192 · nour@trade.example"},
+ {id:"r2",icon:"🫙",days:1,qty:"20,000",budget:null,
+  title:{en:"Glass jars with printed metal lids for honey brand",ar:"برطمانات زجاجية بأغطية معدنية مطبوعة لعلامة عسل"},
+  desc:{en:"Sourcing 380 ml glass jars with custom-printed twist-off lids and adhesive labels for a honey brand launching in Q4. Delivery in two batches.",ar:"مطلوب توريد برطمانات زجاج ٣٨٠ مل بأغطية معدنية مطبوعة وملصقات لاصقة لعلامة عسل جديدة تُطلق في الربع الأخير. التسليم على دفعتين."},
+  material:{en:"Glass, tinplate lids",ar:"زجاج، أغطية صفيح"},
+  gov:2, by:{en:"Karam Foods",ar:"كرم للأغذية"}, contact:"+20 101 444 7736 · karam@foods.example"},
+ {id:"r3",icon:"🪑",days:2,qty:"120",budget:"900,000",
+  title:{en:"Café furniture set — tables and chairs",ar:"أثاث كافيه — طاولات وكراسي"},
+  desc:{en:"New café chain needs 120 solid-wood chairs and 40 tables with matte lacquer finish, based on attached reference designs. Installments possible for the right partner.",ar:"سلسلة كافيهات جديدة تحتاج ١٢٠ كرسي خشب زان و٤٠ طاولة بتشطيب دوكو مطفي حسب التصميمات المرجعية المرفقة."},
+  material:{en:"Beech wood, matte lacquer",ar:"خشب زان، دوكو مطفي"},
+  gov:1, by:{en:"Bunn Café Group",ar:"مجموعة بُن للكافيهات"}, contact:"+20 106 210 8845 · bunn@cafe.example"},
+ {id:"r4",icon:"🧴",days:3,qty:"50,000",budget:null,
+  title:{en:"HDPE bottles 250 ml for detergent line",ar:"زجاجات HDPE سعة ٢٥٠ مل لخط منظفات"},
+  desc:{en:"Monthly supply of 50,000 white HDPE bottles with flip-top caps. Mold available or can be produced. Long-term contract for a growing cleaning-products brand.",ar:"توريد شهري ٥٠ ألف زجاجة HDPE بيضاء بغطاء فليب توب. الاسطمبة متاحة أو يمكن تصنيعها. تعاقد طويل الأمد لعلامة منظفات."},
+  material:{en:"HDPE, PP caps",ar:"HDPE وأغطية PP"},
+  gov:5, by:{en:"Sator Clean",ar:"ساتور كلين"}, contact:"+20 122 300 4519 · sator@clean.example"},
+ {id:"r5",icon:"🎁",days:4,qty:"2,000",budget:"180,000",
+  title:{en:"Corporate gift boxes for year-end campaign",ar:"علب هدايا شركات لحملة نهاية العام"},
+  desc:{en:"2,000 gift sets: rigid box, branded ceramic mug, A5 notebook, and pen — all with single-color logo. Needed before December 10.",ar:"٢٠٠٠ طقم هدايا: علبة هارد، مج سيراميك بشعار، نوت بوك A5، وقلم — بطباعة لون واحد. مطلوب قبل ١٠ ديسمبر."},
+  material:{en:"Rigid board, ceramic, PU",ar:"كرتون مقوى، سيراميك، جلد صناعي"},
+  gov:0, by:{en:"Meem Marketing",ar:"ميم للتسويق"}, contact:"+20 109 887 2210 · meem@mkt.example"},
+ {id:"r6",icon:"🩺",days:6,qty:"100,000",budget:null,
+  title:{en:"Disposable non-woven gowns — export order",ar:"أرواب غير منسوجة للاستخدام الواحد — طلب تصدير"},
+  desc:{en:"Export trading office seeks a certified factory for 100k SMS non-woven gowns (35 gsm, EN 13795). CE marking required. Recurring quarterly volumes.",ar:"مكتب تصدير يبحث عن مصنع معتمد لتوريد ١٠٠ ألف روب SMS غير منسوج (٣٥ جم، مطابق EN 13795) بعلامة CE. كميات ربع سنوية متكررة."},
+  material:{en:"SMS non-woven 35 gsm",ar:"قماش SMS غير منسوج ٣٥ جم"},
+  gov:3, by:{en:"PortEx Trading",ar:"بورت إكس للتصدير"}, contact:"+20 114 652 9903 · portex@trade.example"}
+];
+</script>
+<script>
+/* =============== App state & helpers =============== */
+let LANG=document.documentElement.getAttribute("data-lang")||"ar";
+let VIEW={name:"home"};
+let FILTERS={q:"",industry:"",gov:"",moq:"",exp:false,sort:"name"};
+const t=k=>STR[LANG][k];
+const L=obj=>obj[LANG];
+const ind=id=>INDUSTRIES.find(x=>x.id===id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const grad=g=>`linear-gradient(135deg,${g[0]},${g[1]})`;
+const num=n=>LANG==="ar"?Number(String(n).replace(/,/g,"")).toLocaleString("ar-EG"):Number(String(n).replace(/,/g,"")).toLocaleString("en-US");
+
+function setLang(l){
+  LANG=l;
+  document.documentElement.lang=l;
+  document.documentElement.dir=l==="ar"?"rtl":"ltr";
+  render();
+}
+function go(view){ VIEW=view; render(); window.scrollTo({top:0}); }
+function toast(msg){
+  const el=document.createElement("div");
+  el.className="toast"; el.textContent=msg;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),2600);
+}
+
+/* =============== Shared pieces =============== */
+function headerHTML(){
+  const links=[["home",t("nav_home")],["factories",t("nav_factories")],["requests",t("nav_requests")]];
+  return `<header><div class="container header-inner">
+    <a href="#" class="logo" onclick="go({name:'home'});return false">
+      <span class="mark">ع</span><span>${t("brand")}<span class="ain">ع</span></span>
+    </a>
+    <nav class="main-nav">${links.map(([v,l])=>`<button class="nav-link ${VIEW.name===v||VIEW.name===v.slice(0,-1)?"active":""}" onclick="go({name:'${v}'})">${l}</button>`).join("")}</nav>
+    <div class="header-actions">
+      <div class="lang-toggle" role="group" aria-label="Language">
+        <button class="${LANG==='en'?'on':''}" onclick="setLang('en')">EN</button>
+        <button class="${LANG==='ar'?'on':''}" onclick="setLang('ar')">عربي</button>
+      </div>
+      <button class="btn btn-ghost btn-sm">${t("login")}</button>
+      <button class="btn btn-primary btn-sm" onclick="openForm()">${t("post_request")}</button>
+    </div>
+  </div></header>`;
+}
+function footerHTML(){
+  const col=(title,items)=>`<div><h4>${title}</h4><ul>${items.map(x=>`<li><button>${x}</button></li>`).join("")}</ul></div>`;
+  return `<footer><div class="container">
+    <div class="footer-grid">
+      <div><div class="logo"><span class="mark">ع</span><span>${t("brand")}<span class="ain" style="color:#4FBFAE">ع</span></span></div>
+      <p>${t("footer_about")}</p></div>
+      ${col(t("f_platform"),t("f_links1"))}${col(t("f_company"),t("f_links2"))}${col(t("f_support"),t("f_links3"))}
+    </div>
+    <div class="footer-bottom"><span>${t("rights")}</span><span>${t("made")}</span></div>
+  </div></footer>`;
+}
+function factoryCardHTML(f){
+  const i=ind(f.industry);
+  return `<button class="factory-card" onclick="go({name:'factory',id:'${f.id}'})">
+    <div class="cover" style="background:${grad(i.g)}">
+      <div class="flogo">${L(f.name).charAt(0)}</div>
+    </div>
+    <div class="body">
+      <h3>${esc(L(f.name))}</h3>
+      <div class="meta"><span>${i.icon} ${L({en:i.en,ar:i.ar})}</span> · <span>📍 ${L(f.gov)}</span></div>
+      <div class="desc">${esc(L(f.desc))}</div>
+      <div class="chip-row">
+        <span class="chip teal">${t("moq")}: ${num(f.moq)}</span>
+        ${f.exp?`<span class="chip amber">🌍 ${t("exports")}</span>`:""}
+        ${f.certs.slice(0,1).map(c=>`<span class="chip">${c}</span>`).join("")}
+      </div>
+    </div>
+  </button>`;
+}
+function requestCardHTML(r){
+  const i=INDUSTRIES[0];
+  return `<button class="request-card" onclick="go({name:'request',id:'${r.id}'})">
+    <div class="thumb" style="background:var(--mist)">${r.icon}</div>
+    <h3>${esc(L(r.title))}</h3>
+    <div class="desc">${esc(L(r.desc))}</div>
+    <div class="foot">
+      <span>📦 ${t("qty")}: <b>${num(r.qty)}</b></span>
+      <span>📍 ${L(GOVS[r.gov])}</span>
+      <span>🕒 ${STR[LANG].days_ago(r.days)}</span>
+    </div>
+  </button>`;
+}
+
+/* =============== Views =============== */
+function homeHTML(){
+  const featured=FACTORIES.filter(f=>f.featured);
+  return `
+  <div class="hero"><div class="container hero-inner">
+    <div class="watermark" aria-hidden="true">ع</div>
+    <span class="eyebrow"><span class="dot"></span>${t("eyebrow")}</span>
+    <h1>${t("hero_title")}</h1>
+    <p class="sub">${t("hero_sub")}</p>
+    <form class="search-bar" onsubmit="event.preventDefault();FILTERS.q=this.q.value;go({name:'factories'})">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>
+      <input name="q" placeholder="${t("search_ph")}" aria-label="${t("search_ph")}">
+      <button class="btn btn-primary" type="submit">${LANG==='ar'?'بحث':'Search'}</button>
+    </form>
+    <div class="hero-ctas">
+      <button class="btn btn-ghost" onclick="go({name:'factories'})">🏭 ${t("browse_factories")}</button>
+      <button class="btn btn-primary" onclick="openForm()">📣 ${t("post_request")}</button>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><b>${num(50)}+</b><span>${t("stat_factories")}</span></div>
+      <div class="hero-stat"><b>${num(14)}</b><span>${t("stat_industries")}</span></div>
+      <div class="hero-stat"><b>${num(16)}</b><span>${t("stat_governorates")}</span></div>
+    </div>
+  </div></div>
+
+  <section class="block"><div class="container">
+    <div class="section-head"><div><h2>${t("industries_title")}</h2><p>${t("industries_sub")}</p></div></div>
+    <div class="industry-grid">
+      ${INDUSTRIES.map(i=>{
+        const c=FACTORIES.filter(f=>f.industry===i.id).length;
+        return `<button class="industry-card" onclick="FILTERS={...FILTERS,industry:'${i.id}'};go({name:'factories'})">
+          <div class="icon">${i.icon}</div><div class="name">${L({en:i.en,ar:i.ar})}</div>
+          <div class="count">${num(c)} ${t("factories_count")}</div></button>`;
+      }).join("")}
+    </div>
+  </div></section>
+
+  <section class="block alt"><div class="container">
+    <div class="section-head"><div><h2>${t("latest_requests")}</h2><p>${t("latest_requests_sub")}</p></div>
+      <button class="link-more" onclick="go({name:'requests'})">${t("view_all")} ${LANG==='ar'?'←':'→'}</button></div>
+    <div class="card-grid">${REQUESTS.slice(0,3).map(requestCardHTML).join("")}</div>
+  </div></section>
+
+  <section class="block"><div class="container">
+    <div class="section-head"><div><h2>${t("featured")}</h2><p>${t("featured_sub")}</p></div>
+      <button class="link-more" onclick="go({name:'factories'})">${t("view_all")} ${LANG==='ar'?'←':'→'}</button></div>
+    <div class="card-grid">${featured.map(factoryCardHTML).join("")}</div>
+  </div></section>
+
+  <section class="block alt"><div class="container">
+    <div class="section-head"><div><h2>${t("why_title")}</h2></div></div>
+    <div class="why-grid">
+      ${t("why").map(([ic,h,p])=>`<div class="why-card"><div class="icon">${ic}</div><h3>${h}</h3><p>${p}</p></div>`).join("")}
+    </div>
+  </div></section>
+
+  <section class="block"><div class="container">
+    <div class="cta-band">
+      <div class="ain-bg" aria-hidden="true">ع</div>
+      <div><h2>${t("cta_title")}</h2><p>${t("cta_sub")}</p></div>
+      <button class="btn btn-primary">${t("cta_btn")}</button>
+    </div>
+  </div></section>`;
+}
+
+function factoriesHTML(){
+  let list=FACTORIES.filter(f=>{
+    if(FILTERS.industry && f.industry!==FILTERS.industry) return false;
+    if(FILTERS.gov!=="" && FILTERS.gov!=null && f.gov!==GOVS[FILTERS.gov]) return false;
+    if(FILTERS.moq && f.moq>Number(FILTERS.moq)) return false;
+    if(FILTERS.exp && !f.exp) return false;
+    if(FILTERS.q){
+      const q=FILTERS.q.toLowerCase();
+      const i=ind(f.industry);
+      const hay=[f.name.en,f.name.ar,i.en,i.ar,f.gov.en,f.gov.ar,...IND_PRODUCTS[f.industry].en,...IND_PRODUCTS[f.industry].ar,...IND_CAPS[f.industry].en,...IND_CAPS[f.industry].ar].join(" ").toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
+    return true;
+  });
+  if(FILTERS.sort==="moq") list=[...list].sort((a,b)=>a.moq-b.moq);
+  else list=[...list].sort((a,b)=>L(a.name).localeCompare(L(b.name),LANG));
+
+  return `
+  <div class="page-head"><div class="container"><h1>${t("dir_title")}</h1><p>${t("dir_sub")}</p></div></div>
+  <div class="container dir-layout">
+    <aside class="filters">
+      <h3>${t("filters")} <button class="clear" onclick="FILTERS={q:'',industry:'',gov:'',moq:'',exp:false,sort:'name'};render()">${t("clear")}</button></h3>
+      <div class="f-group"><label>${LANG==='ar'?'بحث':'Search'}</label>
+        <input type="text" value="${esc(FILTERS.q)}" onchange="FILTERS.q=this.value;render()" placeholder="${t("search_ph")}"></div>
+      <div class="f-group"><label>${t("f_industry")}</label>
+        <select onchange="FILTERS.industry=this.value;render()">
+          <option value="">${t("all")}</option>
+          ${INDUSTRIES.map(i=>`<option value="${i.id}" ${FILTERS.industry===i.id?"selected":""}>${L({en:i.en,ar:i.ar})}</option>`).join("")}
+        </select></div>
+      <div class="f-group"><label>${t("f_gov")}</label>
+        <select onchange="FILTERS.gov=this.value;render()">
+          <option value="">${t("all")}</option>
+          ${GOVS.map((g,ix)=>`<option value="${ix}" ${String(FILTERS.gov)===String(ix)?"selected":""}>${L(g)}</option>`).join("")}
+        </select></div>
+      <div class="f-group"><label>${t("f_moq")}</label>
+        <input type="number" min="0" value="${esc(FILTERS.moq)}" onchange="FILTERS.moq=this.value;render()" placeholder="${LANG==='ar'?'مثال: ٥٠٠':'e.g. 500'}"></div>
+      <div class="f-group"><label class="f-check"><input type="checkbox" ${FILTERS.exp?"checked":""} onchange="FILTERS.exp=this.checked;render()"> ${t("f_export")}</label></div>
+    </aside>
+    <div>
+      <div class="results-bar">
+        <span class="count"><b>${num(list.length)}</b> ${t("results")}</span>
+        <label style="font-size:13px;color:var(--ink-soft)">${t("sort")}:
+          <select style="padding:7px 10px;border:1.5px solid var(--line);border-radius:9px;margin-inline-start:6px" onchange="FILTERS.sort=this.value;render()">
+            <option value="name" ${FILTERS.sort==="name"?"selected":""}>${t("sort_name")}</option>
+            <option value="moq" ${FILTERS.sort==="moq"?"selected":""}>${t("sort_moq")}</option>
+          </select></label>
+      </div>
+      ${list.length?`<div class="card-grid">${list.map(factoryCardHTML).join("")}</div>`
+        :`<div class="empty"><div class="big">🔍</div><b>${t("no_results")}</b><p>${t("no_results_sub")}</p></div>`}
+    </div>
+  </div>`;
+}
+
+function factoryProfileHTML(id){
+  const f=FACTORIES.find(x=>x.id===id); if(!f) return homeHTML();
+  const i=ind(f.industry);
+  const prods=IND_PRODUCTS[f.industry], caps=IND_CAPS[f.industry];
+  const cIcon=(bg,em)=>`<span class="ci" style="background:${bg}">${em}</span>`;
+  const slug=f.name.en.toLowerCase().replace(/[^a-z]+/g,"");
+  return `
+  <div class="container"><button class="back-btn" onclick="go({name:'factories'})">${LANG==='ar'?'→':'←'} ${t("back")}</button></div>
+  <div class="container" style="margin-top:14px">
+    <div class="profile-cover" style="background:${grad(i.g)};border-radius:20px"></div>
+    <div class="profile-top">
+      <div class="profile-card">
+        <div class="profile-logo">${L(f.name).charAt(0)}</div>
+        <div class="profile-main">
+          <h1>${esc(L(f.name))}</h1>
+          <div class="meta" style="color:var(--ink-soft);font-size:13.5px">${i.icon} ${L({en:i.en,ar:i.ar})} · 📍 ${L(f.gov)} · ${t("est")} ${num(f.yr)}</div>
+          <div class="badge-row">
+            <span class="chip teal">${t("moq")}: ${num(f.moq)} ${t("units")}</span>
+            ${f.exp?`<span class="chip amber">🌍 ${t("exports")}</span>`:""}
+            ${f.certs.map(c=>`<span class="chip">✔ ${c}</span>`).join("")}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="profile-layout">
+      <div>
+        <div class="panel"><h2>${t("about")}</h2><p>${esc(L(f.desc))}</p></div>
+        <div class="panel"><h2>${t("products")}</h2>
+          <div class="chip-row">${L(prods).map(p=>`<span class="chip" style="font-size:13px;padding:7px 14px">${p}</span>`).join("")}</div></div>
+        <div class="panel"><h2>${t("capabilities")}</h2>
+          <div class="chip-row">${L(caps).map(p=>`<span class="chip teal" style="font-size:13px;padding:7px 14px">${p}</span>`).join("")}</div></div>
+        <div class="panel"><h2>${t("gallery")}</h2>
+          <div class="gallery">${[0,1,2,3,4,5].map(n=>`<div class="ph" style="background:${grad(i.g)};opacity:${1-n*0.09}">${n<3?"📷":i.icon}</div>`).join("")}</div></div>
+        <div class="panel"><h2>${t("details")}</h2>
+          <div class="spec-grid">
+            <div class="spec"><div class="k">${t("established")}</div><div class="v">${num(f.yr)}</div></div>
+            <div class="spec"><div class="k">${t("employees")}</div><div class="v">${f.emp}</div></div>
+            <div class="spec"><div class="k">${t("location")}</div><div class="v">📍 ${L(f.gov)}</div></div>
+            <div class="spec"><div class="k">${t("hours")}</div><div class="v">${t("hours_val")}</div></div>
+            <div class="spec"><div class="k">${t("moq")}</div><div class="v">${num(f.moq)} ${t("units")}</div></div>
+            <div class="spec"><div class="k">${t("certifications")}</div><div class="v">${f.certs.length?f.certs.join(" · "):"—"}</div></div>
+          </div></div>
+      </div>
+      <aside class="contact-panel">
+        <div class="panel">
+          <h2>${t("contact_title")}</h2>
+          <p style="margin-bottom:14px;font-size:13px">${t("contact_sub")}</p>
+          <a class="contact-btn" href="tel:${f.phone.replace(/\s/g,'')}">${cIcon("var(--teal-tint)","📞")}<span>${t("call")}<small dir="ltr">${f.phone}</small></span></a>
+          <a class="contact-btn" href="#" onclick="return false">${cIcon("#E7F6EC","💬")}<span>${t("whatsapp")}<small dir="ltr">${f.phone}</small></span></a>
+          <a class="contact-btn" href="mailto:info@${slug}.example">${cIcon("#FDF0E0","✉️")}<span>${t("email")}<small dir="ltr">info@${slug}.example</small></span></a>
+          <a class="contact-btn" href="#" onclick="return false">${cIcon("#E8EEFB","🌐")}<span>${t("website")}<small dir="ltr">${slug}.example.com</small></span></a>
+          <div class="chip-row" style="margin-top:8px">
+            <span class="chip">Facebook</span><span class="chip">Instagram</span><span class="chip">LinkedIn</span>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>`;
+}
+
+function requestsHTML(){
+  return `
+  <div class="page-head"><div class="container" style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap">
+    <div><h1>${t("req_title")}</h1><p>${t("req_sub")}</p></div>
+    <button class="btn btn-primary" onclick="openForm()">📣 ${t("post_request")}</button>
+  </div></div>
+  <div class="container req-layout"><div class="card-grid">${REQUESTS.map(requestCardHTML).join("")}</div></div>`;
+}
+
+function requestDetailHTML(id){
+  const r=REQUESTS.find(x=>x.id===id); if(!r) return requestsHTML();
+  return `
+  <div class="container"><button class="back-btn" onclick="go({name:'requests'})">${LANG==='ar'?'→':'←'} ${t("req_title")}</button></div>
+  <div class="container" style="padding:18px 24px 64px;max-width:860px">
+    <div class="panel">
+      <div class="req-detail-head">
+        <div style="display:flex;gap:14px;align-items:center">
+          <div style="width:56px;height:56px;border-radius:14px;background:var(--mist);display:grid;place-items:center;font-size:26px">${r.icon}</div>
+          <div><h1 style="font-size:22px;font-weight:800">${esc(L(r.title))}</h1>
+          <span style="font-size:13px;color:var(--ink-soft)">${t("posted")} ${STR[LANG].days_ago(r.days)} · ${t("by")} <b>${esc(L(r.by))}</b></span></div>
+        </div>
+      </div>
+      <p style="margin:18px 0;color:var(--ink);font-size:14.5px">${esc(L(r.desc))}</p>
+      <div class="spec-grid">
+        <div class="spec"><div class="k">${t("qty")}</div><div class="v">${num(r.qty)} ${t("units")}</div></div>
+        <div class="spec"><div class="k">${t("budget")}</div><div class="v">${r.budget?num(r.budget)+" "+t("egp"):t("budget_na")}</div></div>
+        <div class="spec"><div class="k">${t("materials")}</div><div class="v">${esc(L(r.material))}</div></div>
+        <div class="spec"><div class="k">${t("deliver_to")}</div><div class="v">📍 ${L(GOVS[r.gov])}</div></div>
+      </div>
+      <div class="panel" style="margin:18px 0 0;background:var(--teal-tint);border-color:transparent">
+        <h2>${t("contact_requester")}</h2>
+        <p style="font-weight:600;color:var(--ink)" dir="ltr">${esc(r.contact)}</p>
+        <p style="font-size:12.5px;margin-top:8px">${t("req_note")}</p>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* =============== Request form =============== */
+function openForm(){
+  const bd=document.createElement("div");
+  bd.className="modal-backdrop";
+  bd.addEventListener("click",e=>{if(e.target===bd)bd.remove()});
+  bd.innerHTML=`<div class="modal" role="dialog" aria-modal="true">
+    <h2>${t("new_req")}</h2><p class="sub">${t("new_req_sub")}</p>
+    <div class="form-grid">
+      <div class="form-field full"><label>${t("fr_title")} *</label><input id="fq_title" placeholder="${t("fr_title_ph")}"></div>
+      <div class="form-field full"><label>${t("fr_desc")} *</label><textarea id="fq_desc" placeholder="${t("fr_desc_ph")}"></textarea></div>
+      <div class="form-field"><label>${t("fr_qty")} *</label><input id="fq_qty" type="number" min="1" placeholder="1000"></div>
+      <div class="form-field"><label>${t("fr_material")} <span class="opt">(${t("optional")})</span></label><input id="fq_mat" placeholder="${t("fr_material_ph")}"></div>
+      <div class="form-field"><label>${t("fr_budget")} <span class="opt">(${t("optional")})</span></label><input id="fq_budget" type="number" min="0" placeholder="${t("fr_budget_ph")}"></div>
+      <div class="form-field"><label>${t("fr_gov")} *</label>
+        <select id="fq_gov">${GOVS.map((g,ix)=>`<option value="${ix}">${L(g)}</option>`).join("")}</select></div>
+      <div class="form-field full"><label>${t("fr_contact")} *</label><input id="fq_contact" placeholder="${t("fr_contact_ph")}"></div>
+      <div class="form-field full"><label>${t("fr_files")} <span class="opt">(${t("optional")})</span></label>
+        <div class="upload-box">${t("fr_files_note")}</div></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="fq_cancel">${t("cancel")}</button>
+      <button class="btn btn-primary" id="fq_submit">${t("publish")}</button>
+    </div>
+  </div>`;
+  document.body.appendChild(bd);
+  bd.querySelector("#fq_cancel").onclick=()=>bd.remove();
+  bd.querySelector("#fq_submit").onclick=()=>{
+    const v=id=>bd.querySelector(id).value.trim();
+    const title=v("#fq_title"),desc=v("#fq_desc"),qty=v("#fq_qty"),contact=v("#fq_contact");
+    if(!title||!desc||!qty||!contact){toast(t("fill_required"));return;}
+    const mat=v("#fq_mat")||"—", budget=v("#fq_budget")||null, gov=Number(bd.querySelector("#fq_gov").value);
+    REQUESTS.unshift({id:"r"+Date.now(),icon:"📝",days:0,qty,budget,
+      title:{en:title,ar:title},desc:{en:desc,ar:desc},material:{en:mat,ar:mat},
+      gov,by:{en:LANG==='ar'?"مستخدم صُنّاع":"Sonnaع user",ar:"مستخدم صُنّاع"},contact});
+    bd.remove(); toast(t("published")); go({name:"requests"});
+  };
+}
+
+/* =============== Render =============== */
+function render(){
+  document.documentElement.lang=LANG;
+  document.documentElement.dir=LANG==="ar"?"rtl":"ltr";
+  let body="";
+  if(VIEW.name==="home")body=homeHTML();
+  else if(VIEW.name==="factories")body=factoriesHTML();
+  else if(VIEW.name==="factory")body=factoryProfileHTML(VIEW.id);
+  else if(VIEW.name==="requests")body=requestsHTML();
+  else if(VIEW.name==="request")body=requestDetailHTML(VIEW.id);
+  document.getElementById("app").innerHTML=
+    headerHTML()+`<main>${body}</main>`+
+    `<div class="container" style="padding:0 24px 28px"><p style="font-size:12px;color:var(--ink-soft);text-align:center">${t("demo_note")}</p></div>`+
+    footerHTML();
+}
+render();
+</script>
+</body>
+</html>
