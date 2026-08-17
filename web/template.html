@@ -24,6 +24,8 @@
   --line:#E4E2DC;
   --line-soft:#EFEDE7;
   --shade:#F3F1EB;
+  --verified:#2E6B4F;
+  --pending:#8A6A1F;
   --font-naskh:"Amiri","Scheherazade New","Noto Naskh Arabic","Geeza Pro",serif;
   --font-quran:"Amiri Quran","Amiri","Scheherazade New","Noto Naskh Arabic",serif;
   --font-ui:"IBM Plex Sans Arabic","Noto Sans Arabic","Segoe UI",system-ui,sans-serif;
@@ -44,6 +46,8 @@
     --line:#2A2E38;
     --line-soft:#22262E;
     --shade:#1D212A;
+    --verified:#6FBF95;
+    --pending:#D3B25C;
   }
 }
 :root[data-theme="dark"]{
@@ -57,6 +61,8 @@
   --line:#2A2E38;
   --line-soft:#22262E;
   --shade:#1D212A;
+  --verified:#6FBF95;
+  --pending:#D3B25C;
 }
 *{box-sizing:border-box}
 body{
@@ -165,6 +171,12 @@ body{
   color:var(--ink-soft);font-size:.83rem;line-height:1.6;border-radius:0 8px 8px 0;
 }
 .notice b{color:var(--ink)}
+.layer{
+  font-size:.64rem;font-weight:700;letter-spacing:.02em;padding:2px 9px;
+  border-radius:99px;border:1px solid currentColor;white-space:nowrap;
+}
+.layer-ok{color:var(--verified)}
+.layer-raw{color:var(--pending)}
 .empty{padding:36px 24px;color:var(--ink-soft);font-size:.92rem;line-height:1.8}
 .empty b{color:var(--ink)}
 
@@ -314,10 +326,12 @@ function renderTafsir(){
   const wanted = currentAyah;
   const shown = book.sections.filter(sec =>
     !wanted || sec.kind !== "ayah" || sec.ayat.includes(wanted));
-  const parts = [`<div class="tafsir-body">`,
-    `<p class="notice"><b>نص مستخرج آلياً من المسح الضوئي، قيد المراجعة.</b>
-      طبقة النص الحالية من tesseract: النثر دقيق بنسبة ٩٥٪+، لكن الشواهد القرآنية
-      داخله تتلف — وهي قيد الاستبدال بقراءة بصرية. كل مقطع محال إلى رقم صفحته المطبوع.</p>`];
+  const LAYER = {
+    vision:    ["قراءة بصرية", "layer-ok",   "نص مقروء من الصورة مباشرة، والشواهد القرآنية فيه سليمة."],
+    tesseract: ["tesseract — قيد المراجعة", "layer-raw", "النثر دقيق ٩٥٪+، لكن الشواهد القرآنية داخله متلفة."],
+    mixed:     ["مختلط — قيد المراجعة", "layer-raw", "بعض صفحات هذا المقطع قُرئت بصرياً وبعضها لا يزال من tesseract."],
+  };
+  const parts = [`<div class="tafsir-body">`];
   for (const sec of shown){
     const label = sec.kind === "ayah"
       ? "تفسير الآية " + sec.ayat.map(toArabicDigits).join("، ")
@@ -325,8 +339,10 @@ function renderTafsir(){
     const pages = sec.pages.length > 1
       ? `ص ${toArabicDigits(sec.pages[0])}–${toArabicDigits(sec.pages[sec.pages.length-1])}`
       : `ص ${toArabicDigits(sec.pages[0])}`;
+    const [layerName, layerClass, layerNote] = LAYER[sec.text_layer] || LAYER.tesseract;
     parts.push(`<div class="section">
-      <div class="section-label"><span>${label}</span><span class="cite">${pages}</span></div>`);
+      <div class="section-label"><span>${label}</span><span class="cite">${pages}</span>
+        <span class="layer ${layerClass}" title="${layerNote}">${layerName}</span></div>`);
     if (sec.ayah_text){
       for (const a of sec.ayah_text){
         parts.push(`<div class="ayah-quote">${a.text} <span class="ayah-mark"

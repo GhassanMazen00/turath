@@ -28,11 +28,25 @@ FIXES = [(r"»", "،"), (r"[ ]+([،.؛:؟])", r"\1"), (r"\s{2,}", " ")]
 
 
 def page_text(n):
+    """Prefer a vision transcription when one exists.
+
+    data/ocr_vision holds pages read off the scan directly. They are already
+    clean and header-free, so they are used verbatim; tesseract output still
+    needs its first line (the running header) stripped."""
+    vision = f"data/ocr_vision/p{n:04d}.txt"
+    if os.path.exists(vision):
+        return open(vision).read().strip()
     p = f"build/ocr/p{n:04d}.txt"
     if not os.path.exists(p):
         return ""
     lines = open(p).read().splitlines()
     return "\n".join(lines[1:]).strip()          # line 1 is the running header
+
+
+def text_layer(pages):
+    seen = {"vision" if os.path.exists(f"data/ocr_vision/p{n:04d}.txt") else "tesseract"
+            for n in pages}
+    return "vision" if seen == {"vision"} else ("mixed" if len(seen) > 1 else "tesseract")
 
 
 def clean(text):
@@ -51,6 +65,7 @@ def build(surah, mapping, qi):
         sec = {
             "kind": entry["kind"],
             "pages": entry["pages"],
+            "text_layer": text_layer(entry["pages"]),
             "text": text,
             "quran_quotes": [{
                 "verses": [f"{c}:{v}" for c, v in q["verses"]],
@@ -68,7 +83,7 @@ def build(surah, mapping, qi):
         "surah": surah,
         "book": "تفسير القرآن العظيم — ابن كثير",
         "source_file": "Noor-Book.com تفسير القرآن العظيم تفسير ابن كثير-1-500.pdf",
-        "text_layer": "tesseract-ara",   # to be replaced by vision OCR
+        "text_layer": text_layer([p for e in mapping for p in e["pages"]]),
         "sections": sections,
     }
 
