@@ -1,0 +1,407 @@
+<title>مصحف تراث</title>
+<style>
+/* Embedded rather than linked: the artifact CSP blocks font CDNs, and a silent
+   fallback is not survivable here — most system faces mangle the Uthmani marks
+   (ۡ ٰ ۖ) and render نَعۡبُدُ with the ع dropped. Amiri Quran carries them. */
+@font-face{
+  font-family:"Amiri Quran";
+  src:url(data:font/woff2;base64,__FONT_QURAN__) format("woff2");
+  font-display:swap;
+}
+@font-face{
+  font-family:"Amiri";
+  src:url(data:font/woff2;base64,__FONT_BODY__) format("woff2");
+  font-display:swap;
+}
+:root{
+  --paper:#FBFAF7;
+  --raised:#FFFFFF;
+  --ink:#171A21;
+  --ink-soft:#565C6B;
+  --ink-faint:#8A8F9C;
+  --midad:#2B3A67;
+  --rubric:#A8362B;
+  --line:#E4E2DC;
+  --line-soft:#EFEDE7;
+  --shade:#F3F1EB;
+  --font-naskh:"Amiri","Scheherazade New","Noto Naskh Arabic","Geeza Pro",serif;
+  --font-quran:"Amiri Quran","Amiri","Scheherazade New","Noto Naskh Arabic",serif;
+  --font-ui:"IBM Plex Sans Arabic","Noto Sans Arabic","Segoe UI",system-ui,sans-serif;
+  --step-0:1rem;
+  --step-1:1.125rem;
+  --step-2:1.375rem;
+  --step-3:1.75rem;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#12141A;
+    --raised:#191C24;
+    --ink:#E9E7E1;
+    --ink-soft:#A7ACB8;
+    --ink-faint:#767C89;
+    --midad:#93A7DE;
+    --rubric:#D9776A;
+    --line:#2A2E38;
+    --line-soft:#22262E;
+    --shade:#1D212A;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#12141A;
+  --raised:#191C24;
+  --ink:#E9E7E1;
+  --ink-soft:#A7ACB8;
+  --ink-faint:#767C89;
+  --midad:#93A7DE;
+  --rubric:#D9776A;
+  --line:#2A2E38;
+  --line-soft:#22262E;
+  --shade:#1D212A;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--font-ui);
+  direction:rtl;
+  line-height:1.7;
+}
+:focus-visible{outline:2px solid var(--midad);outline-offset:2px;border-radius:4px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.masthead{
+  border-bottom:1px solid var(--line);
+  background:var(--raised);
+  position:sticky;top:0;z-index:20;
+}
+.masthead-in{
+  max-width:1240px;margin:0 auto;padding:14px 20px;
+  display:flex;align-items:center;gap:20px;flex-wrap:wrap;
+}
+.wordmark{display:flex;align-items:baseline;gap:10px;font-family:var(--font-naskh)}
+.wordmark b{font-size:var(--step-3);font-weight:700;letter-spacing:.01em}
+.wordmark span{color:var(--ink-faint);font-family:var(--font-ui);font-size:.8rem}
+.jump{display:flex;gap:8px;margin-inline-start:auto;flex-wrap:wrap}
+.jump input{
+  font:inherit;padding:8px 12px;border:1px solid var(--line);border-radius:8px;
+  background:var(--paper);color:var(--ink);min-width:190px;
+}
+.jump input::placeholder{color:var(--ink-faint)}
+.jump button{
+  font:inherit;padding:8px 16px;border:1px solid var(--midad);border-radius:8px;
+  background:var(--midad);color:var(--raised);cursor:pointer;font-weight:600;
+}
+.jump button:hover{filter:brightness(1.1)}
+
+.shell{max-width:1240px;margin:0 auto;padding:20px;display:grid;gap:20px;grid-template-columns:300px 1fr}
+@media (max-width:900px){.shell{grid-template-columns:1fr}}
+
+.panel{background:var(--raised);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.panel-head{
+  padding:11px 16px;border-bottom:1px solid var(--line);background:var(--shade);
+  font-size:.78rem;font-weight:700;color:var(--ink-soft);letter-spacing:.06em;
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+}
+.surah-scroll{max-height:calc(100vh - 190px);overflow-y:auto}
+@media (max-width:900px){.surah-scroll{max-height:340px}}
+.surah-row{
+  display:flex;align-items:center;gap:12px;width:100%;
+  padding:9px 14px;border:0;border-bottom:1px solid var(--line-soft);
+  background:none;color:inherit;font:inherit;cursor:pointer;text-align:start;
+}
+.surah-row:hover{background:var(--shade)}
+.surah-row[aria-current="true"]{background:var(--shade);box-shadow:inset 3px 0 0 var(--rubric)}
+.surah-num{
+  font-variant-numeric:tabular-nums;font-size:.75rem;color:var(--ink-faint);
+  min-width:2.1em;text-align:center;
+}
+.surah-name{font-family:var(--font-naskh);font-size:var(--step-1);flex:1}
+.has-tafsir{
+  font-size:.65rem;color:var(--rubric);border:1px solid currentColor;
+  border-radius:99px;padding:1px 7px;font-weight:700;white-space:nowrap;
+}
+
+.reader{display:flex;flex-direction:column;gap:20px;min-width:0}
+.surah-head{padding:22px 24px;border-bottom:1px solid var(--line)}
+.surah-title{font-family:var(--font-naskh);font-size:var(--step-3);margin:0 0 4px;text-wrap:balance}
+.surah-meta{color:var(--ink-faint);font-size:.82rem}
+
+.ayah{
+  display:flex;gap:14px;padding:16px 24px;border-bottom:1px solid var(--line-soft);
+  width:100%;background:none;border-inline:0;border-top:0;color:inherit;font:inherit;
+  cursor:pointer;text-align:start;
+}
+.ayah:hover{background:var(--shade)}
+.ayah[aria-current="true"]{background:var(--shade)}
+.ayah-mark{
+  flex:none;width:2.1rem;height:2.1rem;border-radius:50%;
+  border:1.5px solid var(--rubric);color:var(--rubric);
+  display:grid;place-items:center;font-size:.78rem;font-weight:700;
+  font-variant-numeric:tabular-nums;margin-top:.35rem;
+}
+.ayah-text{font-family:var(--font-quran);font-size:var(--step-2);line-height:2.15;flex:1}
+
+.tafsir-body{padding:0 24px 24px}
+.section{border-bottom:1px solid var(--line-soft);padding:18px 0}
+.section:last-child{border-bottom:0}
+.section-label{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;
+  font-size:.78rem;color:var(--ink-soft);font-weight:700;letter-spacing:.04em;
+}
+.cite{
+  font-variant-numeric:tabular-nums;color:var(--ink-faint);font-weight:400;
+  border-inline-start:1px solid var(--line);padding-inline-start:10px;
+}
+.ayah-quote{
+  font-family:var(--font-quran);font-size:var(--step-2);line-height:2.1;
+  color:var(--midad);padding:12px 16px;background:var(--shade);border-radius:10px;margin-bottom:14px;
+}
+.prose{font-family:var(--font-naskh);font-size:var(--step-1);line-height:2.05;max-width:66ch}
+.prose p{margin:0 0 1em}
+
+.notice{
+  margin:0;padding:12px 16px;background:var(--shade);border-inline-start:3px solid var(--rubric);
+  color:var(--ink-soft);font-size:.83rem;line-height:1.6;border-radius:0 8px 8px 0;
+}
+.notice b{color:var(--ink)}
+.empty{padding:36px 24px;color:var(--ink-soft);font-size:.92rem;line-height:1.8}
+.empty b{color:var(--ink)}
+
+.results{padding:8px 0;max-height:420px;overflow-y:auto}
+.result{
+  display:block;width:100%;padding:11px 24px;border:0;border-bottom:1px solid var(--line-soft);
+  background:none;color:inherit;font:inherit;cursor:pointer;text-align:start;
+}
+.result:hover{background:var(--shade)}
+.result-ref{font-size:.74rem;color:var(--rubric);font-weight:700;font-variant-numeric:tabular-nums}
+.result-text{font-family:var(--font-naskh);font-size:var(--step-1);line-height:1.9}
+mark{background:color-mix(in srgb,var(--rubric) 22%,transparent);color:inherit;border-radius:3px}
+
+footer{
+  max-width:1240px;margin:0 auto;padding:0 20px 36px;
+  color:var(--ink-faint);font-size:.78rem;line-height:1.8;
+}
+</style>
+
+<header class="masthead">
+  <div class="masthead-in">
+    <div class="wordmark"><b>تراث</b><span>مصحف وتفسير</span></div>
+    <form class="jump" id="jumpForm">
+      <input id="jumpInput" type="text" inputmode="text"
+             placeholder="اكتب ٢:٢٥٥ أو ابحث في النص" aria-label="انتقال أو بحث">
+      <button type="submit">اذهب</button>
+    </form>
+  </div>
+</header>
+
+<main class="shell">
+  <aside class="panel">
+    <div class="panel-head"><span>السور</span><span id="tafsirCount"></span></div>
+    <div class="surah-scroll" id="surahList"></div>
+  </aside>
+
+  <div class="reader">
+    <section class="panel" id="searchPanel" hidden>
+      <div class="panel-head"><span id="searchHead"></span></div>
+      <div class="results" id="results"></div>
+    </section>
+
+    <section class="panel">
+      <div class="surah-head">
+        <h1 class="surah-title" id="surahTitle"></h1>
+        <div class="surah-meta" id="surahMeta"></div>
+      </div>
+      <div id="ayahList"></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head"><span>التفسير</span><span id="tafsirSource"></span></div>
+      <div id="tafsirPane"></div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  النص القرآني برواية حفص (٦٢٣٦ آية)، وأسماء السور من مصدر مستقل — وقد تطابق المصدران في عدد آيات السور الـ١١٤ جميعاً.
+  التفسير: تفسير القرآن العظيم لابن كثير، مستخرج آلياً من المسح الضوئي مع الإحالة إلى رقم الصفحة المطبوع.
+</footer>
+
+<script id="quranData" type="application/json">__QURAN__</script>
+<script id="surahData" type="application/json">__SURAHS__</script>
+<script id="tafsirData" type="application/json">__TAFSIR__</script>
+<script>
+const QURAN  = JSON.parse(document.getElementById("quranData").textContent);
+const SURAHS = JSON.parse(document.getElementById("surahData").textContent);
+const TAFSIR = JSON.parse(document.getElementById("tafsirData").textContent);
+
+// Same normalisation the extraction pipeline uses: readers do not type tashkeel,
+// and alef/ya/ta-marbuta vary by keyboard. Matching happens on the stripped form,
+// display always uses the original.
+const TASHKEEL = /[ؐ-ًؚ-ٰٟۖ-ۭ࣓-ࣿـ]/g;
+function normalize(s){
+  return s.replace(TASHKEEL,"")
+          .replace(/[أإآٱا]/g,"ا").replace(/[ىي]/g,"ي")
+          .replace(/ة/g,"ه").replace(/[ؤئء]/g,"ء")
+          .replace(/\s+/g," ").trim();
+}
+const AR_DIGITS = {"٠":"0","١":"1","٢":"2","٣":"3","٤":"4","٥":"5","٦":"6","٧":"7","٨":"8","٩":"9"};
+const toLatinDigits = s => s.replace(/[٠-٩]/g, d => AR_DIGITS[d]);
+const toArabicDigits = n => String(n).replace(/[0-9]/g, d => "٠١٢٣٤٥٦٧٨٩"[+d]);
+
+const bySurah = new Map();
+for (const a of QURAN){
+  if (!bySurah.has(a.chapter)) bySurah.set(a.chapter, []);
+  bySurah.get(a.chapter).push(a);
+}
+const searchIndex = QURAN.map(a => ({a, n: normalize(a.text)}));
+const tafsirFor = s => TAFSIR[String(s)] || null;
+
+let currentSurah = 1, currentAyah = null;
+
+function renderSurahList(){
+  const host = document.getElementById("surahList");
+  host.innerHTML = "";
+  for (const s of SURAHS){
+    const b = document.createElement("button");
+    b.className = "surah-row";
+    b.type = "button";
+    b.setAttribute("aria-current", s.index === currentSurah);
+    b.innerHTML = `<span class="surah-num">${toArabicDigits(s.index)}</span>
+      <span class="surah-name">${s.name}</span>` +
+      (tafsirFor(s.index) ? `<span class="has-tafsir">تفسير</span>` : "");
+    b.onclick = () => selectSurah(s.index);
+    host.appendChild(b);
+  }
+  const n = Object.keys(TAFSIR).length;
+  document.getElementById("tafsirCount").textContent = `${toArabicDigits(n)} بتفسير`;
+}
+
+function renderSurah(){
+  const s = SURAHS.find(x => x.index === currentSurah);
+  document.getElementById("surahTitle").textContent = "سورة " + s.name;
+  document.getElementById("surahMeta").textContent =
+    `${toArabicDigits(s.ayat)} آية · السورة ${toArabicDigits(s.index)}`;
+  const host = document.getElementById("ayahList");
+  host.innerHTML = "";
+  for (const a of bySurah.get(currentSurah)){
+    const b = document.createElement("button");
+    b.className = "ayah";
+    b.type = "button";
+    b.id = `ayah-${a.verse}`;
+    b.setAttribute("aria-current", a.verse === currentAyah);
+    b.innerHTML = `<span class="ayah-mark">${toArabicDigits(a.verse)}</span>
+                   <span class="ayah-text">${a.text}</span>`;
+    b.onclick = () => selectAyah(a.verse);
+    host.appendChild(b);
+  }
+}
+
+function renderTafsir(){
+  const pane = document.getElementById("tafsirPane");
+  const src  = document.getElementById("tafsirSource");
+  const book = tafsirFor(currentSurah);
+  if (!book){
+    src.textContent = "";
+    const s = SURAHS.find(x => x.index === currentSurah);
+    const done = Object.keys(TAFSIR).map(k => SURAHS.find(x => x.index === +k).name).join("، ");
+    pane.innerHTML = `<div class="empty">لم يُستخرج تفسير <b>سورة ${s.name}</b> بعد.
+      المستخرَج حتى الآن: <b>${done}</b>، من الجزء الأول لتفسير ابن كثير (٥٠٠ صفحة).
+      بقية الأجزاء لم تُرفع بعد.</div>`;
+    return;
+  }
+  src.textContent = book.book;
+  const wanted = currentAyah;
+  const shown = book.sections.filter(sec =>
+    !wanted || sec.kind !== "ayah" || sec.ayat.includes(wanted));
+  const parts = [`<div class="tafsir-body">`,
+    `<p class="notice"><b>نص مستخرج آلياً من المسح الضوئي، قيد المراجعة.</b>
+      طبقة النص الحالية من tesseract: النثر دقيق بنسبة ٩٥٪+، لكن الشواهد القرآنية
+      داخله تتلف — وهي قيد الاستبدال بقراءة بصرية. كل مقطع محال إلى رقم صفحته المطبوع.</p>`];
+  for (const sec of shown){
+    const label = sec.kind === "ayah"
+      ? "تفسير الآية " + sec.ayat.map(toArabicDigits).join("، ")
+      : sec.title;
+    const pages = sec.pages.length > 1
+      ? `ص ${toArabicDigits(sec.pages[0])}–${toArabicDigits(sec.pages[sec.pages.length-1])}`
+      : `ص ${toArabicDigits(sec.pages[0])}`;
+    parts.push(`<div class="section">
+      <div class="section-label"><span>${label}</span><span class="cite">${pages}</span></div>`);
+    if (sec.ayah_text){
+      for (const a of sec.ayah_text){
+        parts.push(`<div class="ayah-quote">${a.text} <span class="ayah-mark"
+          style="display:inline-grid;width:1.7rem;height:1.7rem;vertical-align:middle">${toArabicDigits(a.n)}</span></div>`);
+      }
+    }
+    const prose = sec.text.split(/\n{2,}/).filter(Boolean)
+      .map(p => `<p>${p.replace(/\n/g," ")}</p>`).join("");
+    parts.push(`<div class="prose">${prose}</div></div>`);
+  }
+  parts.push(`</div>`);
+  pane.innerHTML = parts.join("");
+}
+
+function selectSurah(n, ayah){
+  currentSurah = n;
+  currentAyah = ayah || null;
+  renderSurahList(); renderSurah(); renderTafsir();
+  if (ayah) document.getElementById(`ayah-${ayah}`)?.scrollIntoView({block:"center"});
+  else window.scrollTo({top:0});
+}
+function selectAyah(v){
+  currentAyah = currentAyah === v ? null : v;
+  renderSurah(); renderTafsir();
+}
+
+function runSearch(raw){
+  const panel = document.getElementById("searchPanel");
+  const q = normalize(raw);
+  if (q.length < 2){ panel.hidden = true; return; }
+  const hits = [];
+  for (const {a, n} of searchIndex){
+    const at = n.indexOf(q);
+    if (at !== -1){ hits.push(a); if (hits.length >= 60) break; }
+  }
+  document.getElementById("searchHead").textContent =
+    hits.length ? `نتائج البحث — ${toArabicDigits(hits.length)}${hits.length>=60?"+":""}`
+                : "لا نتائج";
+  const host = document.getElementById("results");
+  host.innerHTML = "";
+  for (const a of hits){
+    const name = SURAHS.find(x => x.index === a.chapter).name;
+    const b = document.createElement("button");
+    b.className = "result";
+    b.type = "button";
+    b.innerHTML = `<div class="result-ref">${name} ${toArabicDigits(a.chapter)}:${toArabicDigits(a.verse)}</div>
+                   <div class="result-text">${a.text}</div>`;
+    b.onclick = () => { panel.hidden = true; selectSurah(a.chapter, a.verse); };
+    host.appendChild(b);
+  }
+  panel.hidden = false;
+}
+
+document.getElementById("jumpForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const raw = document.getElementById("jumpInput").value.trim();
+  if (!raw) return;
+  const ref = toLatinDigits(raw).match(/^(\d{1,3})\s*[:：\/\-\s]\s*(\d{1,3})$/);
+  if (ref){
+    const s = +ref[1], v = +ref[2];
+    const list = bySurah.get(s);
+    if (list && v >= 1 && v <= list.length){
+      document.getElementById("searchPanel").hidden = true;
+      selectSurah(s, v);
+      return;
+    }
+  }
+  const only = toLatinDigits(raw).match(/^(\d{1,3})$/);
+  if (only && bySurah.has(+only[1])){
+    document.getElementById("searchPanel").hidden = true;
+    selectSurah(+only[1]);
+    return;
+  }
+  runSearch(raw);
+});
+
+selectSurah(1);
+</script>
