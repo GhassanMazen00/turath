@@ -1,0 +1,686 @@
+[
+ {
+  "index": 1,
+  "name": "الفاتحة",
+  "name_norm": "الفاتحه",
+  "ayat": 7
+ },
+ {
+  "index": 2,
+  "name": "البقرة",
+  "name_norm": "البقره",
+  "ayat": 286
+ },
+ {
+  "index": 3,
+  "name": "آل عمران",
+  "name_norm": "ال عمران",
+  "ayat": 200
+ },
+ {
+  "index": 4,
+  "name": "النساء",
+  "name_norm": "النساء",
+  "ayat": 176
+ },
+ {
+  "index": 5,
+  "name": "المائدة",
+  "name_norm": "الماءده",
+  "ayat": 120
+ },
+ {
+  "index": 6,
+  "name": "الأنعام",
+  "name_norm": "الانعام",
+  "ayat": 165
+ },
+ {
+  "index": 7,
+  "name": "الأعراف",
+  "name_norm": "الاعراف",
+  "ayat": 206
+ },
+ {
+  "index": 8,
+  "name": "الأنفال",
+  "name_norm": "الانفال",
+  "ayat": 75
+ },
+ {
+  "index": 9,
+  "name": "التوبة",
+  "name_norm": "التوبه",
+  "ayat": 129
+ },
+ {
+  "index": 10,
+  "name": "يونس",
+  "name_norm": "يونس",
+  "ayat": 109
+ },
+ {
+  "index": 11,
+  "name": "هود",
+  "name_norm": "هود",
+  "ayat": 123
+ },
+ {
+  "index": 12,
+  "name": "يوسف",
+  "name_norm": "يوسف",
+  "ayat": 111
+ },
+ {
+  "index": 13,
+  "name": "الرعد",
+  "name_norm": "الرعد",
+  "ayat": 43
+ },
+ {
+  "index": 14,
+  "name": "إبراهيم",
+  "name_norm": "ابراهيم",
+  "ayat": 52
+ },
+ {
+  "index": 15,
+  "name": "الحجر",
+  "name_norm": "الحجر",
+  "ayat": 99
+ },
+ {
+  "index": 16,
+  "name": "النحل",
+  "name_norm": "النحل",
+  "ayat": 128
+ },
+ {
+  "index": 17,
+  "name": "الإسراء",
+  "name_norm": "الاسراء",
+  "ayat": 111
+ },
+ {
+  "index": 18,
+  "name": "الكهف",
+  "name_norm": "الكهف",
+  "ayat": 110
+ },
+ {
+  "index": 19,
+  "name": "مريم",
+  "name_norm": "مريم",
+  "ayat": 98
+ },
+ {
+  "index": 20,
+  "name": "طه",
+  "name_norm": "طه",
+  "ayat": 135
+ },
+ {
+  "index": 21,
+  "name": "الأنبياء",
+  "name_norm": "الانبياء",
+  "ayat": 112
+ },
+ {
+  "index": 22,
+  "name": "الحج",
+  "name_norm": "الحج",
+  "ayat": 78
+ },
+ {
+  "index": 23,
+  "name": "المؤمنون",
+  "name_norm": "المءمنون",
+  "ayat": 118
+ },
+ {
+  "index": 24,
+  "name": "النور",
+  "name_norm": "النور",
+  "ayat": 64
+ },
+ {
+  "index": 25,
+  "name": "الفرقان",
+  "name_norm": "الفرقان",
+  "ayat": 77
+ },
+ {
+  "index": 26,
+  "name": "الشعراء",
+  "name_norm": "الشعراء",
+  "ayat": 227
+ },
+ {
+  "index": 27,
+  "name": "النمل",
+  "name_norm": "النمل",
+  "ayat": 93
+ },
+ {
+  "index": 28,
+  "name": "القصص",
+  "name_norm": "القصص",
+  "ayat": 88
+ },
+ {
+  "index": 29,
+  "name": "العنكبوت",
+  "name_norm": "العنكبوت",
+  "ayat": 69
+ },
+ {
+  "index": 30,
+  "name": "الروم",
+  "name_norm": "الروم",
+  "ayat": 60
+ },
+ {
+  "index": 31,
+  "name": "لقمان",
+  "name_norm": "لقمان",
+  "ayat": 34
+ },
+ {
+  "index": 32,
+  "name": "السجدة",
+  "name_norm": "السجده",
+  "ayat": 30
+ },
+ {
+  "index": 33,
+  "name": "الأحزاب",
+  "name_norm": "الاحزاب",
+  "ayat": 73
+ },
+ {
+  "index": 34,
+  "name": "سبأ",
+  "name_norm": "سبا",
+  "ayat": 54
+ },
+ {
+  "index": 35,
+  "name": "فاطر",
+  "name_norm": "فاطر",
+  "ayat": 45
+ },
+ {
+  "index": 36,
+  "name": "يس",
+  "name_norm": "يس",
+  "ayat": 83
+ },
+ {
+  "index": 37,
+  "name": "الصافات",
+  "name_norm": "الصافات",
+  "ayat": 182
+ },
+ {
+  "index": 38,
+  "name": "ص",
+  "name_norm": "ص",
+  "ayat": 88
+ },
+ {
+  "index": 39,
+  "name": "الزمر",
+  "name_norm": "الزمر",
+  "ayat": 75
+ },
+ {
+  "index": 40,
+  "name": "غافر",
+  "name_norm": "غافر",
+  "ayat": 85
+ },
+ {
+  "index": 41,
+  "name": "فصلت",
+  "name_norm": "فصلت",
+  "ayat": 54
+ },
+ {
+  "index": 42,
+  "name": "الشورى",
+  "name_norm": "الشوري",
+  "ayat": 53
+ },
+ {
+  "index": 43,
+  "name": "الزخرف",
+  "name_norm": "الزخرف",
+  "ayat": 89
+ },
+ {
+  "index": 44,
+  "name": "الدخان",
+  "name_norm": "الدخان",
+  "ayat": 59
+ },
+ {
+  "index": 45,
+  "name": "الجاثية",
+  "name_norm": "الجاثيه",
+  "ayat": 37
+ },
+ {
+  "index": 46,
+  "name": "الأحقاف",
+  "name_norm": "الاحقاف",
+  "ayat": 35
+ },
+ {
+  "index": 47,
+  "name": "محمد",
+  "name_norm": "محمد",
+  "ayat": 38
+ },
+ {
+  "index": 48,
+  "name": "الفتح",
+  "name_norm": "الفتح",
+  "ayat": 29
+ },
+ {
+  "index": 49,
+  "name": "الحجرات",
+  "name_norm": "الحجرات",
+  "ayat": 18
+ },
+ {
+  "index": 50,
+  "name": "ق",
+  "name_norm": "ق",
+  "ayat": 45
+ },
+ {
+  "index": 51,
+  "name": "الذاريات",
+  "name_norm": "الذاريات",
+  "ayat": 60
+ },
+ {
+  "index": 52,
+  "name": "الطور",
+  "name_norm": "الطور",
+  "ayat": 49
+ },
+ {
+  "index": 53,
+  "name": "النجم",
+  "name_norm": "النجم",
+  "ayat": 62
+ },
+ {
+  "index": 54,
+  "name": "القمر",
+  "name_norm": "القمر",
+  "ayat": 55
+ },
+ {
+  "index": 55,
+  "name": "الرحمن",
+  "name_norm": "الرحمن",
+  "ayat": 78
+ },
+ {
+  "index": 56,
+  "name": "الواقعة",
+  "name_norm": "الواقعه",
+  "ayat": 96
+ },
+ {
+  "index": 57,
+  "name": "الحديد",
+  "name_norm": "الحديد",
+  "ayat": 29
+ },
+ {
+  "index": 58,
+  "name": "المجادلة",
+  "name_norm": "المجادله",
+  "ayat": 22
+ },
+ {
+  "index": 59,
+  "name": "الحشر",
+  "name_norm": "الحشر",
+  "ayat": 24
+ },
+ {
+  "index": 60,
+  "name": "الممتحنة",
+  "name_norm": "الممتحنه",
+  "ayat": 13
+ },
+ {
+  "index": 61,
+  "name": "الصف",
+  "name_norm": "الصف",
+  "ayat": 14
+ },
+ {
+  "index": 62,
+  "name": "الجمعة",
+  "name_norm": "الجمعه",
+  "ayat": 11
+ },
+ {
+  "index": 63,
+  "name": "المنافقون",
+  "name_norm": "المنافقون",
+  "ayat": 11
+ },
+ {
+  "index": 64,
+  "name": "التغابن",
+  "name_norm": "التغابن",
+  "ayat": 18
+ },
+ {
+  "index": 65,
+  "name": "الطلاق",
+  "name_norm": "الطلاق",
+  "ayat": 12
+ },
+ {
+  "index": 66,
+  "name": "التحريم",
+  "name_norm": "التحريم",
+  "ayat": 12
+ },
+ {
+  "index": 67,
+  "name": "الملك",
+  "name_norm": "الملك",
+  "ayat": 30
+ },
+ {
+  "index": 68,
+  "name": "القلم",
+  "name_norm": "القلم",
+  "ayat": 52
+ },
+ {
+  "index": 69,
+  "name": "الحاقة",
+  "name_norm": "الحاقه",
+  "ayat": 52
+ },
+ {
+  "index": 70,
+  "name": "المعارج",
+  "name_norm": "المعارج",
+  "ayat": 44
+ },
+ {
+  "index": 71,
+  "name": "نوح",
+  "name_norm": "نوح",
+  "ayat": 28
+ },
+ {
+  "index": 72,
+  "name": "الجن",
+  "name_norm": "الجن",
+  "ayat": 28
+ },
+ {
+  "index": 73,
+  "name": "المزمل",
+  "name_norm": "المزمل",
+  "ayat": 20
+ },
+ {
+  "index": 74,
+  "name": "المدثر",
+  "name_norm": "المدثر",
+  "ayat": 56
+ },
+ {
+  "index": 75,
+  "name": "القيامة",
+  "name_norm": "القيامه",
+  "ayat": 40
+ },
+ {
+  "index": 76,
+  "name": "الإنسان",
+  "name_norm": "الانسان",
+  "ayat": 31
+ },
+ {
+  "index": 77,
+  "name": "المرسلات",
+  "name_norm": "المرسلات",
+  "ayat": 50
+ },
+ {
+  "index": 78,
+  "name": "النبأ",
+  "name_norm": "النبا",
+  "ayat": 40
+ },
+ {
+  "index": 79,
+  "name": "النازعات",
+  "name_norm": "النازعات",
+  "ayat": 46
+ },
+ {
+  "index": 80,
+  "name": "عبس",
+  "name_norm": "عبس",
+  "ayat": 42
+ },
+ {
+  "index": 81,
+  "name": "التكوير",
+  "name_norm": "التكوير",
+  "ayat": 29
+ },
+ {
+  "index": 82,
+  "name": "الإنفطار",
+  "name_norm": "الانفطار",
+  "ayat": 19
+ },
+ {
+  "index": 83,
+  "name": "المطففين",
+  "name_norm": "المطففين",
+  "ayat": 36
+ },
+ {
+  "index": 84,
+  "name": "الإنشقاق",
+  "name_norm": "الانشقاق",
+  "ayat": 25
+ },
+ {
+  "index": 85,
+  "name": "البروج",
+  "name_norm": "البروج",
+  "ayat": 22
+ },
+ {
+  "index": 86,
+  "name": "الطارق",
+  "name_norm": "الطارق",
+  "ayat": 17
+ },
+ {
+  "index": 87,
+  "name": "الأعلى",
+  "name_norm": "الاعلي",
+  "ayat": 19
+ },
+ {
+  "index": 88,
+  "name": "الغاشية",
+  "name_norm": "الغاشيه",
+  "ayat": 26
+ },
+ {
+  "index": 89,
+  "name": "الفجر",
+  "name_norm": "الفجر",
+  "ayat": 30
+ },
+ {
+  "index": 90,
+  "name": "البلد",
+  "name_norm": "البلد",
+  "ayat": 20
+ },
+ {
+  "index": 91,
+  "name": "الشمس",
+  "name_norm": "الشمس",
+  "ayat": 15
+ },
+ {
+  "index": 92,
+  "name": "الليل",
+  "name_norm": "الليل",
+  "ayat": 21
+ },
+ {
+  "index": 93,
+  "name": "الضحى",
+  "name_norm": "الضحي",
+  "ayat": 11
+ },
+ {
+  "index": 94,
+  "name": "الشرح",
+  "name_norm": "الشرح",
+  "ayat": 8
+ },
+ {
+  "index": 95,
+  "name": "التين",
+  "name_norm": "التين",
+  "ayat": 8
+ },
+ {
+  "index": 96,
+  "name": "العلق",
+  "name_norm": "العلق",
+  "ayat": 19
+ },
+ {
+  "index": 97,
+  "name": "القدر",
+  "name_norm": "القدر",
+  "ayat": 5
+ },
+ {
+  "index": 98,
+  "name": "البينة",
+  "name_norm": "البينه",
+  "ayat": 8
+ },
+ {
+  "index": 99,
+  "name": "الزلزلة",
+  "name_norm": "الزلزله",
+  "ayat": 8
+ },
+ {
+  "index": 100,
+  "name": "العاديات",
+  "name_norm": "العاديات",
+  "ayat": 11
+ },
+ {
+  "index": 101,
+  "name": "القارعة",
+  "name_norm": "القارعه",
+  "ayat": 11
+ },
+ {
+  "index": 102,
+  "name": "التكاثر",
+  "name_norm": "التكاثر",
+  "ayat": 8
+ },
+ {
+  "index": 103,
+  "name": "العصر",
+  "name_norm": "العصر",
+  "ayat": 3
+ },
+ {
+  "index": 104,
+  "name": "الهمزة",
+  "name_norm": "الهمزه",
+  "ayat": 9
+ },
+ {
+  "index": 105,
+  "name": "الفيل",
+  "name_norm": "الفيل",
+  "ayat": 5
+ },
+ {
+  "index": 106,
+  "name": "قريش",
+  "name_norm": "قريش",
+  "ayat": 4
+ },
+ {
+  "index": 107,
+  "name": "الماعون",
+  "name_norm": "الماعون",
+  "ayat": 7
+ },
+ {
+  "index": 108,
+  "name": "الكوثر",
+  "name_norm": "الكوثر",
+  "ayat": 3
+ },
+ {
+  "index": 109,
+  "name": "الكافرون",
+  "name_norm": "الكافرون",
+  "ayat": 6
+ },
+ {
+  "index": 110,
+  "name": "النصر",
+  "name_norm": "النصر",
+  "ayat": 3
+ },
+ {
+  "index": 111,
+  "name": "المسد",
+  "name_norm": "المسد",
+  "ayat": 5
+ },
+ {
+  "index": 112,
+  "name": "الإخلاص",
+  "name_norm": "الاخلاص",
+  "ayat": 4
+ },
+ {
+  "index": 113,
+  "name": "الفلق",
+  "name_norm": "الفلق",
+  "ayat": 5
+ },
+ {
+  "index": 114,
+  "name": "الناس",
+  "name_norm": "الناس",
+  "ayat": 6
+ }
+]
