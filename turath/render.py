@@ -8,6 +8,8 @@
 import html
 from pathlib import Path
 
+from . import routing
+
 CSS = (Path(__file__).resolve().parent / "web" / "style.css").read_text(encoding="utf-8")
 
 METHOD_LABEL = {
@@ -37,11 +39,11 @@ def _head(title):
 
 def _topbar(active=""):
     return (
-        '<nav class="topbar"><a class="brand" href="/">تُراث</a>'
+        f'<nav class="topbar"><a class="brand" href="{routing.home_href()}">تُراث</a>'
         '<div class="navlinks">'
-        '<a href="/">الرئيسية</a>'
-        '<a href="/surah/1">الفهرس</a>'
-        '<a href="/ayah/1/1">اقرأ من الفاتحة</a>'
+        f'<a href="{routing.home_href()}">الرئيسية</a>'
+        f'<a href="{routing.surah_href()}">الفهرس</a>'
+        f'<a href="{routing.ayah_href(1,1)}">اقرأ من الفاتحة</a>'
         '</div></nav>'
     )
 
@@ -88,11 +90,15 @@ def _pager(nav):
     if not nav:
         return ""
     prev, cur, nxt = nav.get("prev"), nav.get("here", ""), nav.get("next")
-    left = (f'<a class="pg" href="/ayah/{nxt[0]}/{nxt[1]}">'
-            f'<span class="pgdir">التالي ›</span></a>') if nxt else '<span class="pg disabled"></span>'
-    right = (f'<a class="pg" href="/ayah/{prev[0]}/{prev[1]}">'
-             f'<span class="pgdir">‹ السابق</span></a>') if prev else '<span class="pg disabled"></span>'
-    return f'<div class="pager">{right}<span class="pgcur">{e(cur)}</span>{left}</div>'
+
+    def btn(ref, label):
+        if ref and routing.ayah_available(*ref):
+            return (f'<a class="pg" href="{routing.ayah_href(*ref)}">'
+                    f'<span class="pgdir">{label}</span></a>')
+        return '<span class="pg disabled"></span>'
+
+    return (f'<div class="pager">{btn(prev, "‹ السابق")}'
+            f'<span class="pgcur">{e(cur)}</span>{btn(nxt, "التالي ›")}</div>')
 
 
 def render_ayah(data, nav=None) -> str:
@@ -149,13 +155,13 @@ def render_home(surahs, indexed=()) -> str:
     """الصفحة الرئيسية: ما المنصة، وكيف تبدأ."""
     indexed = set(indexed)
     cards = "".join(
-        f'<a class="feat" href="/ayah/1/1"><b>اقرأ من الفاتحة</b>'
+        f'<a class="feat" href="{routing.ayah_href(1,1)}"><b>اقرأ من الفاتحة</b>'
         f'<span>ابدأ من أول المصحف وتنقّل آيةً آية حتى الناس</span></a>'
-        f'<a class="feat" href="/surah/1"><b>فهرس السور</b>'
+        f'<a class="feat" href="{routing.surah_href()}"><b>فهرس السور</b>'
         f'<span>١١٤ سورة — اختر السورة ثم الآية</span></a>'
         for _ in [0])
     demo = "".join(
-        f'<a class="chip" href="/ayah/{s}/{a}">{e(label)}</a>'
+        f'<a class="chip" href="{routing.ayah_href(s, a)}">{e(label)}</a>'
         for s, a, label in [(2, 255, "آية الكرسي ٢:٢٥٥"),
                             (5, 6, "آية الوضوء ٥:٦"),
                             (1, 1, "الفاتحة ١:١")])
@@ -180,13 +186,18 @@ def render_surah_index(surahs, current=None) -> str:
     """فهرس السور، مع إبراز السورة الحالية إن وُجدت."""
     rows = []
     for s in surahs:
-        cls = "srow active" if current == s["index"] else "srow"
-        rows.append(
-            f'<a class="{cls}" href="/ayah/{s["index"]}/1">'
-            f'<span class="snum">{s["index"]}</span>'
-            f'<span class="sname">{e(s["name_ar"])}</span>'
-            f'<span class="smeta">{e(s["revelation"])} · {s["verse_count"]} آية</span>'
-            f'</a>')
+        n = s["index"]
+        available = routing.ayah_available(n, 1)
+        cls = "srow active" if current == n else "srow"
+        inner = (f'<span class="snum">{n}</span>'
+                 f'<span class="sname">{e(s["name_ar"])}</span>'
+                 f'<span class="smeta">{e(s["revelation"])} · {s["verse_count"]} آية</span>')
+        if available:
+            rows.append(f'<a class="{cls}" href="{routing.ayah_href(n, 1)}">{inner}</a>')
+        else:
+            # سورة غير مبنيّة في النسخة الثابتة — تُعرض بلا رابط
+            rows.append(f'<span class="{cls} soon" title="غير متاحة في النسخة الثابتة بعد">'
+                        f'{inner}</span>')
     return (
         _head("فهرس السور · تُراث")
         + _topbar()

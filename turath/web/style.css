@@ -127,3 +127,6 @@ footer.site { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--r
 .srow .smeta { font-family:"IBM Plex Sans Arabic", system-ui, sans-serif; font-size:.72rem;
   color:var(--muted); }
 @media (max-width:34rem) { .sindex { grid-template-columns:1fr; } }
+
+.srow.soon { opacity:.4; cursor:default; }
+.srow.soon:hover { border-color:var(--rule); }
