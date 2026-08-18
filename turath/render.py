@@ -22,6 +22,35 @@ def e(s):
     return html.escape(s or "")
 
 
+def _head(title):
+    return (
+        '<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">'
+        '<meta name="viewport" content="width=device-width,initial-scale=1">'
+        f'<title>{e(title)}</title>'
+        '<link rel="preconnect" href="https://fonts.googleapis.com">'
+        '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
+        '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?'
+        'family=Amiri:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@400;600&display=swap">'
+        f'<style>{CSS}</style></head><body><div class="wrap">'
+    )
+
+
+def _topbar(active=""):
+    return (
+        '<nav class="topbar"><a class="brand" href="/">تُراث</a>'
+        '<div class="navlinks">'
+        '<a href="/">الرئيسية</a>'
+        '<a href="/surah/1">الفهرس</a>'
+        '<a href="/ayah/1/1">اقرأ من الفاتحة</a>'
+        '</div></nav>'
+    )
+
+
+_FOOT = ('<footer class="site">تُعرض النصوص كما وردت في مصادرها بلا تعديل '
+         'ولا تصحيح ولا تلخيص. المنصة تنقل أقوال أهل العلم ولا ترجّح بينها، '
+         'ولا تُصدر فتوى.</footer></div></body></html>')
+
+
 def _meta(row, extra=""):
     return (f'<div class="meta"><b>المصدر:</b> {e(row["source_name"])} · '
             f'<b>الموضع:</b> {e(row["locus_ar"])} · '
@@ -54,14 +83,28 @@ def _gradings_block(gradings, unit_url):
     return "".join(out)
 
 
-def render_ayah(data) -> str:
+def _pager(nav):
+    """شريط التنقّل التسلسلي: السابق · موضع الآية · التالي."""
+    if not nav:
+        return ""
+    prev, cur, nxt = nav.get("prev"), nav.get("here", ""), nav.get("next")
+    left = (f'<a class="pg" href="/ayah/{nxt[0]}/{nxt[1]}">'
+            f'<span class="pgdir">التالي ›</span></a>') if nxt else '<span class="pg disabled"></span>'
+    right = (f'<a class="pg" href="/ayah/{prev[0]}/{prev[1]}">'
+             f'<span class="pgdir">‹ السابق</span></a>') if prev else '<span class="pg disabled"></span>'
+    return f'<div class="pager">{right}<span class="pgcur">{e(cur)}</span>{left}</div>'
+
+
+def render_ayah(data, nav=None) -> str:
     a = data["ayah"]
+    surah_name = nav.get("surah_name") if nav else ""
+    heading = (f'<div class="ayahhead"><span class="surah">{e(surah_name)}</span>'
+               f'<span class="aref">آية {a["surah"]}:{a["ayah"]}</span></div>') if surah_name else ""
     parts = [
-        '<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">',
-        '<meta name="viewport" content="width=device-width,initial-scale=1">',
-        f'<title>{e(a["locus_ar"])}</title><style>{CSS}</style></head><body><div class="wrap">',
-        '<header class="site"><h1>منصة معرفة إسلامية مترابطة</h1>',
-        '<div class="sub">تَنقل ولا تُرجِّح · لا معلومة بلا مصدر · لا إفتاء</div></header>',
+        _head(a["locus_ar"]),
+        _topbar(),
+        _pager(nav),
+        heading,
         f'<div class="ayah">{e(a["text_ar"])}</div>',
         _meta(a),
     ]
@@ -97,7 +140,57 @@ def render_ayah(data) -> str:
                      f'لا يوجد مصدر مهيكل بجودة كافية لـ{note} بعد. '
                      f'مؤجَّل عمدًا — ولن يُملأ بمحتوى غير موثّق.</div>')
 
-    parts.append('<footer class="site">تُعرض النصوص كما وردت في مصادرها بلا تعديل '
-                 'ولا تصحيح ولا تلخيص. المنصة تنقل أقوال أهل العلم ولا ترجّح بينها، '
-                 'ولا تُصدر فتوى.</footer></div></body></html>')
+    parts.append(_pager(nav))
+    parts.append(_FOOT)
     return "".join(parts)
+
+
+def render_home(surahs, indexed=()) -> str:
+    """الصفحة الرئيسية: ما المنصة، وكيف تبدأ."""
+    indexed = set(indexed)
+    cards = "".join(
+        f'<a class="feat" href="/ayah/1/1"><b>اقرأ من الفاتحة</b>'
+        f'<span>ابدأ من أول المصحف وتنقّل آيةً آية حتى الناس</span></a>'
+        f'<a class="feat" href="/surah/1"><b>فهرس السور</b>'
+        f'<span>١١٤ سورة — اختر السورة ثم الآية</span></a>'
+        for _ in [0])
+    demo = "".join(
+        f'<a class="chip" href="/ayah/{s}/{a}">{e(label)}</a>'
+        for s, a, label in [(2, 255, "آية الكرسي ٢:٢٥٥"),
+                            (5, 6, "آية الوضوء ٥:٦"),
+                            (1, 1, "الفاتحة ١:١")])
+    return (
+        _head("تُراث · منصة معرفة إسلامية مترابطة")
+        + _topbar()
+        + '<section class="hero"><h1>تُراث</h1>'
+        '<p class="tagline">لكل آية: تفسيرها، والأحاديث المرتبطة بها، '
+        'وأحكام العلماء عليها — في مكان واحد، كلٌّ بمصدره.</p>'
+        '<p class="creed">تَنقل ولا تُرجِّح · لا معلومة بلا مصدر · لا إفتاء · '
+        'لا يخترع شيء</p></section>'
+        f'<div class="feats">{cards}</div>'
+        '<h2 class="section">نماذج جاهزة</h2>'
+        f'<div class="chips">{demo}</div>'
+        '<div class="notice" style="margin-top:1.4rem">التفسير والأحاديث يعملان الآن. '
+        'أحكام العلماء من الدرر السنية مبنيّة في الشيفرة لكنها محجوبة في هذه البيئة. '
+        'المسائل الفقهية وأحداث السيرة مؤجَّلة حتى يتوفّر مصدر مهيكل — لا تُملأ باختلاق.</div>'
+        + _FOOT)
+
+
+def render_surah_index(surahs, current=None) -> str:
+    """فهرس السور، مع إبراز السورة الحالية إن وُجدت."""
+    rows = []
+    for s in surahs:
+        cls = "srow active" if current == s["index"] else "srow"
+        rows.append(
+            f'<a class="{cls}" href="/ayah/{s["index"]}/1">'
+            f'<span class="snum">{s["index"]}</span>'
+            f'<span class="sname">{e(s["name_ar"])}</span>'
+            f'<span class="smeta">{e(s["revelation"])} · {s["verse_count"]} آية</span>'
+            f'</a>')
+    return (
+        _head("فهرس السور · تُراث")
+        + _topbar()
+        + '<h1 class="pagetitle">فهرس السور</h1>'
+        '<p class="sub">اختر سورة لتبدأ من أول آياتها، ثم تنقّل بالتسلسل.</p>'
+        f'<div class="sindex">{"".join(rows)}</div>'
+        + _FOOT)

@@ -79,7 +79,7 @@ CREATE INDEX IF NOT EXISTS idx_grading_u  ON grading(unit_id);
 def connect(path=None) -> sqlite3.Connection:
     path = Path(path or DB_PATH)
     path.parent.mkdir(parents=True, exist_ok=True)
-    conn = sqlite3.connect(path)
+    conn = sqlite3.connect(path, check_same_thread=False)
     conn.row_factory = sqlite3.Row
     conn.executescript(SCHEMA)
     return conn
