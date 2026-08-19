@@ -1,28 +1,26 @@
-"""بناء موقع تُراث الثابت لـ GitHub Pages — سورة الفاتحة الكاملة.
+"""بناء موقع تُراث الثابت: الرئيسية + صفحة السورة (الفاتحة الآن).
 
-صفحة واحدة مكتفية بذاتها: كل آيات الفاتحة معروضة، كل آية قابلة للنقر
-تكشف تفسيرها وأحاديثها ومسائلها. لا خادم وقت التصفّح.
-
-التوسّع لاحقًا: أضف السور إلى SURAHS وستُبنى كلٌّ في صفحتها.
+نتوسّع سورةً سورة عبر SURAHS.
 """
 import argparse
 import sys
 from pathlib import Path
 
-from .surah_view import build_surah
+from . import routing
+from .surah_view import build_surah, render_home
 
-SURAHS = [1]                       # الفاتحة فقط الآن — نتوسّع سورةً سورة
+SURAHS = [1]
 
 
 def build(out_dir, log=print):
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
-    for i, s in enumerate(SURAHS):
-        html = build_surah(s, log=log)
-        # أول سورة هي الصفحة الرئيسية للموقع
-        name = "index.html" if i == 0 else f"surah-{s}.html"
-        (out / name).write_text(html, encoding="utf-8")
-        log(f"→ {name}")
+    routing.set_static([(s, 1) for s in SURAHS])   # الوضع الثابت للروابط
+    (out / "index.html").write_text(render_home(), encoding="utf-8")
+    log("→ index.html (الرئيسية)")
+    for s in SURAHS:
+        (out / f"surah-{s}.html").write_text(build_surah(s, log=log), encoding="utf-8")
+        log(f"→ surah-{s}.html")
     (out / ".nojekyll").write_text("", encoding="utf-8")
     log(f"تمّ → {out}")
 
@@ -30,8 +28,8 @@ def build(out_dir, log=print):
 def main(argv=None):
     ap = argparse.ArgumentParser(description="بناء موقع تُراث الثابت")
     ap.add_argument("--out", default="docs")
-    args = ap.parse_args(argv)
-    build(args.out)
+    ap.parse_args(argv)
+    build(ap.parse_args(argv).out)
     return 0
 
 
