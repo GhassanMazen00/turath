@@ -1,0 +1,221 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>تُراث · منصة معرفة إسلامية مترابطة</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap"></noscript><style>/* تُراث — لغة بصرية مستوحاة من تذهيب المصاحف: ورق عاجي · لازورد · ذهب */
+:root{
+  --paper:#f5efe3; --surface:#fffdf9; --raised:#fbf6ec; --band:#f0e7d5;
+  --ink:#211d16; --muted:#736a57; --faint:#9a8f79;
+  --line:#e6dcc7; --line-strong:#d9cbad;
+  --gold:#b0863a; --gold-2:#caa25a; --gold-soft:#f1e5c9;
+  --lapis:#173f66; --lapis-ink:#0f3252; --lapis-soft:#e9eef4;
+  --shadow:0 1px 2px rgba(70,52,18,.05), 0 10px 34px rgba(70,52,18,.07);
+  --radius:14px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0f131a; --surface:#161c26; --raised:#1b222d; --band:#12171f;
+  --ink:#ece4d4; --muted:#a89d85; --faint:#7b7360;
+  --line:#28303c; --line-strong:#36424f;
+  --gold:#c9a75f; --gold-2:#dcb96f; --gold-soft:#2b2517;
+  --lapis:#6fa2cf; --lapis-ink:#8cb8dd; --lapis-soft:#162232;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 12px 34px rgba(0,0,0,.34);
+}}
+:root[data-theme="dark"]{
+  --paper:#0f131a; --surface:#161c26; --raised:#1b222d; --band:#12171f;
+  --ink:#ece4d4; --muted:#a89d85; --faint:#7b7360;
+  --line:#28303c; --line-strong:#36424f;
+  --gold:#c9a75f; --gold-2:#dcb96f; --gold-soft:#2b2517;
+  --lapis:#6fa2cf; --lapis-ink:#8cb8dd; --lapis-soft:#162232;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 12px 34px rgba(0,0,0,.34);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);direction:rtl;
+  font-family:"IBM Plex Sans Arabic",system-ui,-apple-system,sans-serif;
+  line-height:1.75;font-size:16px;
+  background-image:radial-gradient(circle at 50% -10%, var(--band), transparent 60%);}
+a{color:var(--lapis);text-decoration:none}
+a:hover{text-decoration:underline}
+::selection{background:var(--gold-soft);color:var(--ink)}
+:focus-visible{outline:2px solid var(--lapis);outline-offset:2px;border-radius:4px}
+
+.wrap{max-width:46rem;margin:0 auto;padding:0 1.1rem}
+
+/* ——— الشريط العلوي ——— */
+.nav{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--paper) 88%,transparent);
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav-in{max-width:46rem;margin:0 auto;padding:.7rem 1.1rem;display:flex;
+  align-items:center;justify-content:space-between;gap:1rem}
+.brand{display:flex;align-items:center;gap:.55rem;font-family:"Reem Kufi",serif;
+  font-size:1.4rem;font-weight:700;color:var(--lapis);text-decoration:none;letter-spacing:.01em}
+.brand .seal{width:1.5rem;height:1.5rem;flex:0 0 auto}
+.nav-links{display:flex;gap:1.1rem;font-size:.85rem}
+.nav-links a{color:var(--muted)}
+.nav-links a:hover{color:var(--lapis)}
+
+/* ——— زخرفة: مِعيَن ذهبي ونجمة ——— */
+.rule{display:flex;align-items:center;justify-content:center;gap:.8rem;margin:1.4rem 0;color:var(--gold)}
+.rule::before,.rule::after{content:"";height:1px;flex:1;max-width:7rem;
+  background:linear-gradient(to var(--d,left),transparent,var(--gold))}
+.rule::after{--d:right}
+.star{width:16px;height:16px;color:var(--gold);flex:0 0 auto}
+
+/* ——— الصفحة الرئيسية ——— */
+.hero{text-align:center;padding:3rem 0 1rem}
+.hero .ey{font-size:.8rem;letter-spacing:.28em;color:var(--gold);font-weight:600;
+  text-transform:uppercase}
+.hero h1{font-family:"Reem Kufi",serif;font-size:clamp(3rem,10vw,4.6rem);margin:.4rem 0 0;
+  color:var(--lapis);font-weight:700;line-height:1.1;text-wrap:balance}
+.hero .lede{font-family:"Amiri",serif;font-size:1.5rem;line-height:2.1;color:var(--ink);
+  max-width:32rem;margin:1.1rem auto 0;text-wrap:balance}
+.creed{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin:1.6rem 0 0}
+.creed span{font-size:.82rem;color:var(--muted);border:1px solid var(--line-strong);
+  border-radius:20px;padding:.32rem .9rem;background:var(--surface)}
+.cta{display:inline-flex;align-items:center;gap:.6rem;margin:1.8rem 0 0;
+  background:var(--lapis);color:#fff;font-weight:600;font-size:1.02rem;
+  padding:.85rem 1.7rem;border-radius:12px;box-shadow:var(--shadow);
+  transition:transform .15s, box-shadow .15s}
+.cta:hover{text-decoration:none;transform:translateY(-2px);
+  box-shadow:0 6px 20px rgba(23,63,102,.28)}
+:root[data-theme="dark"] .cta,
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cta{color:#0f131a}}
+
+.feature{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.9rem;margin:2.6rem 0}
+.fcell{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:1.2rem 1.1rem;box-shadow:var(--shadow)}
+.fcell .ic{width:26px;height:26px;color:var(--gold);margin-bottom:.5rem}
+.fcell h3{font-family:"Reem Kufi",serif;margin:0 0 .25rem;font-size:1.15rem;color:var(--lapis)}
+.fcell p{margin:0;font-size:.85rem;color:var(--muted);line-height:1.8}
+@media (max-width:40rem){.feature{grid-template-columns:1fr}}
+
+.sources{background:var(--band);border:1px solid var(--line);border-radius:var(--radius);
+  padding:1.2rem 1.3rem;margin:2rem 0;font-size:.85rem;color:var(--muted);line-height:2}
+.sources b{color:var(--ink);font-weight:600}
+
+/* ——— ترويسة السورة (على هيئة عنوان مصحف) ——— */
+.surah-frame{position:relative;text-align:center;margin:2.4rem 0 2rem;
+  border:2px solid var(--gold);border-radius:16px;padding:1.6rem 1rem;
+  background:linear-gradient(var(--surface),var(--raised));box-shadow:var(--shadow)}
+.surah-frame::before{content:"";position:absolute;inset:6px;border:1px solid var(--gold-2);
+  border-radius:11px;pointer-events:none;opacity:.55}
+.surah-frame .kaf{font-size:.78rem;letter-spacing:.24em;color:var(--gold);font-weight:600}
+.surah-frame h1{font-family:"Reem Kufi",serif;font-size:clamp(2.2rem,7vw,3rem);margin:.35rem 0;
+  color:var(--lapis);font-weight:700}
+.surah-frame .meta{font-size:.82rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.reading-hint{text-align:center;color:var(--faint);font-size:.82rem;margin:0 0 1.4rem}
+
+/* ——— الآيات ——— */
+.verses{display:flex;flex-direction:column;gap:.7rem}
+.verse{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);overflow:hidden;transition:border-color .18s,box-shadow .18s}
+.verse:hover{border-color:var(--line-strong)}
+.verse.open{border-color:var(--gold)}
+.vrow{width:100%;display:flex;align-items:center;gap:1rem;background:none;border:0;
+  cursor:pointer;text-align:right;padding:1.2rem 1.15rem;color:inherit;font:inherit}
+.vrow:hover{background:var(--raised)}
+.medallion{flex:0 0 auto;width:2.6rem;height:2.6rem;display:grid;place-items:center;
+  position:relative;color:var(--gold);font-family:"IBM Plex Sans Arabic",sans-serif;
+  font-size:.9rem;font-weight:600;font-variant-numeric:tabular-nums}
+.medallion .frame{position:absolute;inset:0;color:var(--gold)}
+.medallion b{position:relative;color:var(--lapis)}
+.vtext{flex:1;font-family:"Amiri",serif;font-size:1.7rem;line-height:2.3;color:var(--ink)}
+.vchev{flex:0 0 auto;color:var(--faint);transition:transform .22s}
+.verse.open .vchev{transform:rotate(180deg);color:var(--gold)}
+
+.detail{border-top:1px solid var(--line);padding:1.1rem 1.2rem 1.4rem;background:var(--raised)}
+.taf-tag{display:inline-flex;align-items:center;gap:.5rem;font-size:.76rem;font-weight:600;
+  color:var(--gold);letter-spacing:.02em;margin-bottom:.5rem}
+.taf-tag .src{margin:0;font-weight:400;color:var(--muted)}
+.taf-text{margin:0;font-family:"Amiri",serif;font-size:1.12rem;line-height:2.15;color:var(--ink)}
+.taf-full{margin-top:1rem;border-top:1px dashed var(--line-strong);padding-top:.8rem}
+.taf-full summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:.5rem;
+  font-size:.88rem;font-weight:600;color:var(--lapis)}
+.taf-full summary::-webkit-details-marker{display:none}
+.taf-full summary .plus{width:1.3rem;height:1.3rem;border-radius:50%;display:grid;
+  place-items:center;background:var(--lapis-soft);color:var(--lapis);font-weight:700}
+.taf-full[open] summary .plus{background:var(--gold-soft);color:var(--gold)}
+.taf-full .verse-echo{font-family:"Amiri",serif;color:var(--gold);font-size:1.05rem;
+  margin:.8rem 0 .4rem;text-align:center}
+.para{margin:0 0 .9rem;font-family:"Amiri",serif;font-size:1.1rem;line-height:2.2;
+  color:var(--ink);text-align:justify}
+.para:last-child{margin-bottom:0}
+.src{display:inline-block;margin-top:.6rem;font-size:.76rem;color:var(--lapis)}
+
+/* ——— خانات ما بعد السورة ——— */
+.block{margin-top:2.6rem}
+.bhead{display:flex;align-items:center;gap:.7rem;margin:0 0 1.1rem}
+.bhead h2{font-family:"Reem Kufi",serif;font-size:1.4rem;color:var(--lapis);margin:0;font-weight:700}
+.bhead .count{font-size:.78rem;background:var(--gold-soft);color:var(--gold);border-radius:20px;
+  padding:.12rem .6rem;font-weight:600}
+.bhead .line{flex:1;height:1px;background:linear-gradient(to left,transparent,var(--line-strong))}
+
+.hcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:1.1rem 1.2rem;margin-bottom:.8rem;box-shadow:var(--shadow)}
+.hcard .lbl{font-family:"Reem Kufi",serif;font-weight:700;font-size:1.05rem;color:var(--lapis);
+  margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem}
+.hcard .lbl .dot{width:.5rem;height:.5rem;border-radius:50%;background:var(--gold)}
+.htext{margin:0 0 .7rem;font-family:"Amiri",serif;font-size:1.18rem;line-height:2.15;color:var(--ink)}
+.why{background:var(--lapis-soft);border-radius:10px;padding:.65rem .85rem;font-size:.85rem;
+  color:var(--ink);line-height:1.9;border-inline-start:3px solid var(--lapis)}
+.why b{color:var(--lapis-ink)}
+.hmeta{display:flex;gap:.5rem 1rem;flex-wrap:wrap;align-items:center;margin-top:.7rem;
+  font-size:.75rem;color:var(--muted)}
+.hmeta .loc{font-weight:600;color:var(--ink)}
+.hmeta .src{margin:0}
+
+.fcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:1rem 1.2rem;margin-bottom:.7rem;box-shadow:var(--shadow)}
+.ftopic{font-weight:600;font-size:1rem;color:var(--ink);margin-bottom:.4rem;
+  display:flex;gap:.5rem;align-items:baseline}
+.ftopic::before{content:"◆";color:var(--gold);font-size:.7rem}
+.fev{font-size:.85rem;color:var(--muted);line-height:1.85}
+.fev b{color:var(--lapis-ink)}
+.disclaim{font-size:.78rem;color:var(--faint);margin:.6rem 0 0;text-align:center}
+
+.empty{font-size:.85rem;color:var(--faint);background:var(--surface);border:1px dashed var(--line-strong);
+  border-radius:10px;padding:.8rem 1rem;margin:0;line-height:1.8}
+
+.foot{margin-top:3rem;padding:1.4rem 0 3rem;border-top:1px solid var(--line);
+  font-size:.76rem;color:var(--faint);line-height:2;text-align:center}
+
+@media (max-width:30rem){
+  .vtext{font-size:1.45rem;line-height:2.05}
+  .medallion{width:2.3rem;height:2.3rem}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style></head><body>
+<nav class="nav"><div class="nav-in">
+  <a class="brand" href="index.html"><svg class="seal" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 1.6l2.6 2.2 3.4-.3.9 3.3 2.9 1.8-1.3 3.2 1.3 3.2-2.9 1.8-.9 3.3-3.4-.3L12 22.4 9.4 20.2l-3.4.3-.9-3.3-2.9-1.8 1.3-3.2L2.2 9 5.1 7.2 6 3.9l3.4.3z" stroke="currentColor" stroke-width="1.1" fill="var(--gold-soft)"/><circle cx="12" cy="12" r="4.4" stroke="currentColor" stroke-width="1.1"/></svg>تُراث</a>
+  <div class="nav-links"><a href="index.html">الرئيسية</a>
+  <a href="surah.html">الفاتحة</a></div>
+</div></nav>
+<main class="wrap">
+  <section class="hero">
+    <div class="ey">منصة معرفة إسلامية مترابطة</div>
+    <h1>تُراث</h1>
+    <div class="rule"><svg class="star" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l2.2 5.8L20 8.4l-4.2 4 1.3 6-5.1-3-5.1 3 1.3-6L4 8.4l5.8-.6z" fill="currentColor" opacity=".9"/></svg></div>
+    <p class="lede">لكل آية: تفسيرها، والأحاديث المرتبطة بها، وأحكام العلماء
+      والمسائل الفقهية — مجموعةً في مكان واحد، كلٌّ موصولٌ بمصدره.</p>
+    <div class="creed"><span>تَنقل ولا تُرجِّح</span><span>لا معلومة بلا مصدر</span>
+      <span>لا إفتاء</span><span>لا يُختلق نصّ</span></div>
+    <a class="cta" href="surah-1.html">ابدأ بسورة الفاتحة ←</a>
+  </section>
+
+  <div class="rule"><svg class="star" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l2.2 5.8L20 8.4l-4.2 4 1.3 6-5.1-3-5.1 3 1.3-6L4 8.4l5.8-.6z" fill="currentColor" opacity=".9"/></svg></div>
+
+  <section class="feature">
+    <div class="fcell"><svg class="ic" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 5h11a2 2 0 012 2v12H6a2 2 0 01-2-2z" stroke="currentColor" stroke-width="1.4"/><path d="M8 9h7M8 12h7M8 15h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg><h3>التفسير</h3>
+      <p>تفسير مختصر لكل آية، ويُتوسَّع إلى التفسير الكامل لها من تفسير ابن كثير.</p></div>
+    <div class="fcell"><svg class="ic" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l7 4v6c0 4-3 6.5-7 8-4-1.5-7-4-7-8V7z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M9 11l2 2 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg><h3>الأحاديث</h3>
+      <p>الأحاديث المرتبطة بالسورة بنصّها من كتبها، مع بيان صلتها ورابط أحكام العلماء.</p></div>
+    <div class="fcell"><svg class="ic" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v16M6 8l6-3 6 3M5 8l-2 5a3 3 0 006 0L7 8M17 8l-2 5a3 3 0 006 0l-2-5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg><h3>المسائل الفقهية</h3>
+      <p>المسائل المتعلقة بالسورة مع أدلّتها المنقولة — عرضٌ بلا ترجيح ولا إفتاء.</p></div>
+  </section>
+
+  <div class="sources">
+    <b>المصادر:</b> القرآن من quran-api · التفسير من tafsir_api · الأحاديث من
+    hadith-json · وأحكام العلماء من الدرر السنية. كلّ عنصر معروض يحمل مصدره
+    وموضعه ورابط أصله. تُعرض النصوص كما وردت بلا تعديل ولا تلخيص.
+  </div>
+
+  <footer class="foot">تُراث — تنقل أقوال أهل العلم ولا ترجّح بينها ولا تُصدر فتوى.</footer>
+</main>
+</body></html>
