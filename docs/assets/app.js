@@ -212,3 +212,50 @@ function mountSearch(root,{autofocus=false}={}){
   inp.addEventListener("input",()=>{clearTimeout(tmr);tmr=setTimeout(run,260);});
   if(autofocus)setTimeout(()=>inp.focus(),350);
 }
+
+/* ═══ الرواة ═══
+   الاسم كما يرد في الإسناد هو المفتاح. لا نجزم بهوية الراوي حين يتعدّد
+   المسمَّون بالاسم نفسه — نعرض كل المحتملين وأحكام أئمة الجرح والتعديل
+   على كلٍّ منهم، ونترك الترجيح للباحث. */
+const RJ={idx:null,sh:{}};
+const shardOf=(name)=>{let h=0;for(let i=0;i<name.length;i++){h=(h*31+name.charCodeAt(i))|0;}
+  return Math.abs(h)%24;};
+async function rijalIndex(){ if(!RJ.idx) RJ.idx=await api.local("rijal/index.json"); return RJ.idx; }
+async function rijalGet(name){
+  const i=shardOf(name);
+  if(!RJ.sh[i]){ const r=await fetch(`data/rijal/n${i}.json`); RJ.sh[i]=await r.json(); }
+  return RJ.sh[i][name]||null;
+}
+const GRADE_CLS=(g)=>{const t=norm(g||"");
+  if(/صحاب|له صحبه|راي النبي/.test(t))return"c";
+  if(/متروك|وضع|كذاب|متهم/.test(t))return"w";
+  if(/ضعيف|لين|مجهول/.test(t))return"w";
+  if(/صدوق|مقبول|حسن/.test(t))return"m";
+  if(/ثقه|حجه|حافظ|امام|ثبت/.test(t))return"g";
+  return"";};
+
+/* ═══ حركة ═══ */
+function reveal(sel=".rv"){
+  const els=document.querySelectorAll(sel);
+  if(!("IntersectionObserver" in window)){els.forEach(e=>e.classList.add("in"));return;}
+  const io=new IntersectionObserver((es)=>{es.forEach(e=>{
+    if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}});},
+    {rootMargin:"0px 0px -8% 0px",threshold:.08});
+  els.forEach(e=>io.observe(e));
+}
+function countUp(el,to,ms=1100){
+  if(matchMedia("(prefers-reduced-motion:reduce)").matches){el.textContent=AR(to);return;}
+  const t0=performance.now();
+  const tick=(t)=>{const p=Math.min(1,(t-t0)/ms);
+    const v=Math.round(to*(1-Math.pow(1-p,3)));
+    el.textContent=AR(v); if(p<1)requestAnimationFrame(tick);};
+  requestAnimationFrame(tick);
+}
+function mountStats(root,items){
+  root.innerHTML=items.map(([n,l])=>
+    `<div class="stat rv"><b data-to="${n}">٠</b><span>${esc(l)}</span></div>`).join("");
+  const io=new IntersectionObserver((es)=>{es.forEach(e=>{ if(!e.isIntersecting)return;
+    const b=e.target.querySelector("b"); if(b&&!b.dataset.done){b.dataset.done=1;countUp(b,+b.dataset.to);}
+    io.unobserve(e.target);});},{threshold:.4});
+  root.querySelectorAll(".stat").forEach(s=>io.observe(s));
+}

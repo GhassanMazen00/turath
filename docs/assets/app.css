@@ -233,3 +233,59 @@ button{font:inherit;color:inherit}
 .act:hover{border-color:var(--gold);transform:translateY(-1px)}
 .act svg{width:.95rem;height:.95rem}
 .note{font-size:.75rem;color:var(--faint);margin-top:.5rem;line-height:1.85}
+
+/* ── شريط الإحصاء ── */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(8rem,1fr));gap:.7rem;margin:2.2rem 0}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:1rem .8rem;
+  text-align:center;box-shadow:var(--sh1);transition:.25s var(--ease)}
+.stat:hover{transform:translateY(-3px);border-color:var(--gold);box-shadow:var(--sh2)}
+.stat b{display:block;font-family:"Reem Kufi",serif;font-size:1.75rem;color:var(--lapis);
+  font-variant-numeric:tabular-nums;line-height:1.2}
+.stat span{font-size:.74rem;color:var(--muted)}
+/* ── أقسام المحتوى ── */
+.band{margin:3rem 0}
+.band-h{text-align:center;margin-bottom:1.5rem}
+.band-h .ey{font-size:.72rem;letter-spacing:.26em;color:var(--gold);font-weight:600}
+.band-h h2{font-family:"Reem Kufi",serif;font-size:clamp(1.5rem,4.5vw,2rem);color:var(--lapis);
+  margin:.35rem 0 0}
+.band-h p{color:var(--muted);font-size:.88rem;margin:.5rem auto 0;max-width:34rem;line-height:1.9}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:.9rem}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:1.2rem;
+  box-shadow:var(--sh1);position:relative;transition:.25s var(--ease)}
+.step:hover{transform:translateY(-3px);border-color:var(--gold2)}
+.step .num{width:2rem;height:2rem;border-radius:50%;background:var(--lapis);color:#fff;display:grid;
+  place-items:center;font-weight:700;font-size:.85rem;margin-bottom:.6rem}
+:root[data-theme="dark"] .step .num{color:#0c1017}
+.step h3{margin:0 0 .3rem;font-size:1rem;color:var(--ink)}
+.step p{margin:0;font-size:.83rem;color:var(--muted);line-height:1.85}
+.srcgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:.7rem}
+.srccard{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:1rem 1.1rem;
+  box-shadow:var(--sh1)}
+.srccard b{display:block;color:var(--lapis);font-size:.98rem;margin-bottom:.2rem}
+.srccard span{font-size:.8rem;color:var(--muted);line-height:1.8;display:block}
+.srccard a{font-size:.74rem}
+.princ{display:grid;grid-template-columns:repeat(auto-fit,minmax(12rem,1fr));gap:.7rem}
+.pr{background:var(--goldsoft);border:1px solid var(--gold2);border-radius:var(--r);padding:1rem 1.1rem}
+.pr b{display:block;font-family:"Reem Kufi",serif;color:var(--gold);font-size:1.05rem;margin-bottom:.25rem}
+.pr span{font-size:.82rem;color:var(--ink2);line-height:1.85}
+.limits{background:var(--surface);border:1px solid var(--line2);border-radius:var(--r);padding:1.2rem 1.3rem}
+.limits li{font-size:.85rem;color:var(--muted);line-height:2;margin-bottom:.4rem}
+.limits li b{color:var(--ink)}
+/* ── الرواة ── */
+.rcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:1rem 1.1rem;
+  margin-bottom:.7rem;box-shadow:var(--sh1);transition:.22s var(--ease)}
+.rcard:hover{border-color:var(--gold);transform:translateY(-2px)}
+.rcard .nm{font-family:"Amiri",serif;font-size:1.2rem;color:var(--ink);line-height:1.9}
+.rcard .kn{font-size:.8rem;color:var(--muted)}
+.rcard .tags{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.5rem}
+.tag{font-size:.72rem;border-radius:20px;padding:.15rem .6rem;background:var(--sunken);color:var(--muted)}
+.tag.g{background:var(--oksoft);color:var(--ok);font-weight:600}
+.tag.w{background:var(--badsoft);color:var(--bad);font-weight:600}
+.tag.m{background:var(--warnsoft);color:var(--warn);font-weight:600}
+.tag.c{background:var(--lapissoft);color:var(--lapis);font-weight:600}
+.warnbox{background:var(--warnsoft);border:1px solid var(--warn);border-radius:var(--r);padding:.9rem 1.1rem;
+  font-size:.83rem;color:var(--warn);line-height:1.9}
+.node .nm a{color:var(--ink);border-bottom:1px dashed var(--gold2)}
+.node .nm a:hover{color:var(--lapis)}
+.rv{opacity:0;transform:translateY(16px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
+.rv.in{opacity:1;transform:none}
