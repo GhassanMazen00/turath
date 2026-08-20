@@ -1,0 +1,75 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"></noscript>
+<link rel="stylesheet" href="assets/app.css">
+<title>القرآن والتفسير · تُراث</title></head><body>
+<header class="nav"><div class="nav-in">
+  <a class="brand" href="index.html">تُراث</a>
+  <div class="nav-links"><a href="index.html">الرئيسية</a><a href="hadith.html">الحديث</a></div>
+</div></header>
+<main class="wrap" id="app"></main>
+<script src="assets/app.js"></script>
+<script>
+let SURAHS=[], TAFSIRS=[];
+const app=()=>document.getElementById('app');
+
+async function boot(){
+  try{ [SURAHS,TAFSIRS]=await Promise.all([api.local('surahs.json'),api.local('tafsirs.json')]); }
+  catch(e){ return failed(app(),e); }
+  window.addEventListener('hashchange',route); route();
+}
+function route(){
+  const p=location.hash.replace(/^#\/?/,'').split('/').filter(Boolean);
+  if(p.length===0) return viewSurahs();
+  if(p.length===1) return viewPickTafsir(+p[0]);
+  if(p.length>=3) return viewAyah(+p[0],p[1],+p[2]);
+  viewSurahs();
+}
+function viewSurahs(){
+  app().innerHTML=crumbs([{t:'السور'}])+
+    '<div class="frame"><div class="k">القرآن الكريم</div><h1>فهرس السور</h1>'+
+    '<div class="m">١١٤ سورة — اختر سورة</div></div><div class="grid" id="g"></div>';
+  document.getElementById('g').innerHTML=SURAHS.map(s=>
+    '<a class="cell" href="#/'+s.n+'"><span class="n">'+AR(s.n)+'</span>'+
+    '<span class="t"><b>'+esc(s.ar)+'</b><span>'+esc(s.rev)+' · '+AR(s.count)+' آية</span></span></a>').join('');
+  scrollTo(0,0);
+}
+function viewPickTafsir(n){
+  const s=SURAHS.find(x=>x.n===n); if(!s) return viewSurahs();
+  app().innerHTML=crumbs([{t:'السور',href:'#/'},{t:'سورة '+s.ar}])+
+    '<div class="frame"><div class="k">سورة</div><h1>'+esc(s.ar)+'</h1>'+
+    '<div class="m">'+esc(s.rev)+' · '+AR(s.count)+' آية</div></div>'+
+    '<p style="text-align:center;color:var(--muted);font-size:.86rem;margin:0 0 1rem">اختر كتاب التفسير</p>'+
+    '<div class="pick">'+TAFSIRS.map(t=>
+      '<a class="book" href="#/'+n+'/'+t.slug+'/1"><b>'+esc(t.ar)+'</b>'+
+      '<span>'+esc(t.author)+'</span><span class="sz">'+esc(t.size)+'</span></a>').join('')+'</div>';
+  scrollTo(0,0);
+}
+async function viewAyah(n,slug,a){
+  const s=SURAHS.find(x=>x.n===n), t=TAFSIRS.find(x=>x.slug===slug);
+  if(!s||!t) return viewSurahs();
+  a=Math.min(Math.max(1,a),s.count);
+  const pg=(pos)=>{
+    const prev=a>1?'#/'+n+'/'+slug+'/'+(a-1):null, next=a<s.count?'#/'+n+'/'+slug+'/'+(a+1):null;
+    return '<div class="pager">'+
+      (prev?'<a href="'+prev+'">‹ الآية السابقة</a>':'<span class="off">‹ السابقة</span>')+
+      '<span class="mid">الآية '+AR(a)+' من '+AR(s.count)+'</span>'+
+      (next?'<a href="'+next+'">الآية التالية ›</a>':'<span class="off">التالية ›</span>')+'</div>';
+  };
+  app().innerHTML=crumbs([{t:'السور',href:'#/'},{t:'سورة '+s.ar,href:'#/'+n},{t:t.ar}])+
+    pg()+'<div id="body"></div>'+pg();
+  loading(document.getElementById('body'),'جارٍ جلب الآية وتفسيرها…');
+  scrollTo(0,0);
+  try{
+    const [av,tf]=await Promise.all([api.ayah(n,a),api.tafsir(slug,n,a)]);
+    document.getElementById('body').innerHTML=
+      '<div class="ayah">'+esc(av.text)+'<span class="num">'+AR(a)+'</span></div>'+
+      '<div class="tcard"><div class="h"><b>'+esc(t.ar)+'</b>'+
+      '<a href="https://cdn.jsdelivr.net/gh/spa5k/tafsir_api@main/tafsir/'+slug+'/'+n+'/'+a+'.json" target="_blank" rel="noopener">المصدر</a></div>'+
+      paras(tf.text)+'</div>';
+  }catch(e){ failed(document.getElementById('body'),e); }
+}
+boot();
+</script></body></html>

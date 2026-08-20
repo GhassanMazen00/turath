@@ -1,0 +1,80 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"></noscript>
+<link rel="stylesheet" href="assets/app.css">
+<title>الحديث الشريف · تُراث</title></head><body>
+<header class="nav"><div class="nav-in">
+  <a class="brand" href="index.html">تُراث</a>
+  <div class="nav-links"><a href="index.html">الرئيسية</a><a href="tafsir.html">القرآن والتفسير</a></div>
+</div></header>
+<main class="wrap" id="app">  <footer class="foot">النصوص كما وردت في مصادرها بلا تعديل. الأرقام هي الترقيم المعتمد المطبوع
+  (fawazahmed0/hadith-api). فصل «السند» عن «المتن» تقسيمٌ آليٌّ للعرض فقط — النص كاملٌ محفوظ،
+  وعند تعذّر التقسيم يُعرض الحديث كاملًا كما هو. أحكام العلماء تُراجَع في الدرر السنية.</footer>
+</main>
+<script src="assets/app.js"></script>
+<script>
+let BOOKS={}; const PAGE=25;
+const app=()=>document.getElementById('app');
+
+async function boot(){
+  try{ BOOKS=await api.local('hadith-books.json'); }catch(e){ return failed(app(),e); }
+  window.addEventListener('hashchange',route); route();
+}
+function route(){
+  const p=location.hash.replace(/^#\/?/,'').split('/').filter(Boolean);
+  if(p.length===0) return viewBooks();
+  if(p.length===1) return viewSections(p[0]);
+  return viewHadiths(p[0],+p[1],+(p[2]||1));
+}
+function viewBooks(){
+  app().innerHTML=crumbs([{t:'كتب الحديث'}])+
+    '<div class="frame"><div class="k">السنّة</div><h1>كتب الحديث</h1>'+
+    '<div class="m">نصّ الحديث برقمه المعتمد وسنده</div></div>'+
+    '<div class="pick">'+Object.keys(BOOKS).map(k=>{const b=BOOKS[k];
+      return '<a class="book" href="#/'+k+'"><b>'+esc(b.name_ar)+'</b>'+
+      '<span>'+AR(b.total)+' حديثًا · '+AR(b.sections.length)+' كتابًا</span></a>';}).join('')+'</div>'+
+    '<div class="msg" style="margin-top:1.2rem">تُضاف بقية الكتب لاحقًا.</div>';
+  scrollTo(0,0);
+}
+function viewSections(k){
+  const b=BOOKS[k]; if(!b) return viewBooks();
+  app().innerHTML=crumbs([{t:'كتب الحديث',href:'#/'},{t:b.name_ar}])+
+    '<div class="frame"><div class="k">صحيح</div><h1>'+esc(b.name_ar)+'</h1>'+
+    '<div class="m">'+AR(b.total)+' حديثًا · '+AR(b.sections.length)+' كتابًا</div></div>'+
+    '<div class="list">'+b.sections.map(s=>
+      '<a class="row" href="#/'+k+'/'+s.n+'/1"><span class="n">'+AR(s.n)+'</span>'+
+      '<span class="t"><b>'+esc(s.ar)+'</b><span>الأحاديث '+AR(s.first)+'–'+AR(s.last)+'</span></span>'+
+      '<span class="go">›</span></a>').join('')+'</div>';
+  scrollTo(0,0);
+}
+async function viewHadiths(k,sec,page){
+  const b=BOOKS[k]; if(!b) return viewBooks();
+  const s=b.sections.find(x=>x.n===sec); if(!s) return viewSections(k);
+  app().innerHTML=crumbs([{t:'كتب الحديث',href:'#/'},{t:b.name_ar,href:'#/'+k},{t:s.ar}])+
+    '<div class="frame"><div class="k">'+esc(b.name_ar)+'</div><h1>'+esc(s.ar)+'</h1>'+
+    '<div class="m">الأحاديث '+AR(s.first)+'–'+AR(s.last)+'</div></div><div id="body"></div>';
+  loading(document.getElementById('body'),'جارٍ جلب الأحاديث…');
+  scrollTo(0,0);
+  try{
+    const d=await grab('fawazahmed0/hadith-api',REF.hadith,'editions/ara-'+k+'/sections/'+sec+'.json');
+    const all=d.hadiths, pages=Math.max(1,Math.ceil(all.length/PAGE));
+    page=Math.min(Math.max(1,page),pages);
+    const slice=all.slice((page-1)*PAGE,page*PAGE);
+    const pg=()=>{const pv=page>1?'#/'+k+'/'+sec+'/'+(page-1):null,nx=page<pages?'#/'+k+'/'+sec+'/'+(page+1):null;
+      return '<div class="pager">'+(pv?'<a href="'+pv+'">‹ السابق</a>':'<span class="off">‹ السابق</span>')+
+      '<span class="mid">صفحة '+AR(page)+' من '+AR(pages)+'</span>'+
+      (nx?'<a href="'+nx+'">التالي ›</a>':'<span class="off">التالي ›</span>')+'</div>';};
+    document.getElementById('body').innerHTML=pg()+slice.map(h=>{
+      const sp=splitIsnad(h.text);
+      return '<div class="hcard"><div class="top"><span class="no">حديث '+AR(h.hadithnumber)+'</span>'+
+        '<span class="ref">'+esc(b.name_ar)+' · كتاب '+AR(h.reference.book)+' · رقم '+AR(h.reference.hadith)+' فيه</span></div>'+
+        (sp.isnad?'<div class="isnad"><span class="lb">السند</span>'+esc(sp.isnad)+'</div>':'')+
+        '<p class="matn">'+(sp.isnad?'<span class="lb">المتن</span>':'')+esc(sp.matn)+'</p>'+
+        '<div class="hlinks"><a href="https://dorar.net/hadith/search?q='+encodeURIComponent(sp.matn.slice(0,40))+'" target="_blank" rel="noopener">أحكام العلماء · الدرر السنية</a></div>'+
+      '</div>';}).join('')+pg();
+  }catch(e){ failed(document.getElementById('body'),e); }
+}
+boot();
+</script></body></html>
