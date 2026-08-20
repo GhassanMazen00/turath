@@ -4,19 +4,22 @@
 <link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"></noscript>
 <link rel="stylesheet" href="assets/app.css">
+<meta name="color-scheme" content="light dark">
+<script>(function(){var t=localStorage.getItem("turath-theme");if(t)document.documentElement.setAttribute("data-theme",t);})();</script>
 <title>القرآن والتفسير · تُراث</title></head><body>
 <header class="nav"><div class="nav-in">
   <a class="brand" href="index.html">تُراث</a>
-  <div class="nav-links"><a href="index.html">الرئيسية</a><a href="hadith.html">الحديث</a></div>
+  <div class="nav-r"><a href="index.html">الرئيسية</a><a href="hadith.html">الحديث</a><span id="tg"></span></div>
 </div></header>
 <main class="wrap" id="app"></main>
 <script src="assets/app.js"></script>
 <script>
+theme(); document.getElementById("tg").innerHTML=TGL;
 let SURAHS=[], TAFSIRS=[];
 const app=()=>document.getElementById('app');
 
 async function boot(){
-  try{ [SURAHS,TAFSIRS]=await Promise.all([api.local('surahs.json'),api.local('tafsirs.json')]); }
+  try{ await searchInit(); SURAHS=SEARCH.surahs; TAFSIRS=SEARCH.tafsirs; }
   catch(e){ return failed(app(),e); }
   window.addEventListener('hashchange',route); route();
 }
@@ -30,17 +33,18 @@ function route(){
 function viewSurahs(){
   app().innerHTML=crumbs([{t:'السور'}])+
     '<div class="frame"><div class="k">القرآن الكريم</div><h1>فهرس السور</h1>'+
-    '<div class="m">١١٤ سورة — اختر سورة</div></div><div class="grid" id="g"></div>';
+    '<div class="m">١١٤ سورة — اختر سورة</div></div><div class="search" id="s"></div><div class="grid" id="g" style="margin-top:1.3rem"></div>';
   document.getElementById('g').innerHTML=SURAHS.map(s=>
     '<a class="cell" href="#/'+s.n+'"><span class="n">'+AR(s.n)+'</span>'+
-    '<span class="t"><b>'+esc(s.ar)+'</b><span>'+esc(s.rev)+' · '+AR(s.count)+' آية</span></span></a>').join('');
+    '<span class="t"><b>'+esc(s.ar)+'</b><span>'+esc(s.rev)+' — '+AR(s.count)+' آية</span></span></a>').join('');
+  try{ if(SEARCH.books) mountSearch(document.getElementById('s'),{}); }catch(e){}
   scrollTo(0,0);
 }
 function viewPickTafsir(n){
   const s=SURAHS.find(x=>x.n===n); if(!s) return viewSurahs();
   app().innerHTML=crumbs([{t:'السور',href:'#/'},{t:'سورة '+s.ar}])+
     '<div class="frame"><div class="k">سورة</div><h1>'+esc(s.ar)+'</h1>'+
-    '<div class="m">'+esc(s.rev)+' · '+AR(s.count)+' آية</div></div>'+
+    '<div class="m">'+esc(s.rev)+' — '+AR(s.count)+' آية</div></div>'+
     '<p style="text-align:center;color:var(--muted);font-size:.86rem;margin:0 0 1rem">اختر كتاب التفسير</p>'+
     '<div class="pick">'+TAFSIRS.map(t=>
       '<a class="book" href="#/'+n+'/'+t.slug+'/1"><b>'+esc(t.ar)+'</b>'+

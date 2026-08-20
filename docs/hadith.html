@@ -1,80 +1,119 @@
 <!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light dark">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"></noscript>
 <link rel="stylesheet" href="assets/app.css">
+<script>(function(){var t=localStorage.getItem("turath-theme");if(t)document.documentElement.setAttribute("data-theme",t);})();</script>
 <title>الحديث الشريف · تُراث</title></head><body>
 <header class="nav"><div class="nav-in">
-  <a class="brand" href="index.html">تُراث</a>
-  <div class="nav-links"><a href="index.html">الرئيسية</a><a href="tafsir.html">القرآن والتفسير</a></div>
+  <a class="brand" href="index.html"><svg viewBox="0 0 24 24" fill="none"><path d="M12 1.7l2.5 2.1 3.3-.3.9 3.2 2.8 1.7-1.3 3.1 1.3 3.1-2.8 1.7-.9 3.2-3.3-.3L12 21.3 9.5 19.2l-3.3.3-.9-3.2-2.8-1.7L3.8 11.5 2.5 8.4l2.8-1.7.9-3.2 3.3.3z" stroke="currentColor" stroke-width="1.1" fill="var(--goldsoft)"/><circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="1.1"/></svg> تُراث</a>
+  <div class="nav-r"><a href="index.html">الرئيسية</a><a href="tafsir.html">التفسير</a><span id="tg"></span></div>
 </div></header>
-<main class="wrap" id="app">  <footer class="foot">النصوص كما وردت في مصادرها بلا تعديل. الأرقام هي الترقيم المعتمد المطبوع
-  (fawazahmed0/hadith-api). فصل «السند» عن «المتن» تقسيمٌ آليٌّ للعرض فقط — النص كاملٌ محفوظ،
-  وعند تعذّر التقسيم يُعرض الحديث كاملًا كما هو. أحكام العلماء تُراجَع في الدرر السنية.</footer>
-</main>
+<main class="wrap" id="app"></main>
 <script src="assets/app.js"></script>
 <script>
-let BOOKS={}; const PAGE=25;
+const PAGE=20; let B={};
 const app=()=>document.getElementById('app');
+theme(); document.getElementById('tg').innerHTML=TGL;
 
-async function boot(){
-  try{ BOOKS=await api.local('hadith-books.json'); }catch(e){ return failed(app(),e); }
-  window.addEventListener('hashchange',route); route();
-}
+(async()=>{ try{ await searchInit(); B=SEARCH.books; }catch(e){ return failed(app(),e); }
+  addEventListener('hashchange',route); route(); })();
+
 function route(){
   const p=location.hash.replace(/^#\/?/,'').split('/').filter(Boolean);
-  if(p.length===0) return viewBooks();
-  if(p.length===1) return viewSections(p[0]);
-  return viewHadiths(p[0],+p[1],+(p[2]||1));
+  if(!p.length) return vBooks();
+  if(p[1]==='h') return vHadith(p[0],+p[2]);
+  if(p.length===1) return vSections(p[0]);
+  return vList(p[0],+p[1],+(p[2]||1));
 }
-function viewBooks(){
+function vBooks(){
+  const tot=Object.values(B).reduce((a,b)=>a+b.total,0);
   app().innerHTML=crumbs([{t:'كتب الحديث'}])+
-    '<div class="frame"><div class="k">السنّة</div><h1>كتب الحديث</h1>'+
-    '<div class="m">نصّ الحديث برقمه المعتمد وسنده</div></div>'+
-    '<div class="pick">'+Object.keys(BOOKS).map(k=>{const b=BOOKS[k];
-      return '<a class="book" href="#/'+k+'"><b>'+esc(b.name_ar)+'</b>'+
-      '<span>'+AR(b.total)+' حديثًا · '+AR(b.sections.length)+' كتابًا</span></a>';}).join('')+'</div>'+
-    '<div class="msg" style="margin-top:1.2rem">تُضاف بقية الكتب لاحقًا.</div>';
-  scrollTo(0,0);
+    '<div class="frame"><div class="k">السنّة النبوية</div><h1>كتب الحديث</h1>'+
+    '<div class="m"><bdi>'+AR(Object.keys(B).length)+' كتب</bdi> — <bdi>'+AR(tot)+' حديثًا</bdi></div></div>'+
+    '<div class="search" id="s"></div>'+
+    '<div class="pick" style="margin-top:1.4rem">'+Object.keys(B).map(k=>{const b=B[k];
+      return '<a class="book" href="#/'+k+'"><b>'+esc(b.ar)+'</b><span>'+esc(b.author)+'</span>'+
+      '<span class="sz">'+AR(b.total)+' حديثًا — '+AR(b.sections.length)+' كتابًا</span></a>';}).join('')+'</div>';
+  mountSearch(document.getElementById('s'),{}); scrollTo(0,0);
 }
-function viewSections(k){
-  const b=BOOKS[k]; if(!b) return viewBooks();
-  app().innerHTML=crumbs([{t:'كتب الحديث',href:'#/'},{t:b.name_ar}])+
-    '<div class="frame"><div class="k">صحيح</div><h1>'+esc(b.name_ar)+'</h1>'+
-    '<div class="m">'+AR(b.total)+' حديثًا · '+AR(b.sections.length)+' كتابًا</div></div>'+
+function vSections(k){
+  const b=B[k]; if(!b) return vBooks();
+  app().innerHTML=crumbs([{t:'كتب الحديث',href:'#/'},{t:b.ar}])+
+    '<div class="frame"><div class="k">'+esc(b.author)+'</div><h1>'+esc(b.ar)+'</h1>'+
+    '<div class="m"><bdi>'+AR(b.total)+' حديثًا</bdi> — <bdi>'+AR(b.sections.length)+' كتابًا</bdi></div></div>'+
     '<div class="list">'+b.sections.map(s=>
       '<a class="row" href="#/'+k+'/'+s.n+'/1"><span class="n">'+AR(s.n)+'</span>'+
-      '<span class="t"><b>'+esc(s.ar)+'</b><span>الأحاديث '+AR(s.first)+'–'+AR(s.last)+'</span></span>'+
+      '<span class="t"><b>'+esc(s.ar)+'</b><span>'+(s.first?'<bdi>الأحاديث '+AR(s.first)+'–'+AR(s.last)+'</bdi>':'')+'</span></span>'+
       '<span class="go">›</span></a>').join('')+'</div>';
   scrollTo(0,0);
 }
-async function viewHadiths(k,sec,page){
-  const b=BOOKS[k]; if(!b) return viewBooks();
-  const s=b.sections.find(x=>x.n===sec); if(!s) return viewSections(k);
-  app().innerHTML=crumbs([{t:'كتب الحديث',href:'#/'},{t:b.name_ar,href:'#/'+k},{t:s.ar}])+
-    '<div class="frame"><div class="k">'+esc(b.name_ar)+'</div><h1>'+esc(s.ar)+'</h1>'+
-    '<div class="m">الأحاديث '+AR(s.first)+'–'+AR(s.last)+'</div></div><div id="body"></div>';
-  loading(document.getElementById('body'),'جارٍ جلب الأحاديث…');
-  scrollTo(0,0);
+async function vList(k,sec,page){
+  const b=B[k]; if(!b) return vBooks();
+  const s=b.sections.find(x=>x.n===sec); if(!s) return vSections(k);
+  app().innerHTML=crumbs([{t:'كتب الحديث',href:'#/'},{t:b.ar,href:'#/'+k},{t:s.ar}])+
+    '<div class="frame"><div class="k">'+esc(b.ar)+'</div><h1>'+esc(s.ar)+'</h1>'+
+    '<div class="m">'+(s.first?'<bdi>الأحاديث '+AR(s.first)+'–'+AR(s.last)+'</bdi>':'')+'</div></div><div id="body"></div>';
+  loading(document.getElementById('body'),'جارٍ جلب الأحاديث…'); scrollTo(0,0);
   try{
-    const d=await grab('fawazahmed0/hadith-api',REF.hadith,'editions/ara-'+k+'/sections/'+sec+'.json');
-    const all=d.hadiths, pages=Math.max(1,Math.ceil(all.length/PAGE));
-    page=Math.min(Math.max(1,page),pages);
-    const slice=all.slice((page-1)*PAGE,page*PAGE);
+    const idx=await loadIdx(k);
+    const rows=idx.filter(r=>r[1]===sec);
+    const pages=Math.max(1,Math.ceil(rows.length/PAGE)); page=Math.min(Math.max(1,page),pages);
+    const sl=rows.slice((page-1)*PAGE,page*PAGE);
     const pg=()=>{const pv=page>1?'#/'+k+'/'+sec+'/'+(page-1):null,nx=page<pages?'#/'+k+'/'+sec+'/'+(page+1):null;
       return '<div class="pager">'+(pv?'<a href="'+pv+'">‹ السابق</a>':'<span class="off">‹ السابق</span>')+
-      '<span class="mid">صفحة '+AR(page)+' من '+AR(pages)+'</span>'+
+      '<span class="mid"><bdi>صفحة '+AR(page)+' من '+AR(pages)+'</bdi> — <bdi>'+AR(rows.length)+' حديثًا</bdi></span>'+
       (nx?'<a href="'+nx+'">التالي ›</a>':'<span class="off">التالي ›</span>')+'</div>';};
-    document.getElementById('body').innerHTML=pg()+slice.map(h=>{
-      const sp=splitIsnad(h.text);
-      return '<div class="hcard"><div class="top"><span class="no">حديث '+AR(h.hadithnumber)+'</span>'+
-        '<span class="ref">'+esc(b.name_ar)+' · كتاب '+AR(h.reference.book)+' · رقم '+AR(h.reference.hadith)+' فيه</span></div>'+
-        (sp.isnad?'<div class="isnad"><span class="lb">السند</span>'+esc(sp.isnad)+'</div>':'')+
-        '<p class="matn">'+(sp.isnad?'<span class="lb">المتن</span>':'')+esc(sp.matn)+'</p>'+
-        '<div class="hlinks"><a href="https://dorar.net/hadith/search?q='+encodeURIComponent(sp.matn.slice(0,40))+'" target="_blank" rel="noopener">أحكام العلماء · الدرر السنية</a></div>'+
-      '</div>';}).join('')+pg();
+    document.getElementById('body').innerHTML=pg()+sl.map(([num,,txt,g])=>{
+      const gg=g&&g.length?'<span class="g '+gclass(g[0][1])+'">'+esc(g[0][1])+'</span>':'';
+      return '<a class="hit" href="#/'+k+'/h/'+num+'"><div class="m"><span class="chip">حديث '+AR(num)+'</span>'+gg+'</div>'+
+        '<div class="tx">'+esc(txt.slice(0,190))+'…</div></a>';}).join('')+pg();
   }catch(e){ failed(document.getElementById('body'),e); }
 }
-boot();
+async function vHadith(k,num){
+  const b=B[k]; if(!b) return vBooks();
+  app().innerHTML='<div id="body"></div>';
+  loading(document.getElementById('body'),'جارٍ جلب الحديث…'); scrollTo(0,0);
+  try{
+    const idx=await loadIdx(k);
+    const row=idx.find(r=>r[0]===num); const sec=row?b.sections.find(x=>x.n===row[1]):null;
+    const d=await api.hadith(k,num); const h=d.hadiths[0];
+    const sp=splitIsnad(h.text), ch=chain(sp.isnad), grades=row?row[3]:[];
+    const all=idx.map(r=>r[0]); const i=all.indexOf(num);
+    const prev=i>0?all[i-1]:null, next=i>=0&&i<all.length-1?all[i+1]:null;
+    const pg='<div class="pager">'+
+      (prev?'<a href="#/'+k+'/h/'+prev+'">‹ حديث '+AR(prev)+'</a>':'<span class="off">‹</span>')+
+      '<span class="mid">حديث '+AR(num)+' من '+AR(b.total)+'</span>'+
+      (next?'<a href="#/'+k+'/h/'+next+'">حديث '+AR(next)+' ›</a>':'<span class="off">›</span>')+'</div>';
+    document.getElementById('body').innerHTML=
+      crumbs([{t:'كتب الحديث',href:'#/'},{t:b.ar,href:'#/'+k}].concat(sec?[{t:sec.ar,href:'#/'+k+'/'+sec.n+'/1'}]:[]).concat([{t:'حديث '+AR(num)}]))+pg+
+      '<div class="hhead"><span class="no">حديث '+AR(num)+'</span>'+
+        '<div class="bk">'+esc(b.ar)+'</div>'+
+        '<div class="meta"><span><b>الكتاب:</b> '+esc(sec?sec.ar:'—')+'</span>'+
+        '<span><b>المؤلف:</b> '+esc(b.author)+'</span>'+
+        '<span><b>الموضع في الكتاب:</b> '+AR(h.reference.book)+':'+AR(h.reference.hadith)+'</span>'+
+        '<span><b>الترقيم:</b> المعتمد المطبوع</span></div></div>'+
+      (ch.length?'<div class="sec"><div class="sec-h"><h3>سلسلة الإسناد</h3><span class="cnt">'+AR(ch.length)+' راويًا</span><span class="ln"></span></div>'+
+        '<div class="chain">'+ch.map((c,j)=>'<div class="node'+(j===ch.length-1?' last':'')+'">'+
+          '<span class="dot">'+AR(j+1)+'</span><span class="nm"><span class="vb">'+esc(c.verb)+'</span>'+esc(c.name)+'</span></div>').join('')+'</div>'+
+        '<div class="note">السلسلة مستخرَجة آليًّا من نصّ السند للعرض؛ النصّ الكامل محفوظ أدناه.</div></div>':'')+
+      (sp.isnad?'<div class="sec"><div class="sec-h"><h3>المتن</h3><span class="ln"></span></div>'+
+        '<div class="matnbox">'+esc(sp.matn)+'</div></div>':'')+
+      '<div class="sec"><div class="sec-h"><h3>نصّ الحديث كاملًا</h3><span class="ln"></span></div>'+
+        '<div class="full">'+esc(h.text)+'</div></div>'+
+      (grades&&grades.length?'<div class="sec"><div class="sec-h"><h3>أحكام المحدّثين</h3><span class="cnt">'+AR(grades.length)+'</span><span class="ln"></span></div>'+
+        '<table class="gtable"><tr><th>المحدِّث</th><th>الحكم</th></tr>'+
+        grades.map(g=>'<tr><td>'+esc(g[0])+'</td><td><span class="g '+gclass(g[1])+'">'+esc(g[1])+'</span></td></tr>').join('')+
+        '</table><div class="note">الأحكام كما وردت في المصدر. المنصة تنقل ولا ترجّح.</div></div>'
+       :'<div class="sec"><div class="sec-h"><h3>أحكام المحدّثين</h3><span class="ln"></span></div>'+
+        '<div class="msg">لم يرد حكم مرفق في المصدر لهذا الحديث'+((k==='bukhari'||k==='muslim')?' — وهو من الصحيحين.':'.')+'</div></div>')+
+      '<div class="acts">'+
+        '<a class="act" target="_blank" rel="noopener" href="https://dorar.net/hadith/search?q='+encodeURIComponent(sp.matn.slice(0,40))+'">أحكام أخرى · الدرر السنية</a>'+
+        '<a class="act" href="index.html#q='+encodeURIComponent(sp.matn.slice(0,28))+'">ابحث عن طرقه في الكتب</a>'+
+        '<a class="act" target="_blank" rel="noopener" href="https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/ara-'+k+'/'+num+'.json">المصدر</a>'+
+      '</div>'+pg;
+  }catch(e){ failed(document.getElementById('body'),e); }
+}
 </script></body></html>
