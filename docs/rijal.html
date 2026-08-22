@@ -6,95 +6,77 @@
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"></noscript>
 <link rel="stylesheet" href="assets/app.css">
 <script>(function(){var t=localStorage.getItem("turath-theme");if(t)document.documentElement.setAttribute("data-theme",t);})();</script>
-<title>الرواة · تُراث</title></head><body>
-<header class="nav"><div class="nav-in">
-  <a class="brand" href="index.html"><svg viewBox="0 0 24 24" fill="none"><path d="M12 1.7l2.5 2.1 3.3-.3.9 3.2 2.8 1.7-1.3 3.1 1.3 3.1-2.8 1.7-.9 3.2-3.3-.3L12 21.3 9.5 19.2l-3.3.3-.9-3.2-2.8-1.7L3.8 11.5 2.5 8.4l2.8-1.7.9-3.2 3.3.3z" stroke="currentColor" stroke-width="1.1" fill="var(--goldsoft)"/><circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="1.1"/></svg> تُراث</a>
-  <div class="nav-r"><a href="index.html">الرئيسية</a><a href="tafsir.html">التفسير</a>
-  <a href="hadith.html">الحديث</a><span id="tg"></span></div>
+<title>$1</title></head><body>
+<header class="nav"><div class="navin">
+  <a class="brand" href="index.html"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2.2l2.3 1.9 3-.3.8 2.9 2.6 1.6-1.2 2.8 1.2 2.8-2.6 1.6-.8 2.9-3-.3L12 21.8l-2.3-1.9-3 .3-.8-2.9L3.3 15.7l1.2-2.8-1.2-2.8 2.6-1.6.8-2.9 3 .3z" stroke="currentColor" stroke-width="1.2"/><circle cx="12" cy="12" r="3.6" stroke="currentColor" stroke-width="1.2"/></svg>تُراث</a>
+  <nav class="navl"><a href="tafsir.html"$2>التفسير</a><a href="hadith.html"$3>الحديث</a><a href="rijal.html"$4>الرواة</a><span id="tg"></span></nav>
 </div></header>
 <main class="wrap" id="app"></main>
+<footer class="foot" id="foot"></footer>
 <script src="assets/app.js"></script>
 <script>
-theme(); document.getElementById('tg').innerHTML=TGL;
-const app=()=>document.getElementById('app'); const PER=40;
-let IDX={}, NAMES=[];
+theme(); document.getElementById('tg').innerHTML=TGL; mountFooter(document.getElementById('foot'));
+const app=()=>document.getElementById('app'); const PER=48;
+let IDX={},KEYS=[];
 (async()=>{ try{ await searchInit(); IDX=await rijalIndex();
-    NAMES=Object.keys(IDX).sort((a,b)=>IDX[b].c-IDX[a].c);
-  }catch(e){ return failed(app(),e); }
+   KEYS=Object.keys(IDX).sort((a,b)=>IDX[b].c-IDX[a].c);}catch(e){return failed(app(),e);}
   addEventListener('hashchange',route); route(); })();
-
 function route(){
   const h=decodeURIComponent(location.hash.replace(/^#\/?/,''));
-  if(h.startsWith('r/')) return vNarrator(h.slice(2));
+  if(h.startsWith('r/')) return vOne(h.slice(2));
   vList(+(h||1));
 }
-function tagFor(g){ const c=GRADE_CLS(g); return g?'<span class="tag '+c+'">'+esc(g.slice(0,40))+'</span>':''; }
+function gtag(g){return g?'<span class="g '+GRADE_CLS2(g)+'">'+esc(g)+'</span>':'';}
+function GRADE_CLS2(g){const t=norm(g||'');
+  if(/صحاب/.test(t))return'ok'; if(/متروك|كذاب|وضع/.test(t))return'bad';
+  if(/ضعيف|لين|مجهول/.test(t))return'bad'; if(/صدوق|مقبول/.test(t))return'mid';
+  if(/ثقه|حجه|حافظ|امام|ثبت/.test(t))return'ok'; return'na';}
 function vList(page){
-  const pages=Math.ceil(NAMES.length/PER); page=Math.min(Math.max(1,page||1),pages);
-  const sl=NAMES.slice((page-1)*PER,page*PER);
-  const pg=()=>'<div class="pager">'+
-    (page>1?'<a href="#/'+(page-1)+'">‹ السابق</a>':'<span class="off">‹</span>')+
-    '<span class="mid"><bdi>صفحة '+AR(page)+' من '+AR(pages)+'</bdi> — <bdi>'+AR(NAMES.length)+' اسمًا</bdi></span>'+
+  const pages=Math.ceil(KEYS.length/PER); page=Math.min(Math.max(1,page||1),pages);
+  const sl=KEYS.slice((page-1)*PER,page*PER);
+  const pg=()=>'<div class="pager">'+(page>1?'<a href="#/'+(page-1)+'">‹ السابق</a>':'<span class="off">‹</span>')+
+    '<span class="mid"><bdi>صفحة '+AR(page)+' من '+AR(pages)+'</bdi></span>'+
     (page<pages?'<a href="#/'+(page+1)+'">التالي ›</a>':'<span class="off">›</span>')+'</div>';
   app().innerHTML=crumbs([{t:'الرواة'}])+
-    '<div class="frame"><div class="k">علم الرجال</div><h1>رواة الأسانيد</h1>'+
-    '<div class="m"><bdi>'+AR(NAMES.length)+' اسمًا</bdi> — مرتّبة بعدد مرات ورودها في الأسانيد</div></div>'+
-    '<div class="warnbox" style="margin-bottom:1rem">الاسم في الإسناد قد يشترك فيه أكثر من راوٍ. '+
-    'نعرض كل المحتملين وأحكام أئمة الجرح والتعديل على كلٍّ منهم، ولا نجزم بواحد — الترجيح للباحث.<br>'+
-    'وتُعرض الأحكام من <b>تقريب التهذيب</b> و<b>الكاشف</b> فقط، لأنهما الوحيدان اللذان ثبتت سلامة مطابقتهما بالفحص.</div>'+
-    '<div class="search" id="s"></div>'+pg()+
-    '<div class="list" id="l" style="margin-top:.8rem"></div>'+pg();
-  document.getElementById('l').innerHTML=sl.map(n=>{const v=IDX[n];
-    return '<a class="rcard rv" href="#/r/'+encodeURIComponent(n)+'">'+
-      '<div class="nm">'+esc(n)+'</div>'+
-      '<div class="tags"><span class="tag"><bdi>'+AR(v.c)+' موضعًا في الأسانيد</bdi></span>'+
-      (v.g?tagFor(v.g):'')+(v.d&&v.d!=='0.0'?'<span class="tag">ت '+esc(v.d.replace(/\.0$/,''))+'هـ</span>':'')+
-      (v.nc?'<span class="tag"><bdi>'+AR(v.nc)+' مطابقًا في كتب الرجال</bdi></span>':'')+'</div></a>';}).join('');
-  try{ mountSearch(document.getElementById('s'),{}); }catch(e){}
-  reveal(); scrollTo(0,0);
+   '<div class="ph"><div class="k">علم الرجال</div><h1>رواة الأسانيد</h1>'+
+   '<div class="m"><bdi>'+AR(KEYS.length)+' راويًا</bdi> — مرتّبون بعدد مروياتهم</div></div>'+
+   '<div class="search" id="s"></div>'+pg()+'<div class="grid g2" id="l"></div>'+pg();
+  document.getElementById('l').innerHTML=sl.map(k=>{const v=IDX[k];
+    return '<a class="card" href="#/r/'+encodeURIComponent(k)+'"><h3 class="amiri" style="font-size:1.15rem">'+esc(v.n)+'</h3>'+
+      (v.en?'<p style="font-size:.76rem">'+esc(v.en)+'</p>':'')+
+      '<div style="display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.45rem">'+
+      gtag(v.g)+(v.gen?'<span class="tag">'+esc(genAr(v.gen))+'</span>':'')+
+      '<span class="tag"><bdi>'+AR(v.c)+' رواية</bdi></span>'+
+      (v.k==='t'?'<span class="tag">استُخرج آليًّا</span>':'')+'</div></a>';}).join('');
+  mountSearch(document.getElementById('s'),{}); reveal(); scrollTo(0,0);
 }
-async function vNarrator(name){
-  app().innerHTML=crumbs([{t:'الرواة',href:'#/1'},{t:name}])+'<div id="body"></div>';
-  loading(document.getElementById('body'),'جارٍ جلب بيانات الراوي…'); scrollTo(0,0);
+async function vOne(key){
+  app().innerHTML=crumbs([{t:'الرواة',href:'#/1'},{t:(IDX[key]||{}).n||key}])+'<div id="body"></div>';
+  loading(document.getElementById('body'),'جارٍ جلب الترجمة…'); scrollTo(0,0);
   try{
-    const d=await rijalGet(name); const v=IDX[name]||{};
-    if(!d){ document.getElementById('body').innerHTML='<div class="msg">لا بيانات لهذا الاسم.</div>'; return; }
-    const nd=d.node;
-    const head='<div class="frame"><div class="k">راوٍ في الإسناد</div><h1>'+esc(name)+'</h1>'+
-      '<div class="m"><bdi>'+AR(d.c)+' موضعًا في الأسانيد</bdi>'+
-      (nd&&nd.d&&nd.d!=='0.0'?' — <bdi>ت '+esc(String(nd.d).replace(/\.0$/,''))+'هـ</bdi>':'')+'</div></div>';
-    let known='';
-    if(nd&&(nd.g||nd.r)){
-      known='<div class="sec"><div class="sec-h"><h3>التعريف المرجَّح</h3><span class="ln"></span></div>'+
-        '<div class="hcard">'+(nd.r?'<div class="nm" style="font-family:Amiri,serif;font-size:1.2rem">'+esc(nd.r)+'</div>':'')+
-        '<div class="tags">'+(nd.g?tagFor(nd.g):'')+
-        (nd.d&&nd.d!=='0.0'?'<span class="tag">ت '+esc(String(nd.d).replace(/\.0$/,''))+'هـ</span>':'')+
-        (nd.p?'<span class="tag">'+esc(String(nd.p).replace(/[\[\]']/g,'').slice(0,60))+'</span>':'')+'</div>'+
-        '<div class="note">مأخوذ من قاعدة رجال مُحكَّمة (تقريب التهذيب — ابن حجر، عبر KASHAF).</div></div></div>';
-    }
-    const cands=d.cands||[];
-    let cl='<div class="sec"><div class="sec-h"><h3>المحتمَلون بهذا الاسم</h3>'+
-      '<span class="cnt"><bdi>'+AR(cands.length)+'</bdi></span><span class="ln"></span></div>';
-    if(!cands.length) cl+='<div class="msg">لم يُعثر على مطابق في كتب الرجال المفهرسة.</div>';
-    else cl+=cands.map(c=>'<div class="hcard"><div class="nm" style="font-family:Amiri,serif;font-size:1.15rem">'+esc(c.n)+'</div>'+
-      (c.k&&c.k!=='-'?'<div class="kn">الكنية: '+esc(c.k)+'</div>':'')+
-      '<div class="tags">'+tagFor(c.g)+
-      (c.d&&c.d!=='-'?'<span class="tag">الوفاة: '+esc(c.d)+'</span>':'')+
-      (c.t?'<span class="tag">الطبقة: '+esc(c.t)+'</span>':'')+
-      (c.c&&c.c!=='-'?'<span class="tag">'+esc(c.c)+'</span>':'')+'</div>'+
-      (c.srcs&&c.srcs.length?'<table class="gtable" style="margin-top:.7rem"><tr><th>المصدر</th><th>ما قيل فيه</th></tr>'+
-        c.srcs.map(s=>'<tr><td>'+esc(s[0])+'</td><td>'+esc(s[1])+'</td></tr>').join('')+'</table>':'')+
-      '</div>').join('');
-    cl+=(cands.length>1?'<div class="warnbox">تعدَّد المسمَّون بهذا الاسم؛ المنصة لا ترجّح بينهم. راجع سياق الإسناد وكتب الرجال.</div>':'')+'<div class="note">الأحكام من تقريب التهذيب والكاشف. أُسقطت مصادر أخرى في البيانات لعدم انضباط مطابقتها.</div>'+'</div>';
-    const hs=(d.h||[]);
-    const hl='<div class="sec"><div class="sec-h"><h3>أحاديث ورد فيها هذا الاسم</h3>'+
-      '<span class="cnt"><bdi>'+AR(d.c)+'</bdi></span><span class="ln"></span></div>'+
-      '<div class="list">'+hs.slice(0,120).map(x=>{const [b,n]=x.split(':');
-        const bk=(SEARCH.books&&SEARCH.books[b])?SEARCH.books[b].ar:b;
-        return '<a class="row" href="hadith.html#/'+b+'/h/'+n+'"><span class="n"><bdi>'+AR(n)+'</bdi></span>'+
-        '<span class="t"><b>'+esc(bk)+'</b><span>حديث رقم '+AR(n)+'</span></span><span class="go">›</span></a>';}).join('')+
-      '</div>'+(d.c>hs.length?'<div class="note">عُرض أول <bdi>'+AR(hs.length)+'</bdi> من <bdi>'+AR(d.c)+'</bdi>.</div>':'')+'</div>';
-    document.getElementById('body').innerHTML=head+known+cl+hl;
+    const d=await rijalGet(key); const v=IDX[key]||{};
+    if(!d){document.getElementById('body').innerHTML='<div class="msg">لا بيانات لهذا الراوي.</div>';return;}
+    const nm=d.ar||d.en||v.n||key;
+    const facts=[['الطبقة',genAr(d.gen)],['الحكم',d.g],['المولد',d.b],['الوفاة',d.d],['الإقامة',d.p],['الاشتهار',d.tg]]
+      .filter(x=>x[1]);
+    const hs=d.h||[];
+    document.getElementById('body').innerHTML=
+      '<div class="ph"><div class="k">راوٍ</div><h1 class="amiri">'+esc(nm)+'</h1>'+
+      '<div class="m">'+esc(d.en||'')+(d.c?'<span class="sep">•</span><bdi>'+AR(d.c)+' رواية في الكتب</bdi>':'')+'</div></div>'+
+      (d.k==='t'?'<div class="warn">هذا الاسم استُخرج آليًّا من نصّ السند ولم يُطابَق بترجمة مفهرسة.</div>':'')+
+      (facts.length?'<div class="sh"><h2>الترجمة</h2><span class="ln"></span></div>'+
+        '<table class="t">'+facts.map(f=>'<tr><td>'+esc(f[0])+'</td><td>'+esc(f[1])+'</td></tr>').join('')+'</table>':'')+
+      ((d.tea&&d.tea.length)?'<div class="sh"><h2>شيوخه</h2><span class="cnt"><bdi>'+AR(d.tea.length)+'</bdi></span><span class="ln"></span></div>'+
+        '<div class="card"><p style="line-height:2">'+d.tea.map(x=>esc(x)).join(' · ')+'</p></div>':'')+
+      ((d.stu&&d.stu.length)?'<div class="sh"><h2>تلاميذه</h2><span class="cnt"><bdi>'+AR(d.stu.length)+'</bdi></span><span class="ln"></span></div>'+
+        '<div class="card"><p style="line-height:2">'+d.stu.map(x=>esc(x)).join(' · ')+'</p></div>':'')+
+      '<div class="sh"><h2>أحاديثه في الكتب</h2><span class="cnt"><bdi>'+AR(d.c)+'</bdi></span><span class="ln"></span></div>'+
+      (hs.length?'<div class="grid g2">'+hs.slice(0,120).map(x=>{const [b,n]=x.split(':');
+        const bk=(SEARCH.books[b]||{}).ar||b;
+        return '<a class="tile" href="hadith.html#/'+b+'/h/'+n+'"><span class="n">'+AR(n)+'</span>'+
+          '<span class="t"><b>'+esc(bk)+'</b><span>حديث '+AR(n)+'</span></span></a>';}).join('')+'</div>'+
+        (d.c>hs.length?'<div class="note">عُرض أول <bdi>'+AR(hs.length)+'</bdi> من <bdi>'+AR(d.c)+'</bdi>.</div>':'')
+       :'<div class="msg">لا أحاديث مفهرسة.</div>');
     reveal();
   }catch(e){ failed(document.getElementById('body'),e); }
 }

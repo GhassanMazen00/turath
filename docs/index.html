@@ -1,131 +1,98 @@
 <!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="light dark">
-<meta name="description" content="تُراث — القرآن بتفاسيره والسنّة بأسانيدها وأحكام المحدّثين، من مصادر مهيكلة بترقيمها المعتمد.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"></noscript>
 <link rel="stylesheet" href="assets/app.css">
 <script>(function(){var t=localStorage.getItem("turath-theme");if(t)document.documentElement.setAttribute("data-theme",t);})();</script>
-<title>تُراث</title></head><body>
-<header class="nav"><div class="nav-in">
-  <div class="brand"><svg viewBox="0 0 24 24" fill="none"><path d="M12 1.7l2.5 2.1 3.3-.3.9 3.2 2.8 1.7-1.3 3.1 1.3 3.1-2.8 1.7-.9 3.2-3.3-.3L12 21.3 9.5 19.2l-3.3.3-.9-3.2-2.8-1.7L3.8 11.5 2.5 8.4l2.8-1.7.9-3.2 3.3.3z" stroke="currentColor" stroke-width="1.1" fill="var(--goldsoft)"/><circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="1.1"/></svg> تُراث</div>
-  <div class="nav-r"><a href="tafsir.html">التفسير</a><a href="hadith.html">الحديث</a>
-  <a href="rijal.html">الرواة</a><a href="#about">عن المنصة</a><span id="tg"></span></div>
+<title>$1</title></head><body>
+<header class="nav"><div class="navin">
+  <a class="brand" href="index.html"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2.2l2.3 1.9 3-.3.8 2.9 2.6 1.6-1.2 2.8 1.2 2.8-2.6 1.6-.8 2.9-3-.3L12 21.8l-2.3-1.9-3 .3-.8-2.9L3.3 15.7l1.2-2.8-1.2-2.8 2.6-1.6.8-2.9 3 .3z" stroke="currentColor" stroke-width="1.2"/><circle cx="12" cy="12" r="3.6" stroke="currentColor" stroke-width="1.2"/></svg>تُراث</a>
+  <nav class="navl"><a href="tafsir.html"$2>التفسير</a><a href="hadith.html"$3>الحديث</a><a href="rijal.html"$4>الرواة</a><span id="tg"></span></nav>
 </div></header>
 <main class="wrap">
   <section class="hero">
-    <div class="hero-bg"><i></i><i></i><i></i></div>
-    <svg class="hero-star" viewBox="0 0 200 200" fill="none" aria-hidden="true">
-      <g stroke="currentColor" stroke-width="1">
-        <path d="M100 8l23 46 51 7-37 36 9 51-46-24-46 24 9-51-37-36 51-7z"/>
-        <path d="M100 8l-23 46-51 7 37 36-9 51 46-24 46 24-9-51 37-36-51-7z"/>
-        <circle cx="100" cy="100" r="70"/><circle cx="100" cy="100" r="52"/><circle cx="100" cy="100" r="88"/>
-      </g></svg>
-    <div class="ey rise">القرآن · التفسير · السنّة · الرجال</div>
-    <h1 class="rise">تُراث</h1>
-    <p class="rise">القرآن بتفاسيره، والسنّة بأسانيدها وأحكام المحدّثين عليها —
-      من مصادر مهيكلة، بترقيمها المعتمد، وكلُّ نصٍّ موصولٌ بمصدره.</p>
-    <div class="search rise" id="search"></div>
+    <canvas id="hc" aria-hidden="true"></canvas>
+    <div class="ey">القرآن · التفسير · السنّة · الرجال</div>
+    <h1>تُراث</h1>
+    <p class="sub">القرآن بتفاسيره، والسنّة بأسانيدها وأحكام المحدّثين عليها — بترقيمها المعتمد، وكلُّ نصٍّ موصولٌ بمصدره.</p>
+    <div class="search" id="search"></div>
   </section>
 
   <div class="stats" id="stats"></div>
 
+  <div class="sh"><h2>الأبواب</h2><span class="ln"></span></div>
   <div class="gates">
-    <a class="gate rv" href="tafsir.html">
+    <a class="card" href="tafsir.html">
       <svg class="ic" viewBox="0 0 24 24" fill="none"><path d="M4 4.5h7a2 2 0 012 2V20H6a2 2 0 01-2-2z" stroke="currentColor" stroke-width="1.4"/><path d="M20 4.5h-7a2 2 0 00-2 2V20h7a2 2 0 002-2z" stroke="currentColor" stroke-width="1.4"/></svg>
-      <h2>القرآن والتفسير</h2>
-      <p>اختر السورة، ثم كتاب التفسير الذي تريده، ثم تصفّح الآيات آيةً آية.</p>
-      <div class="n"><bdi>١١٤ سورة</bdi> — <bdi>١٨ كتاب تفسير</bdi></div></a>
-    <a class="gate rv" href="hadith.html">
+      <h3>القرآن والتفسير</h3><p>اختر السورة، ثم كتاب التفسير، ثم تصفّح الآيات آيةً آية.</p>
+      <div class="meta"><bdi>١١٤ سورة</bdi><span class="sep">•</span><bdi>١٨ كتاب تفسير</bdi></div></a>
+    <a class="card" href="hadith.html">
       <svg class="ic" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 4v6c0 4-3 6.5-7 8-4-1.5-7-4-7-8V7z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M9 11.5l2 2 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <h2>الحديث الشريف</h2>
-      <p>الكتب الستة والموطأ والأربعينات — بالسند والمتن وأحكام المحدّثين.</p>
-      <div class="n" id="hn"></div></a>
-    <a class="gate rv" href="rijal.html">
+      <h3>الحديث الشريف</h3><p>الكتب الستة والموطأ والأربعينات — بالسند والمتن والشرح وأحكام المحدّثين.</p>
+      <div class="meta" id="hn"></div></a>
+    <a class="card" href="rijal.html">
       <svg class="ic" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3.2" stroke="currentColor" stroke-width="1.4"/><path d="M3.5 19.5c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M16 6.5a3 3 0 010 6M18 19.5c0-2.2-1-3.9-2.6-4.7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-      <h2>الرواة</h2>
-      <p>أسماء الأسانيد وما قاله أئمة الجرح والتعديل فيهم، وأحاديث كلِّ اسم.</p>
-      <div class="n" id="rn"></div></a>
-    <div class="gate soon"><h2>الفقه والسيرة</h2>
-      <p>لا يُضاف حتى يتوفّر مصدر مهيكل موثّق — لا يُملأ باختلاق.</p>
-      <div class="n">قريبًا</div></div>
+      <h3>الرواة</h3><p>سلاسل الأسانيد، وتراجم الرواة ومشايخهم وتلاميذهم، وأحاديث كلِّ راوٍ.</p>
+      <div class="meta" id="rn"></div></a>
+    <a class="card" href="hadith.html#/bukhari">
+      <svg class="ic" viewBox="0 0 24 24" fill="none"><path d="M5 4.5h14v15H5z" stroke="currentColor" stroke-width="1.4"/><path d="M8 9h8M8 12.5h8M8 16h5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <h3>ابدأ من الصحيحين</h3><p>صحيح البخاري وصحيح مسلم كاملَين بأبوابهما ومقدماتهما.</p>
+      <div class="meta" id="sn"></div></a>
   </div>
 
-  <section class="band">
-    <div class="band-h rv"><div class="ey">كيف تستعملها</div><h2>ثلاث خطوات</h2>
-      <p>المنصة أداة بحث ومراجعة، لا مرجعًا يُفتي. كل ما تراه موصولٌ بمصدره.</p></div>
-    <div class="steps">
-      <div class="step rv"><div class="num">١</div><h3>ابحث أو تصفّح</h3>
-        <p>اكتب لفظًا في البحث فيمسح متون <bdi>٣٦٬٥١٢</bdi> حديثًا وأسماء السور والأبواب، أو ادخل من باب التفسير أو الحديث.</p></div>
-      <div class="step rv"><div class="num">٢</div><h3>اقرأ بالإسناد</h3>
-        <p>كل حديث يُعرض برقمه المعتمد وكتابه وبابه، ثم سنده مفصولًا عن متنه، وأحكام المحدّثين عليه.</p></div>
-      <div class="step rv"><div class="num">٣</div><h3>تحقّق من الراوي</h3>
-        <p>اضغط اسم أي راوٍ في السند لترى ما قاله فيه أئمة الجرح والتعديل، وبقية الأحاديث التي ورد فيها.</p></div>
-    </div>
-  </section>
+  <div class="sh"><h2>أبواب مطروقة</h2><span class="ln"></span></div>
+  <div class="grid g4" id="picks"></div>
 
-  <section class="band">
-    <div class="band-h rv"><div class="ey">من أين تأتي البيانات</div><h2>المصادر</h2>
-      <p>لا نستخرج نصوصًا من صور أو ملفات؛ نستهلك بيانات مهيكلة منشورة، مثبَّتة على إصدارات محدَّدة.</p></div>
-    <div class="srcgrid">
-      <div class="srccard rv"><b>متون الحديث وترقيمها</b>
-        <span>الترقيم المعتمد المطبوع للكتب العشرة.</span>
-        <a href="https://github.com/fawazahmed0/hadith-api" target="_blank" rel="noopener">fawazahmed0/hadith-api ↗</a></div>
-      <div class="srccard rv"><b>أحكام المحدّثين</b>
-        <span>الألباني، شعيب الأرناؤوط، زبير علي زئي، أحمد شاكر وغيرهم — مرفقة بالمصدر.</span>
-        <a href="https://github.com/R3GENESI5/Itqan" target="_blank" rel="noopener">Itqan (DOI) ↗</a></div>
-      <div class="srccard rv"><b>كتب الرجال</b>
-        <span>أحكام الجرح والتعديل من <b>تقريب التهذيب</b> (ابن حجر) و<b>الكاشف</b> (الذهبي) — وهما ما ثبتت سلامة مطابقته بالفحص.</span>
-        <a href="https://github.com/R3GENESI5/Itqan" target="_blank" rel="noopener">قاعدة الرجال ↗</a></div>
-      <div class="srccard rv"><b>القرآن والتفسير</b>
-        <span>الرسم الإملائي، و<bdi>١٨</bdi> كتاب تفسير من الطبري وابن كثير والقرطبي إلى ابن عاشور.</span>
-        <a href="https://github.com/spa5k/tafsir_api" target="_blank" rel="noopener">tafsir_api ↗</a></div>
-    </div>
-  </section>
+  <div class="sh"><h2>كيف تستعملها</h2><span class="ln"></span></div>
+  <div class="grid g3">
+    <div class="card"><h3>١ — ابحث</h3><p>اكتب لفظًا فيمسح متون الأحاديث كلها؛ يُعرض النصّ مرة واحدة وتحته الكتب التي أخرجته لتختار أيّها تفتح.</p></div>
+    <div class="card"><h3>٢ — اقرأ بالإسناد</h3><p>الحديث برقمه المعتمد وكتابه وبابه، ثم سلسلة رواته، ثم متنه وشرحه وأحكام المحدّثين عليه.</p></div>
+    <div class="card"><h3>٣ — تحقّق من الراوي</h3><p>اضغط أيّ راوٍ لترى ترجمته وطبقته ومشايخه وتلاميذه وبقية أحاديثه.</p></div>
+  </div>
 
-  <section class="band" id="about">
-    <div class="band-h rv"><div class="ey">عن المنصة</div><h2>ما تلتزم به تُراث</h2>
-      <p>هذه قواعد مكتوبة في صلب البناء، لا شعارات: إن لم يوجد المصدر، تُترك الخانة فارغة.</p></div>
-    <div class="princ">
-      <div class="pr rv"><b>تَنقل ولا تُرجِّح</b><span>عند اختلاف الأحكام تُعرض كلها منسوبةً لقائليها، ولا تختار المنصة واحدًا.</span></div>
-      <div class="pr rv"><b>لا معلومة بلا مصدر</b><span>كل نصّ يحمل كتابه وموضعه ورقمه ورابط أصله.</span></div>
-      <div class="pr rv"><b>لا إفتاء</b><span>لا نقول «الراجح» ولا نجيب عن «ما حكم…». نعرض ما ورد فقط.</span></div>
-      <div class="pr rv"><b>لا يُختلق نصّ</b><span>ما لم يُجلب من مصدر يُقال إنه لم يُجلب، ولا يُملأ فراغه.</span></div>
-    </div>
-  </section>
+  <div class="sh"><h2>ما تلتزم به</h2><span class="ln"></span></div>
+  <div class="grid g2">
+    <div class="card"><h3>تَنقل ولا تُرجِّح</h3><p>عند اختلاف الأحكام تُعرض كلها منسوبةً لقائليها.</p></div>
+    <div class="card"><h3>لا معلومة بلا مصدر</h3><p>كل نصّ يحمل كتابه وموضعه ورقمه المعتمد.</p></div>
+    <div class="card"><h3>لا إفتاء</h3><p>نعرض ما ورد، ولا نقول «الراجح».</p></div>
+    <div class="card"><h3>لا يُختلق نصّ</h3><p>ما لم يُجلب يُقال إنه لم يُجلب.</p></div>
+  </div>
 
-  <section class="band">
-    <div class="band-h rv"><div class="ey">بصراحة</div><h2>حدود المنصة اليوم</h2>
-      <p>ما لا نعرفه نقوله — هذا جزء من الأمانة، لا نقصٌ نخفيه.</p></div>
-    <div class="limits rv"><ul>
-      <li><b>فصل السند عن المتن آليّ.</b> النصّ الكامل معروض دائمًا كما ورد، وعند تعذّر الفصل يُعرض الحديث كاملًا بلا تقسيم.</li>
-      <li><b>هوية الراوي لا تُحسم آليًّا.</b> كثير من الأسماء يشترك فيها رواة؛ نعرض كل المحتملين بأحكامهم ولا نجزم بواحد.</li>
-      <li><b>أحكام الرجال من مصدرين فقط</b> — تقريب التهذيب والكاشف؛ أسقطنا مصادر أخرى في البيانات لأن مطابقتها غير منضبطة وتُنتج أحكامًا باطلة على الأئمة.</li>
-      <li><b>الأربعينات بلا أحكام مرفقة</b> في المصدر — وأكثر أحاديثها في الصحيحين.</li>
-      <li><b>الفقه والسيرة مؤجَّلان</b> حتى يتوفّر مصدر مهيكل موثّق.</li>
-      <li><b>مسند أحمد وسنن الدارمي</b> غير مضافين بعد — لم نتحقّق من ترقيمهما في مصدر موثوق.</li>
-    </ul></div>
-  </section>
+  <div class="sh"><h2>حدود المنصة اليوم</h2><span class="ln"></span></div>
+  <div class="card"><p style="line-height:2.1">
+    · <b>سلاسل الإسناد</b> مأخوذة من قاعدة رواة محكَّمة لأكثر من <bdi>٣٣٬٠٠٠</bdi> حديث؛ وما لم يوجد له سلسلة تُستخرج آليًّا ويُنبَّه عليه.<br>
+    · <b>شرح الحديث</b> يُطلب من الموسوعة الحديثية عند توفّر الاتصال، ولا يُخزَّن عندنا.<br>
+    · <b>موطأ مالك والأربعينات</b> بلا سلاسل مفهرسة في المصدر بعد.<br>
+    · <b>الفقه والسيرة</b> مؤجَّلان حتى يتوفّر مصدر مهيكل موثّق.<br>
+    · <b>مسند أحمد وسنن الدارمي</b> لم يُضافا حتى يُتحقَّق من ترقيمهما.</p></div>
 
-  <footer class="foot">تُراث — تنقل أقوال أهل العلم ولا ترجّح بينها ولا تُصدر فتوى.<br>
-  النصوص كما وردت في مصادرها بلا تعديل ولا تلخيص. أرقام الأحاديث هي الترقيم المعتمد المطبوع.</footer>
+  <footer class="foot" id="foot"></footer>
 </main>
 <script src="assets/app.js"></script>
 <script>
-theme(); document.getElementById('tg').innerHTML=TGL;
+theme(); document.getElementById('tg').innerHTML=TGL; heroCanvas(document.getElementById('hc'));
+mountFooter(document.getElementById('foot'));
 (async()=>{
- try{ await searchInit(); }catch(e){
-   document.getElementById('search').innerHTML='<div class="msg">تعذّر تحميل فهرس البحث.</div>'; }
- try{ mountSearch(document.getElementById('search'),{}); }catch(e){}
- const nb=Object.keys(SEARCH.books).length;
- const th=Object.values(SEARCH.books).reduce((a,b)=>a+b.total,0);
- const ts=Object.values(SEARCH.books).reduce((a,b)=>a+b.sections.length,0);
- document.getElementById('hn').innerHTML='<bdi>'+AR(nb)+' كتب</bdi> — <bdi>'+AR(th)+' حديثًا</bdi>';
+ try{ await searchInit(); }catch(e){ document.getElementById('search').innerHTML='<div class="msg">تعذّر تحميل الفهرس.</div>'; return; }
+ mountSearch(document.getElementById('search'),{});
+ const B=SEARCH.books, nb=Object.keys(B).length;
+ const th=Object.values(B).reduce((a,b)=>a+b.total,0);
+ const ts=Object.values(B).reduce((a,b)=>a+b.sections.length,0);
+ document.getElementById('hn').innerHTML='<bdi>'+AR(nb)+' كتب</bdi><span class="sep">•</span><bdi>'+AR(th)+' حديثًا</bdi>';
+ document.getElementById('sn').innerHTML='<bdi>'+AR(B.bukhari.total+B.muslim.total)+' حديثًا</bdi>';
  let rn=0; try{ rn=Object.keys(await rijalIndex()).length; }catch(e){}
- document.getElementById('rn').innerHTML='<bdi>'+AR(rn)+' اسمًا</bdi> — من كتب الرجال';
+ document.getElementById('rn').innerHTML='<bdi>'+AR(rn)+' راويًا</bdi>';
  mountStats(document.getElementById('stats'),[[th,'حديثًا'],[nb,'كتاب حديث'],[ts,'كتابًا وبابًا'],
-   [114,'سورة'],[18,'كتاب تفسير'],[rn,'اسم راوٍ']]);
+   [rn,'راويًا'],[114,'سورة'],[18,'كتاب تفسير']]);
+ // أبواب مطروقة من الصحيحين
+ const picks=[['bukhari',2],['bukhari',10],['muslim',1],['muslim',4],['bukhari',65],['muslim',56],
+              ['bukhari',97],['abudawud',1]];
+ document.getElementById('picks').innerHTML=picks.map(([b,n])=>{
+   const bk=B[b]; const s=bk&&bk.sections.find(x=>x.n===n); if(!s)return '';
+   return '<a class="tile" href="hadith.html#/'+b+'/'+n+'/1"><span class="n">'+AR(n)+'</span>'+
+     '<span class="t"><b>'+esc(s.ar)+'</b><span>'+esc(bk.ar)+'<span class="sep">•</span><bdi>'+AR(s.count)+' حديثًا</bdi></span></span></a>';}).join('');
  reveal();
 })();
 </script></body></html>
