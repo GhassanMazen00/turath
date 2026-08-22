@@ -299,29 +299,34 @@ function mountStats(root,items){        /* أرقام ثابتة بلا عدّ *
   root.innerHTML=items.map(([n,l])=>`<div class="stat"><b>${AR(n)}</b><span>${esc(l)}</span></div>`).join("");
 }
 
-/* تعريب وصف الطبقة */
-const GEN=[[/companion|sahaba|صحاب/i,"صحابي"],[/follower.*2nd|tabi'?\)?\s*\[2nd/i,"تابعي — الطبقة الثانية"],
- [/follower|tabi'/i,"تابعي"],[/succ.*taba'?\s*tabi'|taba' tabi/i,"تابع التابعين"],
- [/(\d)(st|nd|rd|th)\s*century\s*ah/i,"من القرن $1 الهجري"],[/(\d+)(st|nd|rd|th)\s*generation/i,"الطبقة $1"],
- [/rasool allah|prophet/i,"النبي ﷺ"]];
+/* تعريب وصف الطبقة — من صيغ قاعدة الرواة */
+const ORD={1:"الأولى",2:"الثانية",3:"الثالثة",4:"الرابعة",5:"الخامسة",6:"السادسة",
+7:"السابعة",8:"الثامنة",9:"التاسعة",10:"العاشرة",11:"الحادية عشرة",12:"الثانية عشرة"};
 function genAr(s){
   if(!s)return"";
-  if(/^[؀-ۿ\s—،]+$/.test(s))return s;
-  for(const [re,ar] of GEN){ if(re.test(s)) return s.replace(re,ar).replace(/\[.*?\]/g,"").replace(/\s+/g," ").trim(); }
-  return s;
+  if(/^[؀-ۿ\s—،()]+$/.test(s))return s;
+  let out="";
+  if(/Comp\.?\s*\(RA\)|Companion/i.test(s)) out="صحابي";
+  else if(/Succ\.?\s*\(Taba|Taba'? Tabi/i.test(s)) out="من أتباع التابعين";
+  else if(/Follower\s*\(Tabi|Tabi'\)/i.test(s)) out="تابعي";
+  else if(/Rasool Allah|Prophet/i.test(s)) out="النبي ﷺ";
+  else {
+    const c=s.match(/(\d+)(?:st|nd|rd|th)\s*Century\s*AH/i);
+    if(c) out="من القرن "+AR(c[1])+" الهجري";
+  }
+  const g=s.match(/\[?\s*(\d+)(?:st|nd|rd|th)\s*generation\s*\]?/i);
+  if(g){ const t="الطبقة "+(ORD[+g[1]]||AR(g[1])); out=out?out+" — "+t:t; }
+  return out||s.replace(/[\[\]()]/g," ").trim();
 }
 
-/* ── الجانب: قائمة سياقية تملأ الصفحة ── */
+/* ── الجانب ── */
 function sidebar(el,{title,items,active}={}){
+  if(!el)return;
   el.innerHTML=`<h4>${esc(title||"")}</h4><div class="lst">`+
     items.map(i=>`<a href="${i.href}" class="${i.key===active?'on':''}">
       ${i.n!=null?`<span class="n">${AR(i.n)}</span>`:""}<b>${esc(i.label)}</b>
-      ${i.side?`<span class="n" style="margin-inline-start:auto">${esc(i.side)}</span>`:""}</a>`).join("")+
-    `</div>`;
+      ${i.side?`<span class="side-n">${esc(i.side)}</span>`:""}</a>`).join("")+`</div>`;
 }
-function mountMenu(btn,side){
-  if(!btn||!side)return;
-  btn.onclick=()=>side.classList.toggle("open");
-}
+function mountMenu(btn,side){ if(btn&&side) btn.onclick=()=>side.classList.toggle("open"); }
 const MENU=`<button class="menu" id="mn" aria-label="القائمة"><svg viewBox="0 0 24 24" fill="none">
 <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>`;

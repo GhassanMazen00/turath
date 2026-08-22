@@ -12,19 +12,19 @@
   <nav class="navl"><a href="tafsir.html"$2>التفسير</a><a href="hadith.html"$3>الحديث</a><a href="rijal.html"$4>الرواة</a>
   <span id="mnw"></span><span id="tg"></span></nav>
 </div></header>
-<div class="shell">
-  <aside class="side" id="side"></aside>
-  <main class="main" id="app"></main>
-</div>
+<div class="shell"><aside class="side" id="side"></aside><main class="main" id="app"></main></div>
 <script src="assets/app.js"></script>
 <script>
 theme(); document.getElementById('tg').innerHTML=TGL; document.getElementById('mnw').innerHTML=MENU;
 mountMenu(document.getElementById('mn'),document.getElementById('side'));
-const PER=15; let B={};
+const PER=15; let B={},TAK={},GDEF={},SHARH={};
 const app=()=>document.getElementById('app'), side=()=>document.getElementById('side');
 const FOOT='<footer class="foot" id="foot"></footer>';
-function foot(){ const f=document.getElementById('foot'); if(f)mountFooter(f); }
-(async()=>{ try{ await searchInit(); B=SEARCH.books; }catch(e){ return failed(app(),e); }
+function foot(){const f=document.getElementById('foot'); if(f)mountFooter(f);}
+(async()=>{ try{ await searchInit(); B=SEARCH.books;
+    [TAK,GDEF,SHARH]=await Promise.all([api.local('takhrij.json').catch(()=>({})),
+      api.local('grades.json').catch(()=>({})),api.local('sharh.json').catch(()=>({}))]);
+  }catch(e){ return failed(app(),e); }
   addEventListener('hashchange',route); route(); })();
 function route(){
   const p=location.hash.replace(/^#\/?/,'').split('/').filter(Boolean);
@@ -33,36 +33,29 @@ function route(){
   if(p.length===1) return vSections(p[0]);
   return vList(p[0],+p[1],+(p[2]||1));
 }
-function sideBooks(active){
-  sidebar(side(),{title:'كتب الحديث',active,
-    items:Object.keys(B).map(k=>({key:k,href:'#/'+k,label:B[k].ar,side:AR(B[k].total)}))});
-}
-function sideSections(k,active){
-  const b=B[k];
-  sidebar(side(),{title:b.ar,active,
-    items:b.sections.map(s=>({key:s.n,href:'#/'+k+'/'+s.n+'/1',n:s.n,label:s.ar,side:AR(s.count)}))});
-}
+function sideBooks(a){sidebar(side(),{title:'كتب الحديث',active:a,
+  items:Object.keys(B).map(k=>({key:k,href:'#/'+k,label:B[k].ar,side:AR(B[k].total)}))});}
+function sideSections(k,a){const b=B[k];sidebar(side(),{title:b.ar,active:a,
+  items:b.sections.map(s=>({key:s.n,href:'#/'+k+'/'+s.n+'/1',n:s.n,label:s.ar,side:AR(s.count)}))});}
 function vBooks(){
   sideBooks(); const tot=Object.values(B).reduce((a,b)=>a+b.total,0);
   app().innerHTML='<nav class="crumb"><span>كتب الحديث</span></nav>'+
-   '<section class="head"><div class="k">السنّة النبوية</div><h1>كتب الحديث</h1>'+
-   '<div class="m"><bdi>'+AR(Object.keys(B).length)+' كتب</bdi><span class="sep">•</span><bdi>'+AR(tot)+' حديثًا</bdi></div></section>'+
-   '<div id="s"></div>'+
-   '<div class="sh"><h2>الكتب</h2><span class="ln"></span></div>'+
-   '<div class="grid g2x">'+Object.keys(B).map(k=>{const b=B[k];
-     return '<a class="card" href="#/'+k+'"><h3>'+esc(b.ar)+'</h3><p>'+esc(b.author)+'</p>'+
+   '<div class="ph"><div class="k">السنّة النبوية</div><h1>كتب الحديث</h1>'+
+   '<div class="m"><bdi>'+AR(Object.keys(B).length)+' كتب</bdi><span class="sep">•</span><bdi>'+AR(tot)+' حديثًا</bdi></div></div>'+
+   '<div id="s"></div><div class="sh"><h2>الكتب</h2><span class="ln"></span></div>'+
+   '<div class="bento">'+Object.keys(B).map(k=>{const b=B[k];
+     return '<a class="cell b3" href="#/'+k+'"><h3>'+esc(b.ar)+'</h3><p>'+esc(b.author)+'</p>'+
      '<div class="meta"><bdi>'+AR(b.total)+' حديثًا</bdi><span class="sep">•</span><bdi>'+AR(b.sections.length)+' كتابًا</bdi></div></a>';}).join('')+'</div>'+FOOT;
   mountSearch(document.getElementById('s'),{}); foot(); scrollTo(0,0);
 }
 function vSections(k){
-  const b=B[k]; if(!b) return vBooks();
-  sideSections(k);
+  const b=B[k]; if(!b) return vBooks(); sideSections(k);
   app().innerHTML='<nav class="crumb"><a href="#/">كتب الحديث</a><span class="sep">›</span><span>'+esc(b.ar)+'</span></nav>'+
-   '<section class="head"><div class="k">'+esc(b.author)+'</div><h1>'+esc(b.ar)+'</h1>'+
-   '<div class="m"><bdi>'+AR(b.total)+' حديثًا</bdi><span class="sep">•</span><bdi>'+AR(b.sections.length)+' كتابًا</bdi></div></section>'+
+   '<div class="ph"><div class="k">'+esc(b.author)+'</div><h1>'+esc(b.ar)+'</h1>'+
+   '<div class="m"><bdi>'+AR(b.total)+' حديثًا</bdi><span class="sep">•</span><bdi>'+AR(b.sections.length)+' كتابًا</bdi></div></div>'+
    '<div class="sh"><h2>الكتب والأبواب</h2><span class="ln"></span></div>'+
-   '<div class="grid g3">'+b.sections.map(s=>
-     '<a class="tile" href="#/'+k+'/'+s.n+'/1"><span class="n">'+AR(s.n)+'</span>'+
+   '<div class="tiles">'+b.sections.map(s=>
+     '<a class="tile wrap" href="#/'+k+'/'+s.n+'/1"><span class="n">'+AR(s.n)+'</span>'+
      '<span class="t"><b>'+esc(s.ar)+'</b><span><bdi>'+AR(s.count)+' حديثًا</bdi></span></span></a>').join('')+'</div>'+FOOT;
   foot(); scrollTo(0,0);
 }
@@ -71,22 +64,29 @@ async function vList(k,sec,page){
   const s=b.sections.find(x=>x.n===sec); if(!s) return vSections(k);
   sideSections(k,sec);
   app().innerHTML='<nav class="crumb"><a href="#/">كتب الحديث</a><span class="sep">›</span><a href="#/'+k+'">'+esc(b.ar)+'</a><span class="sep">›</span><span>'+esc(s.ar)+'</span></nav>'+
-   '<section class="head"><div class="k">'+esc(b.ar)+'</div><h1>'+esc(s.ar)+'</h1>'+
-   '<div class="m"><bdi>'+AR(s.count)+' حديثًا</bdi></div></section><div id="body"></div>'+FOOT;
+   '<div class="ph"><div class="k">'+esc(b.ar)+'</div><h1>'+esc(s.ar)+'</h1>'+
+   '<div class="m"><bdi>'+AR(s.count)+' حديثًا</bdi></div></div><div id="body"></div>'+FOOT;
   loading(document.getElementById('body'),'جارٍ الجلب…'); foot(); scrollTo(0,0);
   try{
     const idx=await loadIdx(k); const rows=idx.filter(r=>r[1]===sec);
     const pages=Math.max(1,Math.ceil(rows.length/PER)); page=Math.min(Math.max(1,page),pages);
-    const sl=rows.slice((page-1)*PER,page*PER);
     const pg=()=>{const pv=page>1?'#/'+k+'/'+sec+'/'+(page-1):null,nx=page<pages?'#/'+k+'/'+sec+'/'+(page+1):null;
       return '<div class="pager">'+(pv?'<a href="'+pv+'">‹ السابق</a>':'<span class="off">‹ السابق</span>')+
       '<span class="mid"><bdi>صفحة '+AR(page)+' من '+AR(pages)+'</bdi></span>'+
       (nx?'<a href="'+nx+'">التالي ›</a>':'<span class="off">التالي ›</span>')+'</div>';};
-    document.getElementById('body').innerHTML=pg()+sl.map(([num,,txt,g])=>{
+    document.getElementById('body').innerHTML=pg()+rows.slice((page-1)*PER,page*PER).map(([num,,txt,g])=>{
       const gg=g&&g.length?'<span class="g '+gclass(g[0][1])+'">'+esc(g[0][1])+'</span>':'';
-      return '<a class="hit" href="#/'+k+'/h/'+num+'"><div class="m"><span class="tag c">حديث '+AR(num)+'</span>'+gg+'</div>'+
+      const tk=(TAK[k+':'+num]||[]).length;
+      return '<a class="hit" href="#/'+k+'/h/'+num+'"><div class="m"><span class="tag c">حديث '+AR(num)+'</span>'+gg+
+        (tk?'<span class="tag"><bdi>'+AR(tk)+' تخريجًا</bdi></span>':'')+'</div>'+
         '<div class="tx">'+esc(txt.slice(0,220))+'…</div></a>';}).join('')+pg();
   }catch(e){ failed(document.getElementById('body'),e); }
+}
+function gdef(g){
+  if(!g)return'';
+  const keys=Object.keys(GDEF).sort((a,b)=>b.length-a.length);
+  for(const k of keys) if(g.indexOf(k)>=0) return GDEF[k];
+  return'';
 }
 async function vHadith(k,num){
   const b=B[k]; if(!b) return vBooks();
@@ -97,7 +97,7 @@ async function vHadith(k,num){
     const sec=row?b.sections.find(x=>x.n===row[1]):null;
     if(sec) sideSections(k,sec.n); else sideBooks(k);
     const d=await api.hadith(k,num); const h=d.hadiths[0];
-    const sp=splitIsnad(h.text),grades=row?row[3]:[],raw=(row&&row[4])||[];
+    const sp=splitIsnad(h.text), grades=row?row[3]:[], raw=(row&&row[4])||[];
     const RI=await rijalIndex();
     const all=idx.map(r=>r[0]),i=all.indexOf(num);
     const prev=i>0?all[i-1]:null,next=i>=0&&i<all.length-1?all[i+1]:null;
@@ -109,29 +109,65 @@ async function vHadith(k,num){
       if(kind==='i'){const r=RI[v];return r?{href:'rijal.html#/r/'+encodeURIComponent(v),name:r.n,
         sub:[r.g,genAr(r.gen)].filter(Boolean).join(' — ')}:null;}
       return {href:'rijal.html#/r/'+encodeURIComponent('t:'+v),name:v,sub:''};}).filter(Boolean);
+    const tak=TAK[k+':'+num]||[];
+    const sharh=SHARH[k+':'+num];
+    // الحكم البارز
+    const top=grades.length?grades[0]:null;
+    const cls=top?gclass(top[1]):'na';
+    const agree=grades.filter(g=>gclass(g[1])===cls).length;
+    const gband=top?
+      '<div class="pane gband"><span class="gbig '+cls+'">'+esc(top[1])+'</span>'+
+      '<span class="gdef">'+(gdef(top[1])||'حكمٌ منقول عن أهل الحديث.')+
+      '<br><b>'+esc(top[0])+'</b>'+(grades.length>1?' — ووافقه <bdi>'+AR(agree-1)+'</bdi> من <bdi>'+AR(grades.length-1)+'</bdi> من المحدّثين الآخرين المذكورين':'')+'</span></div>'
+      :'<div class="pane gband"><span class="gbig na">بلا حكم مرفق</span><span class="gdef">لم يرد حكم في المصدر لهذا الحديث'+
+       ((k==='bukhari'||k==='muslim')?' — وهو من الصحيحين، وأهل العلم على تلقّي ما فيهما بالقبول.':'.')+'</span></div>';
     document.getElementById('body').innerHTML=
       '<nav class="crumb"><a href="#/">كتب الحديث</a><span class="sep">›</span><a href="#/'+k+'">'+esc(b.ar)+'</a>'+
       (sec?'<span class="sep">›</span><a href="#/'+k+'/'+sec.n+'/1">'+esc(sec.ar)+'</a>':'')+
       '<span class="sep">›</span><span>حديث '+AR(num)+'</span></nav>'+pg+
-      '<section class="head"><div class="k">'+esc(b.ar)+(sec?' — '+esc(sec.ar):'')+'</div>'+
+      '<div class="ph"><div class="k">'+esc(b.ar)+(sec?' — '+esc(sec.ar):'')+'</div>'+
       '<h1>حديث '+AR(num)+'</h1><div class="m">'+esc(b.author)+
-      '<span class="sep">•</span>الموضع <bdi>'+AR(h.reference.book)+':'+AR(h.reference.hadith)+'</bdi>'+
-      '<span class="sep">•</span>الترقيم المعتمد المطبوع</div></section>'+
-      (sp.isnad?'<div class="sh"><h2>المتن</h2><span class="ln"></span></div><div class="matn">'+esc(sp.matn)+'</div>':'')+
-      (nodes.length?'<div class="sh"><h2>سلسلة الإسناد</h2><span class="cnt"><bdi>'+AR(nodes.length)+' راويًا</bdi></span><span class="ln"></span></div>'+
-        '<div class="chain">'+nodes.map((n,j)=>'<div class="node'+(j===nodes.length-1?' last':'')+'">'+
+      '<span class="sep">•</span>الموضع <bdi>'+AR(h.reference.book)+':'+AR(h.reference.hadith)+'</bdi></div></div>'+
+      gband+
+      '<div class="pane matn">'+esc(sp.matn||h.text)+'</div>'+
+      '<div class="tabs" role="tablist">'+
+        '<button class="tab" role="tab" data-t="isnad" aria-selected="true">الإسناد<span class="c">'+AR(nodes.length)+'</span></button>'+
+        '<button class="tab" role="tab" data-t="full" aria-selected="false">النصّ كاملًا</button>'+
+        '<button class="tab" role="tab" data-t="hukm" aria-selected="false">الأحكام<span class="c">'+AR(grades.length)+'</span></button>'+
+        '<button class="tab" role="tab" data-t="takh" aria-selected="false">التخريج<span class="c">'+AR(tak.length)+'</span></button>'+
+        '<button class="tab" role="tab" data-t="sharh" aria-selected="false">الشرح</button>'+
+      '</div>'+
+      '<div class="panel on" data-p="isnad">'+
+        (nodes.length?'<div class="pane pad">'+nodes.map((n,j)=>'<div class="node'+(j===nodes.length-1?' last':'')+'">'+
           '<span class="dot">'+AR(j+1)+'</span><span class="nm"><a href="'+n.href+'">'+esc(n.name)+'</a>'+
           (n.sub?'<span class="sub">'+esc(n.sub)+'</span>':'')+'</span></div>').join('')+'</div>'+
-        '<div class="note">'+(auth?'السلسلة من قاعدة رواة مفهرسة لكل حديث.':'لم تُفهرَس سلسلة هذا الحديث؛ استُخرجت الأسماء آليًّا وقد تنقص.')+'</div>':'')+
-      '<div class="sh"><h2>نصّ الحديث كاملًا</h2><span class="ln"></span></div><div class="body">'+esc(h.text)+'</div>'+
-      '<div class="sh"><h2>شرح الحديث</h2><span class="ln"></span></div><div id="sharh"></div>'+
-      '<div class="sh"><h2>أحكام المحدّثين</h2>'+(grades.length?'<span class="cnt"><bdi>'+AR(grades.length)+'</bdi></span>':'')+'<span class="ln"></span></div>'+
-      (grades.length?'<table class="t"><tr><th>المحدِّث</th><th>الحكم</th></tr>'+
-        grades.map(g=>'<tr><td>'+esc(g[0])+'</td><td><span class="g '+gclass(g[1])+'">'+esc(g[1])+'</span></td></tr>').join('')+
-        '</table><div class="note">الأحكام كما وردت. المنصة تنقل ولا ترجّح.</div>'
-       :'<div class="msg">لم يرد حكم مرفق في المصدر لهذا الحديث.</div>')+
-      '<div class="acts"><a class="act" href="index.html">ابحث عن طرقه في بقية الكتب</a></div>'+pg;
-    sharhBlock(sp.matn,document.getElementById('sharh'));
+          '<div class="note">'+(auth?'السلسلة من قاعدة رواة مفهرسة لكل حديث.':'لم تُفهرَس سلسلة هذا الحديث؛ استُخرجت الأسماء آليًّا وقد تنقص.')+'</div>'
+         :'<div class="pane msg">لا سلسلة مفهرسة لهذا الحديث.</div>')+'</div>'+
+      '<div class="panel" data-p="full"><div class="pane full">'+esc(h.text)+'</div></div>'+
+      '<div class="panel" data-p="hukm">'+
+        (grades.length?'<div class="pane"><table class="t"><tr><th>المحدِّث</th><th>الحكم</th><th>معناه</th></tr>'+
+          grades.map(g=>'<tr><td>'+esc(g[0])+'</td><td><span class="g '+gclass(g[1])+'">'+esc(g[1])+'</span></td>'+
+          '<td style="color:var(--mut);font-size:.9rem">'+esc(gdef(g[1])||'—')+'</td></tr>').join('')+'</table></div>'+
+          '<div class="note">الأحكام كما وردت عن قائليها. المنصة تنقل ولا ترجّح بينها.</div>'
+         :'<div class="pane msg">لم يرد حكم مرفق في المصدر.</div>')+'</div>'+
+      '<div class="panel" data-p="takh">'+
+        (tak.length?'<div class="tiles">'+tak.map(r=>{const [bb,nn]=r.split(':');
+          const bk=(B[bb]||{}).ar||bb;
+          return '<a class="tile" href="#/'+bb+'/h/'+nn+'"><span class="n">'+AR(nn)+'</span>'+
+            '<span class="t"><b>'+esc(bk)+'</b><span>حديث '+AR(nn)+'</span></span></a>';}).join('')+'</div>'+
+          '<div class="note">مواضع ورود الحديث نفسه في كتبٍ أخرى، مستخرَجة بمطابقة المتن. المطابقة دقيقة متحفّظة، فقد تفوتها بعض الطرق.</div>'
+         :'<div class="pane msg">لم يُعثر على تخريج لهذا الحديث في بقية الكتب المفهرسة.</div>')+'</div>'+
+      '<div class="panel" data-p="sharh"><div id="sharh"></div></div>'+
+      '<div class="acts"><a class="act" href="index.html">ابحث عن ألفاظه</a></div>'+pg;
+    // التبويبات
+    const root=document.getElementById('body');
+    root.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+      root.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected',x===t));
+      root.querySelectorAll('.panel').forEach(p=>p.classList.toggle('on',p.dataset.p===t.dataset.t));
+    });
+    const sm=document.getElementById('sharh');
+    if(sharh) sm.innerHTML='<div class="pane pad">'+paras(sharh.t)+'</div><div class="note">المصدر: '+esc(sharh.s)+'</div>';
+    else sharhBlock(sp.matn||h.text,sm);
   }catch(e){ failed(document.getElementById('body'),e); }
 }
 </script></body></html>
