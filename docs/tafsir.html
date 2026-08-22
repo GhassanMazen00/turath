@@ -9,14 +9,20 @@
 <title>$1</title></head><body>
 <header class="nav"><div class="navin">
   <a class="brand" href="index.html"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2.2l2.3 1.9 3-.3.8 2.9 2.6 1.6-1.2 2.8 1.2 2.8-2.6 1.6-.8 2.9-3-.3L12 21.8l-2.3-1.9-3 .3-.8-2.9L3.3 15.7l1.2-2.8-1.2-2.8 2.6-1.6.8-2.9 3 .3z" stroke="currentColor" stroke-width="1.2"/><circle cx="12" cy="12" r="3.6" stroke="currentColor" stroke-width="1.2"/></svg>تُراث</a>
-  <nav class="navl"><a href="tafsir.html"$2>التفسير</a><a href="hadith.html"$3>الحديث</a><a href="rijal.html"$4>الرواة</a><span id="tg"></span></nav>
+  <nav class="navl"><a href="tafsir.html"$2>التفسير</a><a href="hadith.html"$3>الحديث</a><a href="rijal.html"$4>الرواة</a>
+  <span id="mnw"></span><span id="tg"></span></nav>
 </div></header>
-<main class="wrap" id="app"></main>
-<footer class="foot" id="foot"></footer>
+<div class="shell">
+  <aside class="side" id="side"></aside>
+  <main class="main" id="app"></main>
+</div>
 <script src="assets/app.js"></script>
 <script>
-theme(); document.getElementById('tg').innerHTML=TGL; mountFooter(document.getElementById('foot'));
-let S=[],T=[]; const app=()=>document.getElementById('app');
+theme(); document.getElementById('tg').innerHTML=TGL; document.getElementById('mnw').innerHTML=MENU;
+mountMenu(document.getElementById('mn'),document.getElementById('side'));
+let S=[],T=[]; const app=()=>document.getElementById('app'),side=()=>document.getElementById('side');
+const FOOT='<footer class="foot" id="foot"></footer>';
+function foot(){const f=document.getElementById('foot'); if(f)mountFooter(f);}
 (async()=>{ try{ await searchInit(); S=SEARCH.surahs; T=SEARCH.tafsirs; }catch(e){ return failed(app(),e); }
   addEventListener('hashchange',route); route(); })();
 function route(){
@@ -26,51 +32,63 @@ function route(){
   if(p.length>=3) return vAyah(+p[0],p[1],+p[2]);
   vSurahs();
 }
+function sideSurahs(active){
+  sidebar(side(),{title:'السور',active,
+    items:S.map(x=>({key:x.n,href:'#/'+x.n,n:x.n,label:x.ar,side:AR(x.count)}))});
+}
+function sideAyat(n,slug,active){
+  const s=S.find(x=>x.n===n); const a=[];
+  for(let i=1;i<=s.count;i++) a.push({key:i,href:'#/'+n+'/'+slug+'/'+i,n:i,label:'الآية '+AR(i)});
+  sidebar(side(),{title:'سورة '+s.ar,active,items:a});
+}
 function vSurahs(){
-  app().innerHTML=crumbs([{t:'السور'}])+
-   '<div class="ph"><div class="k">القرآن الكريم</div><h1>فهرس السور</h1>'+
-   '<div class="m"><bdi>١١٤ سورة</bdi> — اختر سورة ثم كتاب التفسير</div></div>'+
-   '<div class="search" id="s"></div>'+
-   '<div class="sh"><h2>السور</h2><span class="ln"></span></div><div class="grid g4" id="g"></div>';
+  sideSurahs();
+  app().innerHTML='<nav class="crumb"><span>السور</span></nav>'+
+   '<section class="head"><div class="k">القرآن الكريم</div><h1>فهرس السور</h1>'+
+   '<div class="m"><bdi>١١٤ سورة</bdi><span class="sep">•</span>اختر سورة ثم كتاب التفسير</div></section>'+
+   '<div id="s"></div><div class="sh"><h2>السور</h2><span class="ln"></span></div>'+
+   '<div class="grid g4" id="g"></div>'+FOOT;
   document.getElementById('g').innerHTML=S.map(x=>
-    '<a class="tile" href="#/'+x.n+'"><span class="n">'+AR(x.n)+'</span>'+
-    '<span class="t"><b>'+esc(x.ar)+'</b><span>'+esc(x.rev)+'<span class="sep">•</span><bdi>'+AR(x.count)+' آية</bdi></span></span></a>').join('');
-  mountSearch(document.getElementById('s'),{}); reveal(); scrollTo(0,0);
+   '<a class="tile" href="#/'+x.n+'"><span class="n">'+AR(x.n)+'</span>'+
+   '<span class="t"><b>'+esc(x.ar)+'</b><span>'+esc(x.rev)+'<span class="sep">•</span><bdi>'+AR(x.count)+' آية</bdi></span></span></a>').join('');
+  mountSearch(document.getElementById('s'),{}); foot(); scrollTo(0,0);
 }
 function vPick(n){
   const s=S.find(x=>x.n===n); if(!s) return vSurahs();
-  app().innerHTML=crumbs([{t:'السور',href:'#/'},{t:'سورة '+s.ar}])+
-   '<div class="ph"><div class="k">سورة</div><h1>'+esc(s.ar)+'</h1>'+
-   '<div class="m">'+esc(s.rev)+'<span class="sep">•</span><bdi>'+AR(s.count)+' آية</bdi></div></div>'+
+  sideSurahs(n);
+  app().innerHTML='<nav class="crumb"><a href="#/">السور</a><span class="sep">›</span><span>سورة '+esc(s.ar)+'</span></nav>'+
+   '<section class="head"><div class="k">سورة</div><h1>'+esc(s.ar)+'</h1>'+
+   '<div class="m">'+esc(s.rev)+'<span class="sep">•</span><bdi>'+AR(s.count)+' آية</bdi></div></section>'+
    '<div class="sh"><h2>اختر كتاب التفسير</h2><span class="cnt"><bdi>'+AR(T.length)+'</bdi></span><span class="ln"></span></div>'+
    '<div class="grid g2">'+T.map(t=>'<a class="card" href="#/'+n+'/'+t.slug+'/1"><h3>'+esc(t.ar)+'</h3>'+
-     '<p>'+esc(t.author)+'</p><div class="meta">'+esc(t.size)+'</div></a>').join('')+'</div>';
-  reveal(); scrollTo(0,0);
+     '<p>'+esc(t.author)+'</p><div class="meta">'+esc(t.size)+'</div></a>').join('')+'</div>'+FOOT;
+  foot(); scrollTo(0,0);
 }
 async function vAyah(n,slug,a){
-  const s=S.find(x=>x.n===n), t=T.find(x=>x.slug===slug);
+  const s=S.find(x=>x.n===n),t=T.find(x=>x.slug===slug);
   if(!s||!t) return vSurahs();
   a=Math.min(Math.max(1,a),s.count);
+  sideAyat(n,slug,a);
   const pg=()=>{const p=a>1?'#/'+n+'/'+slug+'/'+(a-1):null,x=a<s.count?'#/'+n+'/'+slug+'/'+(a+1):null;
-    return '<div class="pager">'+(p?'<a href="'+p+'">‹ الآية السابقة</a>':'<span class="off">‹</span>')+
+    return '<div class="pager">'+(p?'<a href="'+p+'">‹ الآية السابقة</a>':'<span class="off">‹ السابقة</span>')+
     '<span class="mid"><bdi>الآية '+AR(a)+' من '+AR(s.count)+'</bdi></span>'+
-    (x?'<a href="'+x+'">الآية التالية ›</a>':'<span class="off">›</span>')+'</div>';};
-  app().innerHTML=crumbs([{t:'السور',href:'#/'},{t:'سورة '+s.ar,href:'#/'+n},{t:t.ar}])+
-   '<div class="ph"><div class="k">'+esc(t.ar)+'</div><h1>سورة '+esc(s.ar)+'</h1>'+
-   '<div class="m">'+esc(t.author)+'</div></div>'+pg()+'<div id="body"></div>'+
-   '<div class="sh"><h2>كتب أخرى لهذه الآية</h2><span class="ln"></span></div>'+
-   '<div class="grid g2" id="others"></div>';
-  loading(document.getElementById('body'),'جارٍ الجلب…'); scrollTo(0,0);
+    (x?'<a href="'+x+'">الآية التالية ›</a>':'<span class="off">التالية ›</span>')+'</div>';};
+  app().innerHTML='<nav class="crumb"><a href="#/">السور</a><span class="sep">›</span><a href="#/'+n+'">سورة '+esc(s.ar)+'</a><span class="sep">›</span><span>'+esc(t.ar)+'</span></nav>'+
+   '<section class="head"><div class="k">'+esc(t.ar)+'</div><h1>سورة '+esc(s.ar)+'</h1>'+
+   '<div class="m">'+esc(t.author)+'</div></section>'+pg()+'<div id="body"></div>'+
+   '<div class="sh"><h2>الآية نفسها في كتب أخرى</h2><span class="ln"></span></div>'+
+   '<div class="grid g3" id="others"></div>'+FOOT;
+  loading(document.getElementById('body'),'جارٍ الجلب…'); foot(); scrollTo(0,0);
   document.getElementById('others').innerHTML=T.filter(x=>x.slug!==slug).map(x=>
-    '<a class="tile" href="#/'+n+'/'+x.slug+'/'+a+'"><span class="n">؟</span>'+
-    '<span class="t"><b>'+esc(x.ar)+'</b><span>'+esc(x.author)+'</span></span></a>').join('');
+   '<a class="tile alt" href="#/'+n+'/'+x.slug+'/'+a+'">'+
+   '<span class="n"><svg viewBox="0 0 24 24" fill="none" width="14" height="14"><path d="M5 4h9a2 2 0 012 2v14H7a2 2 0 01-2-2z" stroke="currentColor" stroke-width="1.6"/></svg></span>'+
+   '<span class="t"><b>'+esc(x.ar)+'</b><span>'+esc(x.author)+'</span></span></a>').join('');
   try{
     const [av,tf]=await Promise.all([api.ayah(n,a),api.tafsir(slug,n,a)]);
     document.getElementById('body').innerHTML=
       '<div class="ayah">'+esc(av.text)+'<span class="num">'+AR(a)+'</span></div>'+
       '<div class="sh"><h2>'+esc(t.ar)+'</h2><span class="ln"></span></div>'+
-      '<div class="card">'+paras(tf.text)+'</div>'+pg();
-    reveal();
+      '<div class="prose">'+paras(tf.text)+'</div>'+pg();
   }catch(e){ failed(document.getElementById('body'),e); }
 }
 </script></body></html>

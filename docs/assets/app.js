@@ -254,35 +254,6 @@ function mountFooter(el){
   dlg.addEventListener("click",e=>{ if(e.target===dlg)dlg.close(); });
 }
 
-/* ── خلفية البطل: شبكة هندسية هادئة ── */
-function heroCanvas(cv){
-  if(!cv||matchMedia("(prefers-reduced-motion:reduce)").matches)return;
-  const ctx=cv.getContext("2d"); let w,h,t=0,raf;
-  const col=()=>getComputedStyle(document.documentElement).getPropertyValue("--gold").trim()||"#9c7b33";
-  function size(){const r=cv.getBoundingClientRect(),d=Math.min(2,devicePixelRatio||1);
-    w=cv.width=r.width*d; h=cv.height=r.height*d; ctx.setTransform(d,0,0,d,0,0);}
-  function draw(){
-    const rw=w/(Math.min(2,devicePixelRatio||1)), rh=h/(Math.min(2,devicePixelRatio||1));
-    ctx.clearRect(0,0,rw,rh);
-    const cx=rw/2, cy=rh*.46, R=Math.min(rw,rh)*.52;
-    ctx.strokeStyle=col(); ctx.globalAlpha=.16; ctx.lineWidth=1;
-    for(let ring=0;ring<3;ring++){
-      const pts=8+ring*2, rad=R*(.5+ring*.26), rot=t*(ring%2?-1:1)*.00016;
-      ctx.beginPath();
-      for(let i=0;i<pts;i++){
-        const a=rot+i*2*Math.PI/pts, b=rot+((i+ (ring===1?3:2))%pts)*2*Math.PI/pts;
-        ctx.moveTo(cx+Math.cos(a)*rad,cy+Math.sin(a)*rad);
-        ctx.lineTo(cx+Math.cos(b)*rad,cy+Math.sin(b)*rad);
-      }
-      ctx.stroke();
-    }
-    ctx.globalAlpha=.1;
-    for(let ring=1;ring<=3;ring++){ctx.beginPath();ctx.arc(cx,cy,R*(.35+ring*.24),0,7);ctx.stroke();}
-    t+=16; raf=requestAnimationFrame(draw);
-  }
-  size(); draw(); addEventListener("resize",size,{passive:true});
-}
-
 /* ── شرح الحديث: يُجلب من الموسوعة الحديثية (الدرر السنية) عبر وسيط عام.
    لا يُخزَّن عندنا ولا يُختلق؛ فإن تعذّر الاتصال عُرض رابط مباشر للشرح. ── */
 const SHARH_HOSTS=["https://dorar-hadith-api.herokuapp.com","https://hadeethenc-api.vercel.app",
@@ -323,26 +294,9 @@ async function rijalGet(key){
   return RJ.sh[i][key]||null;
 }
 /* ── حركة ── */
-function reveal(sel=".rv"){
-  const els=document.querySelectorAll(sel);
-  if(!("IntersectionObserver" in window)){els.forEach(e=>e.classList.add("in"));return;}
-  const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}});},
-    {rootMargin:"0px 0px -6% 0px",threshold:.06});
-  els.forEach(e=>io.observe(e));
-}
-function countUp(el,to,ms=1000){
-  if(matchMedia("(prefers-reduced-motion:reduce)").matches){el.textContent=AR(to);return;}
-  const t0=performance.now();
-  const tick=t=>{const p=Math.min(1,(t-t0)/ms);el.textContent=AR(Math.round(to*(1-Math.pow(1-p,3))));
-    if(p<1)requestAnimationFrame(tick);};
-  requestAnimationFrame(tick);
-}
-function mountStats(root,items){
-  root.innerHTML=items.map(([n,l])=>`<div class="stat"><b data-to="${n}">٠</b><span>${esc(l)}</span></div>`).join("");
-  const io=new IntersectionObserver(es=>{es.forEach(e=>{if(!e.isIntersecting)return;
-    const b=e.target.querySelector("b"); if(b&&!b.dataset.done){b.dataset.done=1;countUp(b,+b.dataset.to);}
-    io.unobserve(e.target);});},{threshold:.35});
-  root.querySelectorAll(".stat").forEach(s=>io.observe(s));
+function reveal(){}   /* بلا حركة — تصميم ثابت */
+function mountStats(root,items){        /* أرقام ثابتة بلا عدّ */
+  root.innerHTML=items.map(([n,l])=>`<div class="stat"><b>${AR(n)}</b><span>${esc(l)}</span></div>`).join("");
 }
 
 /* تعريب وصف الطبقة */
@@ -356,3 +310,18 @@ function genAr(s){
   for(const [re,ar] of GEN){ if(re.test(s)) return s.replace(re,ar).replace(/\[.*?\]/g,"").replace(/\s+/g," ").trim(); }
   return s;
 }
+
+/* ── الجانب: قائمة سياقية تملأ الصفحة ── */
+function sidebar(el,{title,items,active}={}){
+  el.innerHTML=`<h4>${esc(title||"")}</h4><div class="lst">`+
+    items.map(i=>`<a href="${i.href}" class="${i.key===active?'on':''}">
+      ${i.n!=null?`<span class="n">${AR(i.n)}</span>`:""}<b>${esc(i.label)}</b>
+      ${i.side?`<span class="n" style="margin-inline-start:auto">${esc(i.side)}</span>`:""}</a>`).join("")+
+    `</div>`;
+}
+function mountMenu(btn,side){
+  if(!btn||!side)return;
+  btn.onclick=()=>side.classList.toggle("open");
+}
+const MENU=`<button class="menu" id="mn" aria-label="القائمة"><svg viewBox="0 0 24 24" fill="none">
+<path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>`;
