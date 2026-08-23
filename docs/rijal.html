@@ -70,7 +70,7 @@ async function vOne(key){
     const d=await rijalGet(key),v=IDX[key]||{};
     if(!d){document.getElementById('body').innerHTML='<div class="pane msg">لا بيانات لهذا الراوي.</div>';return;}
     const nm=d.ar||d.en||v.n||key, hs=d.h||[];
-    const facts=[['الطبقة',genAr(d.gen)],['الحكم',d.g],['المولد',d.b],['الوفاة',d.d],['الإقامة',d.p],['الاشتهار',d.tg]].filter(x=>x[1]);
+    const facts=[['الطبقة',genAr(d.gen)],['الحكم',d.g],['مولده',placeAr(d.b)],['وفاته',dateAr(d.d)],['بلدانه',placeAr(d.p)],['نسبته',tribeAr(d.tg)]].filter(x=>x[1]);
     document.getElementById('body').innerHTML=
       '<nav class="crumb"><a href="#/1">الرواة</a><span class="sep">›</span><span>'+esc(nm)+'</span></nav>'+
       '<section class="ph"><div class="k">راوٍ</div><h1 class="amiri">'+esc(nm)+'</h1>'+

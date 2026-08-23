@@ -12,68 +12,144 @@
   <nav class="navl"><a href="tafsir.html"$2>التفسير</a><a href="hadith.html"$3>الحديث</a><a href="rijal.html"$4>الرواة</a>
   <span id="mnw"></span><span id="tg"></span></nav>
 </div></header>
-<div class="shell"><aside class="side" id="side"></aside><main class="main">
-  <section class="hero">
-    <div class="ey">القرآن · التفسير · السنّة</div>
+<div class="home">
+  <section class="mast">
+    <svg class="mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M12 1.6l2.5 2.1 3.3-.3.9 3.2 2.8 1.7-1.3 3.2 1.3 3.2-2.8 1.7-.9 3.2-3.3-.3L12 22.4l-2.5-2.1-3.3.3-.9-3.2-2.8-1.7 1.3-3.2L2.5 9.3l2.8-1.7.9-3.2 3.3.3z" stroke="currentColor" stroke-width="1"/>
+      <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1"/></svg>
     <h1>تُراث</h1>
-    <p class="sub">القرآن بتفاسيره، والسنّة بأسانيدها وأحكام المحدّثين عليها — بترقيمها المعتمد، وكلُّ نصٍّ موصولٌ بمصدره.</p>
+    <p class="lede">القرآن بتفاسيره، والسنّة بأسانيدها وأحكام المحدّثين عليها — بترقيمها المعتمد، وكلُّ نصٍّ موصولٌ بمصدره.</p>
+    <div class="search" id="search"></div>
+    <div class="figs" id="figs"></div>
   </section>
-  <div id="search"></div>
-  <div class="bento" id="bento"></div>
-  <div class="sh"><h2>أبواب مطروقة</h2><span class="ln"></span></div>
-  <div class="tiles" id="picks"></div>
-  <div class="sh"><h2>كيف تستعملها</h2><span class="ln"></span></div>
-  <div class="bento">
-    <div class="cell b2"><div class="k">خطوة ١</div><h3>ابحث</h3><p>اكتب لفظًا فيمسح متون الأحاديث كلها؛ يُعرض النصّ مرة واحدة وتحته الكتب التي أخرجته.</p></div>
-    <div class="cell b2"><div class="k">خطوة ٢</div><h3>اقرأ بالإسناد</h3><p>الحكم بارزًا مع معناه، ثم المتن، ثم تبويب للإسناد والنصّ الكامل والأحكام والتخريج والشرح.</p></div>
-    <div class="cell b2"><div class="k">خطوة ٣</div><h3>تحقّق من الراوي</h3><p>اضغط أيّ راوٍ لترى ترجمته وطبقته ومشايخه وتلاميذه وبقية أحاديثه.</p></div>
-  </div>
-  <div class="sh"><h2>ما تلتزم به</h2><span class="ln"></span></div>
-  <div class="bento">
-    <div class="cell b3"><h3>تَنقل ولا تُرجِّح</h3><p>عند اختلاف الأحكام تُعرض كلها منسوبةً لقائليها، ولا تختار المنصة واحدًا.</p></div>
-    <div class="cell b3"><h3>لا معلومة بلا مصدر</h3><p>كل نصّ يحمل كتابه وموضعه ورقمه المعتمد المطبوع.</p></div>
-    <div class="cell b3"><h3>لا إفتاء</h3><p>نعرض ما ورد، ولا نقول «الراجح» ولا نجيب عن «ما حكم…».</p></div>
-    <div class="cell b3"><h3>لا يُختلق نصّ</h3><p>ما لم يُجلب من مصدر يُقال إنه لم يُجلب، ولا يُملأ فراغه.</p></div>
-  </div>
-  <div class="sh"><h2>حدود المنصة اليوم</h2><span class="ln"></span></div>
-  <div class="cell b6"><p style="line-height:2.3">
-    · <b>التخريج</b> مستخرَج بمطابقة المتن، ومضبوط على الدقة لا السَّعة — فقد تفوته بعض الطرق.<br>
-    · <b>شرح الحديث</b> متوفّر للأربعين النووية من مصدر مُتحقَّق؛ ولبقية الكتب يُطلب من الموسوعة الحديثية عند توفّر الوسيط.<br>
-    · <b>سلاسل الإسناد</b> مفهرسة لأكثر من <bdi>٣٣٬٠٠٠</bdi> حديث؛ وما سواها يُستخرج آليًّا ويُنبَّه عليه.<br>
-    · <b>الفقه والسيرة</b> مؤجَّلان حتى يتوفّر مصدر مهيكل موثّق.</p></div>
+
+  <section class="band band-tint">
+    <div class="sect"><div class="l"><div class="k">السنّة النبوية</div>
+      <h2>الحديث الشريف</h2>
+      <p>الكتب الستة والموطأ والأربعينات، بترقيمها المعتمد المطبوع. كل حديث يُعرض بحكمه ومعناه، ثم متنه، ثم سلسلة رواته، وتخريجه في بقية الكتب، وشرحه حيث توفّر.</p></div>
+      <a class="more" href="hadith.html">كل الكتب ←</a></div>
+    <div class="car" id="carH"></div>
+  </section>
+
+  <section class="band">
+    <div class="sect"><div class="l"><div class="k">القرآن الكريم</div>
+      <h2>التفسير</h2>
+      <p>مئة وأربع عشرة سورة، وثمانية عشر كتاب تفسير من الطبري وابن كثير والقرطبي إلى ابن عاشور. اختر السورة، ثم الكتاب، ثم تصفّح الآيات آيةً آية بنصٍّ كبير مريح.</p></div>
+      <a class="more" href="tafsir.html">كل السور ←</a></div>
+    <div class="car" id="carT"></div>
+  </section>
+
+  <section class="band band-tint">
+    <div class="sect"><div class="l"><div class="k">علم الرجال</div>
+      <h2>الرواة</h2>
+      <p>تراجم رواة الأسانيد: الطبقة والحكم والمولد والوفاة والبلدان والشيوخ والتلاميذ، وكل حديث ورد فيه الراوي. اضغط أيّ اسم في أيّ إسناد لتصل إلى ترجمته.</p></div>
+      <a class="more" href="rijal.html">كل الرواة ←</a></div>
+    <div class="car" id="carR"></div>
+  </section>
+
+  <section class="band">
+    <div class="sect"><div class="l"><div class="k">دليل</div><h2>كيف تستعمل المنصة</h2>
+      <p>المنصة أداة بحث ومراجعة، لا مرجعًا يُفتي.</p></div></div>
+    <div class="plain">
+      <div class="it"><span class="n">خطوة ١</span><h3>ابحث</h3>
+        <p>اكتب لفظًا فيمسح متون الأحاديث كلها. يُعرض النصّ مرة واحدة وتحته الكتب التي أخرجته، فتختار أيّها تفتح.</p></div>
+      <div class="it"><span class="n">خطوة ٢</span><h3>اقرأ بالإسناد</h3>
+        <p>الحكم بارزٌ مع معناه ومن قاله، ثم المتن، ثم تبويب للإسناد والنصّ الكامل والأحكام والتخريج والشرح.</p></div>
+      <div class="it"><span class="n">خطوة ٣</span><h3>تحقّق من الراوي</h3>
+        <p>اضغط أيّ راوٍ في السلسلة لترى ترجمته وطبقته ومشايخه وتلاميذه وبقية ما رواه.</p></div>
+    </div>
+  </section>
+
+  <section class="band band-tint">
+    <div class="sect"><div class="l"><div class="k">اقتراح</div><h2>من أين تبدأ</h2>
+      <p>إن لم تكن تبحث عن شيء بعينه، فهذه أبواب وكتب يُبتدأ بها عادةً.</p></div></div>
+    <div class="car" id="carS"></div>
+  </section>
+
+  <section class="band">
+    <div class="sect"><div class="l"><div class="k">بصراحة</div><h2>ما نفعله وما لا نفعله</h2>
+      <p>ما لا نعرفه نقوله؛ وإن لم يوجد المصدر تُترك الخانة فارغة.</p></div></div>
+    <div class="rules">
+      <div class="rule yes"><span class="mk">✓</span><div><b>ننقل ولا نرجّح</b><span>عند اختلاف الأحكام تُعرض كلها منسوبةً لقائليها.</span></div></div>
+      <div class="rule no"><span class="mk">✕</span><div><b>لا نُفتي</b><span>لا نقول «الراجح» ولا نجيب عن «ما حكم…».</span></div></div>
+      <div class="rule yes"><span class="mk">✓</span><div><b>كل نصٍّ بمصدره</b><span>الكتاب والباب والرقم المعتمد المطبوع مع كل حديث.</span></div></div>
+      <div class="rule no"><span class="mk">✕</span><div><b>لا نختلق نصًّا</b><span>ما لم يُجلب من مصدر نقول إنه لم يُجلب، ولا نملأ فراغه.</span></div></div>
+      <div class="rule yes"><span class="mk">✓</span><div><b>التخريج بالمطابقة</b><span>مضبوط على الدقة لا السَّعة، فقد تفوته بعض الطرق.</span></div></div>
+      <div class="rule no"><span class="mk">✕</span><div><b>لا نجزم بهوية ملتبسة</b><span>حين يتعدّد المسمَّون باسمٍ في السند لا نختار واحدًا.</span></div></div>
+      <div class="rule yes"><span class="mk">✓</span><div><b>الشرح حيث توفّر</b><span>للأربعين النووية من مصدر مُتحقَّق، ولغيرها يُطلب عند توفّر الوسيط.</span></div></div>
+      <div class="rule no"><span class="mk">✕</span><div><b>الفقه والسيرة مؤجَّلان</b><span>حتى يتوفّر مصدر مهيكل موثّق.</span></div></div>
+    </div>
+  </section>
+
   <footer class="foot" id="foot"></footer>
-</main></div>
+</div>
 <script src="assets/app.js"></script>
 <script>
-theme(); document.getElementById('tg').innerHTML=TGL; document.getElementById('mnw').innerHTML=MENU;
-mountMenu(document.getElementById('mn'),document.getElementById('side'));
-mountFooter(document.getElementById('foot'));
+theme(); document.getElementById('tg').innerHTML=TGL; mountFooter(document.getElementById('foot'));
+const TAFNOTE={"ar-tafsir-al-mukhtasar": "تفسير موجز بلغة معاصرة، يعطي المعنى الإجمالي للآية.","ar-tafsir-muyassar": "أوجز التفاسير وأيسرها عبارةً؛ مناسب لأول قراءة.","ar-tafsir-ibn-kathir": "تفسير بالمأثور: يفسّر القرآن بالقرآن ثم بالسنة وأقوال السلف.","ar-tafsir-al-tabari": "أمّ كتب التفسير بالمأثور، يسوق أقوال السلف بأسانيدها.","ar-tafseer-al-qurtubi": "يُعنى باستنباط الأحكام الفقهية من الآيات.","ar-tafsir-al-baghawi": "مختصر من تفسير الثعلبي، جامع للمأثور بعبارة سهلة.","ar-tafsir-as-saadi": "يُبرز المقاصد والفوائد التربوية بأسلوب واضح.","ar-tafsir-al-jalalayn": "غاية الإيجاز: كلمة بكلمة، بحجم المتن نفسه.","ar-tafsir-al-wasit": "تفسير معاصر متوسّط الحجم، يجمع بين المعنى واللغة.","tafsir-al-baydawi": "يُعنى بالبلاغة ووجوه الإعراب والاشتقاق.","tafsir-al-alusi": "موسوعة تجمع اللغة والقراءات وأقوال المفسّرين قبله.","al-bahr-al-muhit": "عمدة في الإعراب والنحو ووجوه القراءات.","fath-al-qadir-al-shawkani": "يجمع بين الرواية والدراية: المأثور مع النظر اللغوي.","tafsir-ibn-uthaymeen": "تفسير معاصر يستخرج الفوائد والأحكام مسألةً مسألة.","ar-tafseer-tahrir-al-tanwir": "أوسع تفسير حديث في البلاغة ونظم القرآن ومقاصده.","tafsir-al-razi": "يُعنى بالمسائل العقلية والكلامية ومناسبات الآيات.","al-muharrar-al-wajiz-ibn-atiyyah": "محرَّر في نقل الأقوال، مع ترجيح لغوي دقيق.","tafsir-ibn-al-jawzi": "يجمع وجوه التفسير المنقولة في الآية ويعدّدها."};
+ const BOOKNOTE={bukhari:'أصحّ الكتب بعد كتاب الله، جمعه البخاري في نحو ستة عشر عامًا.',
+ muslim:'ثاني الصحيحين، امتاز بحسن السياق وجمع طرق الحديث في موضع واحد.',
+ abudawud:'عُني بأحاديث الأحكام، وهو أحد السنن الأربعة.',
+ tirmidhi:'يجمع الحديث وحكمه وأقوال الفقهاء فيه، ويذكر الباب وما فيه.',
+ nasai:'أدقّ السنن شرطًا في الرجال، وهو المجتبى.',
+ ibnmajah:'رابع السنن، فيه زوائد كثيرة على بقية الكتب.',
+ malik:'أقدم كتب السنّة المصنّفة، جمع الحديث مع عمل أهل المدينة.',
+ nawawi:'أربعون حديثًا جوامع، عليها مدار الدين، مع شرحها.',
+ qudsi:'أربعون من الأحاديث القدسية.',
+ dehlawi:'أربعون انتقاها شاه ولي الله الدهلوي.'};
 (async()=>{
  try{ await searchInit(); }catch(e){ document.getElementById('search').innerHTML='<div class="pane msg">تعذّر تحميل الفهرس.</div>'; return; }
  mountSearch(document.getElementById('search'),{});
- const B=SEARCH.books,nb=Object.keys(B).length;
+ const B=SEARCH.books,T=SEARCH.tafsirs,nb=Object.keys(B).length;
  const th=Object.values(B).reduce((a,b)=>a+b.total,0);
  const ts=Object.values(B).reduce((a,b)=>a+b.sections.length,0);
- let rn=0; try{ rn=Object.keys(await rijalIndex()).length; }catch(e){}
- let tk=0; try{ tk=Object.keys(await api.local('takhrij.json')).length; }catch(e){}
- document.getElementById('bento').innerHTML=
-  '<a class="cell b3" href="hadith.html"><svg class="ic" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 4v6c0 4-3 6.5-7 8-4-1.5-7-4-7-8V7z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M9 11.5l2 2 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>'+
-  '<h3>الحديث الشريف</h3><p>الكتب الستة والموطأ والأربعينات — بالحكم والمتن والإسناد والتخريج والشرح.</p>'+
-  '<div class="meta"><bdi>'+AR(nb)+' كتب</bdi><span class="sep">•</span><bdi>'+AR(th)+' حديثًا</bdi></div></a>'+
-  '<a class="cell b3" href="tafsir.html"><svg class="ic" viewBox="0 0 24 24" fill="none"><path d="M4 4.5h7a2 2 0 012 2V20H6a2 2 0 01-2-2z" stroke="currentColor" stroke-width="1.4"/><path d="M20 4.5h-7a2 2 0 00-2 2V20h7a2 2 0 002-2z" stroke="currentColor" stroke-width="1.4"/></svg>'+
-  '<h3>القرآن والتفسير</h3><p>اختر السورة، ثم كتاب التفسير، ثم تصفّح الآيات آيةً آية بنصٍّ كبير مريح.</p>'+
-  '<div class="meta"><bdi>١١٤ سورة</bdi><span class="sep">•</span><bdi>١٨ كتاب تفسير</bdi></div></a>'+
-  '<div class="cell b2"><div class="k">أحاديث</div><div class="big">'+AR(th)+'</div><p>من عشرة كتب</p></div>'+
-  '<div class="cell b2"><div class="k">رواة مترجَمون</div><div class="big">'+AR(rn)+'</div><p>بطبقاتهم وشيوخهم</p></div>'+
-  '<div class="cell b2"><div class="k">أحاديث لها تخريج</div><div class="big">'+AR(tk)+'</div><p>في كتب أخرى</p></div>'+
-  '<a class="cell b3" href="rijal.html"><h3>الرواة</h3><p>تراجم الرواة وطبقاتهم ومشايخهم وتلاميذهم، وكل حديث ورد فيه الراوي.</p><div class="meta"><bdi>'+AR(rn)+' راويًا</bdi></div></a>'+
-  '<a class="cell b3" href="hadith.html#/bukhari"><h3>ابدأ من الصحيحين</h3><p>صحيح البخاري وصحيح مسلم كاملَين بأبوابهما ومقدماتهما.</p><div class="meta"><bdi>'+AR(B.bukhari.total+B.muslim.total)+' حديثًا</bdi></div></a>';
- sidebar(document.getElementById('side'),{title:'كتب الحديث',
-   items:Object.keys(B).map(k=>({href:'hadith.html#/'+k,label:B[k].ar,side:AR(B[k].total)}))});
- const picks=[['bukhari',2],['bukhari',10],['muslim',1],['muslim',4],['bukhari',65],['muslim',56],['bukhari',97],['abudawud',1]];
- document.getElementById('picks').innerHTML=picks.map(([b,n])=>{
-   const bk=B[b],s=bk&&bk.sections.find(x=>x.n===n); if(!s)return '';
-   return '<a class="tile wrap" href="hadith.html#/'+b+'/'+n+'/1"><span class="n">'+AR(n)+'</span>'+
-     '<span class="t"><b>'+esc(s.ar)+'</b><span>'+esc(bk.ar)+'<span class="sep">•</span><bdi>'+AR(s.count)+' حديثًا</bdi></span></span></a>';}).join('');
+ let rn=0,tk=0;
+ try{ rn=Object.keys(await rijalIndex()).length; }catch(e){}
+ try{ tk=Object.keys(await api.local('takhrij.json')).length; }catch(e){}
+ document.getElementById('figs').innerHTML=[
+   [th,'حديثًا','من '+AR(nb)+' كتب'],[ts,'كتابًا وبابًا','مفهرسة بأسمائها'],
+   [rn,'راويًا','بتراجمهم وطبقاتهم'],[tk,'حديثًا له تخريج','في كتب أخرى'],
+   [114,'سورة','بنصّها الكامل'],[18,'كتاب تفسير','من الطبري إلى ابن عاشور']
+ ].map(([n,l,s])=>`<div class="fig"><b>${AR(n)}</b><span class="lb">${l}</span><span class="sub">${s}</span></div>`).join('');
+ // شريط الحديث
+ carousel(document.getElementById('carH'),{slides:Object.keys(B).map(k=>{const b=B[k];
+   return `<a class="scard" href="hadith.html#/${k}"><div class="top"><span class="idx">كتاب</span></div>
+     <h3>${esc(b.ar)}</h3><div class="by">${esc(b.author)}</div>
+     <p>${esc(BOOKNOTE[k]||'')}</p>
+     <div class="fo"><bdi>${AR(b.total)} حديثًا</bdi><span class="sep">•</span><bdi>${AR(b.sections.length)} كتابًا</bdi></div></a>`;})});
+ // شريط التفسير
+ carousel(document.getElementById('carT'),{slides:T.map(t=>
+   `<a class="scard" href="tafsir.html#/1/${t.slug}/1"><div class="top"><span class="idx">تفسير</span></div>
+     <h3>${esc(t.ar)}</h3><div class="by">${esc(t.author)}</div>
+     <p>${esc(TAFNOTE[t.slug]||('تفسير '+t.size+' لكامل المصحف.'))}</p>
+     <div class="fo">١١٤ سورة<span class="sep">•</span>${esc(t.size)}</div></a>`),interval:5000});
+ // شريط الرواة
+ try{
+   const rline=v=>{const gen=genAr(v.gen)||"",g=(v.g||"").trim();
+     return [(/صحاب/.test(gen)&&/صحاب/.test(g))?"":g,gen].filter(Boolean).join(" — ");};
+   const RI=await rijalIndex();
+   const top=Object.keys(RI).sort((a,b)=>RI[b].c-RI[a].c).slice(0,12);
+   carousel(document.getElementById('carR'),{slides:top.map(k=>{const v=RI[k];
+     return `<a class="scard" href="rijal.html#/r/${encodeURIComponent(k)}"><div class="top"><span class="idx">راوٍ</span></div>
+       <h3 class="amiri" style="font-weight:400">${esc(v.n)}</h3>
+       <div class="by">${esc(rline(v))}</div>
+       <p>${esc(dateAr(v.d)?('توفّي '+dateAr(v.d)):'من رواة الأسانيد المفهرسة.')}</p>
+       <div class="fo"><bdi>${AR(v.c)} رواية</bdi></div></a>`}),interval:4600});
+ }catch(e){}
+ // شريط الاقتراحات
+ const picks=[['bukhari',2,'يُبتدأ به عادةً؛ أصل الدين وأركانه.'],
+   ['nawawi',null,'أربعون حديثًا جامعة، مع شرحها كاملًا في المنصة.'],
+   ['bukhari',10,'أحاديث الأذان والإقامة وسننهما.'],
+   ['muslim',4,'كتاب الصلاة في صحيح مسلم، مجموع الطرق.'],
+   ['bukhari',65,'تفسير النبي ﷺ للقرآن من صحيح البخاري.'],
+   ['malik',null,'أقدم المصنّفات، ومدخل حسن لعمل أهل المدينة.']];
+ carousel(document.getElementById('carS'),{slides:picks.map(([b,n,note])=>{
+   const bk=B[b]; if(!bk)return '';
+   const s=n?bk.sections.find(x=>x.n===n):null;
+   const href=s?`hadith.html#/${b}/${n}/1`:`hadith.html#/${b}`;
+   return `<a class="scard" href="${href}"><div class="top"><span class="idx">${s?'باب':'كتاب'}</span></div>
+     <h3>${esc(s?s.ar:bk.ar)}</h3><div class="by">${esc(bk.ar)}</div>
+     <p>${esc(note)}</p>
+     <div class="fo"><bdi>${AR(s?s.count:bk.total)} حديثًا</bdi></div></a>`;}),interval:5400});
 })();
 </script></body></html>

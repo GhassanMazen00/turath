@@ -319,6 +319,77 @@ function genAr(s){
   return out||s.replace(/[\[\]()]/g," ").trim();
 }
 
+
+/* تعريب البلدان والتواريخ والقبائل — من صيغ قاعدة الرواة */
+const PLACE={basrah:"البصرة",basra:"البصرة",basrh:"البصرة",medina:"المدينة",madina:"المدينة",madinah:"المدينة",
+makkah:"مكة",mecca:"مكة",makka:"مكة",kufah:"الكوفة",kufa:"الكوفة",koufa:"الكوفة",damascus:"دمشق",dimashq:"دمشق",
+baghdad:"بغداد",egypt:"مصر",misr:"مصر",fustat:"الفسطاط",sham:"الشام",syria:"الشام",yemen:"اليمن",yaman:"اليمن",
+marw:"مرو",merv:"مرو",nishapur:"نيسابور",naysabur:"نيسابور",ray:"الرَّي",rayy:"الرَّي",wasit:"واسط",homs:"حمص",
+hims:"حمص",jerusalem:"بيت المقدس",isfahan:"أصفهان",bukhara:"بخارى",samarqand:"سمرقند",tarsus:"طرسوس",
+alexandria:"الإسكندرية",aleppo:"حلب",qairawan:"القيروان",tabaristan:"طبرستان",yamama:"اليمامة",bahrain:"البحرين",
+taif:"الطائف",jurjan:"جرجان",balkh:"بلخ",herat:"هراة",andalus:"الأندلس",khurasan:"خراسان",sijistan:"سجستان",
+tirmidh:"ترمذ",nasa:"نسا",qazwin:"قزوين",asqalan:"عسقلان",raqqa:"الرقة",mosul:"الموصل",anbar:"الأنبار",
+madain:"المدائن",hijaz:"الحجاز",iraq:"العراق",persia:"فارس",khwarizm:"خوارزم",samarkand:"سمرقند"};
+function placeAr(s){
+  if(!s)return"";
+  if(/[؀-ۿ]/.test(s))return s.replace(/[()\[\]]/g," ").trim();
+  const out=[];
+  for(const raw of s.replace(/[()\[\]]/g," ").split(/[,،/]|\band\b/i)){
+    const k=raw.toLowerCase().replace(/^al[- ]/,"").replace(/[^a-z]/g,"");
+    const v=PLACE[k];
+    if(v&&out.indexOf(v)<0) out.push(v);
+  }
+  return out.join("، ");
+}
+function dateAr(s){
+  if(!s)return"";
+  if(/^[؀-ۿ\s—،.٠-٩]+$/.test(s))return s.trim();
+  const y=s.match(/(\d+)\s*AH/i);
+  const pre=/\bafter\b/i.test(s)?"بعد ":/\bbefore\b/i.test(s)?"قبل ":/\b(circa|about|around)\b|\bc\./i.test(s)?"نحو ":"";
+  const pl=placeAr((s.match(/\(([^)]*)\)/g)||[]).join(" "));
+  if(!y) return pl?"في "+pl:"";
+  const t=pre+"سنة "+AR(y[1])+"هـ";
+  return pl?t+" — "+pl:t;
+}
+const TRIBE={
+/* قبائل */
+quraish:"قريش",quraysh:"قريش",ansar:"الأنصار",aws:"الأوس",khazraj:"الخزرج",azd:"الأزد",hamdan:"همدان",
+kindah:"كندة",kinda:"كندة",thaqif:"ثقيف",khuzaa:"خزاعة",juhaynah:"جهينة",muzaynah:"مزينة",qays:"قيس",
+mudar:"مضر",rabia:"ربيعة",tayy:"طيء",tamim:"تميم",hashim:"بنو هاشم",
+bhashim:"بنو هاشم",bmakhzum:"بنو مخزوم",bumayya:"بنو أمية",btaym:"بنو تيم",badi:"بنو عدي",
+bzuhra:"بنو زهرة",bzuhrah:"بنو زهرة",basad:"بنو أسد",bsahm:"بنو سهم",bjumah:"بنو جمح",
+babdaldar:"بنو عبد الدار",babdshams:"بنو عبد شمس",bnaufal:"بنو نوفل",bamir:"بنو عامر",btamim:"بنو تميم",
+bsulaym:"بنو سليم",bghifar:"بنو غفار",bnajjar:"بنو النجار",bsaida:"بنو ساعدة",bharith:"بنو الحارث",
+babdqays:"عبد القيس",bbakr:"بنو بكر",btaghlib:"بنو تغلب",bhanifa:"بنو حنيفة",bmurra:"بنو مرة",
+/* نِسَب البلدان */
+albasri:"البصري",basri:"البصري",albasra:"البصرة",almadni:"المدني",madni:"المدني",almadani:"المدني",
+alkufi:"الكوفي",kufi:"الكوفي",alkufa:"الكوفة",almakki:"المكي",makki:"المكي",makkah:"مكة",
+almasri:"المصري",egypt:"مصر",aldamashqi:"الدمشقي",alshami:"الشامي",alhimsi:"الحمصي",
+albaghdadi:"البغدادي",baghdad:"بغداد",alwasti:"الواسطي",alraqqi:"الرقّي",hijazi:"حجازي",
+alyamani:"اليماني",yemeni:"يماني",almarwzi:"المروزي",alnisaburi:"النيسابوري",alharrani:"الحرّاني",
+/* نِسَب القبائل */
+alazdi:"الأزدي",altamimi:"التميمي",althaqifi:"الثقفي",alhamdani:"الهمداني",alsalmi:"السُّلَمي",
+alkundi:"الكندي",alabdi:"العبدي",alhadrami:"الحضرمي",allaithi:"الليثي",alkhuzai:"الخزاعي",
+alhanfi:"الحنفي",albajli:"البجلي",almazni:"المزني",alasadi:"الأسدي",alnakhai:"النخعي",
+alaslami:"الأسلمي",alajli:"العجلي",aljuhni:"الجهني",alansari:"الأنصاري",alqurashi:"القرشي",
+aldausi:"الدوسي",dausi:"دوسي",alghifari:"الغفاري",alkhathami:"الخثعمي",altai:"الطائي",
+/* أوصاف */
+client:"مولى",imam:"إمام",hafiz:"حافظ",judge:"قاضٍ",makhdaram:"مخضرم",female:"امرأة",
+earlymuslim:"من السابقين إلى الإسلام",latemuslim:"متأخّر الإسلام",emigrant:"مهاجر",
+badr:"شهد بدرًا",uhud:"شهد أُحدًا",khandaq:"شهد الخندق",ridwan:"من أهل بيعة الرضوان"};
+function tribeAr(s){
+  if(!s)return"";
+  if(/[؀-ۿ]/.test(s))return s.trim();
+  const seen=[],out=[];
+  for(const raw of s.replace(/\[[^\]]*\]?/g," ").split(/[,،/]/)){
+    const t=raw.trim(); if(!t)continue;
+    const k=t.toLowerCase().replace(/[^a-z]/g,"");
+    const v=TRIBE[k]||TRIBE[k.replace(/h$/,"")]||TRIBE[k.replace(/^al/,"")]||t;
+    if(seen.indexOf(v)<0){seen.push(v);out.push(v);}
+  }
+  return out.join("، ");
+}
+
 /* ── الجانب ── */
 function sidebar(el,{title,items,active}={}){
   if(!el)return;
@@ -330,3 +401,40 @@ function sidebar(el,{title,items,active}={}){
 function mountMenu(btn,side){ if(btn&&side) btn.onclick=()=>side.classList.toggle("open"); }
 const MENU=`<button class="menu" id="mn" aria-label="القائمة"><svg viewBox="0 0 24 24" fill="none">
 <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>`;
+
+/* ── شريط متحرك: يتقدّم تلقائيًا، ويتوقّف عند المرور أو اللمس ── */
+function carousel(root,{slides,interval=4200}={}){
+  root.innerHTML=`<div class="track">${slides.map(s=>`<div class="slide">${s}</div>`).join("")}</div>
+    <div class="dots"></div>`;
+  const track=root.querySelector(".track"), dots=root.querySelector(".dots");
+  const per=()=>{const w=track.clientWidth,s=track.querySelector(".slide");
+    return Math.max(1,Math.round(w/(s?s.offsetWidth+16:w)));};
+  const pages=()=>Math.max(1,Math.ceil(slides.length/per()));
+  function drawDots(){
+    const n=pages(); dots.innerHTML=Array.from({length:n},(_,i)=>
+      `<button aria-label="الشريحة ${i+1}" aria-current="${i===cur}"></button>`).join("");
+    dots.querySelectorAll("button").forEach((b,i)=>b.onclick=()=>{cur=i;go();reset();});
+  }
+  let cur=0,timer=null;
+  function go(){
+    const n=pages(); cur=((cur%n)+n)%n;
+    const step=track.clientWidth;
+    track.scrollTo({left:-(cur*step),behavior:"smooth"});   /* RTL: قيَم سالبة */
+    dots.querySelectorAll("button").forEach((b,i)=>b.setAttribute("aria-current",i===cur));
+  }
+  function tick(){ cur++; go(); }
+  function start(){ if(matchMedia("(prefers-reduced-motion:reduce)").matches)return;
+    stop(); timer=setInterval(tick,interval); }
+  function stop(){ if(timer){clearInterval(timer);timer=null;} }
+  function reset(){ start(); }
+  drawDots(); go();
+  root.addEventListener("mouseenter",stop); root.addEventListener("mouseleave",start);
+  root.addEventListener("touchstart",stop,{passive:true});
+  track.addEventListener("scroll",()=>{
+    const step=track.clientWidth||1, i=Math.round(Math.abs(track.scrollLeft)/step);
+    if(i!==cur){cur=i;dots.querySelectorAll("button").forEach((b,j)=>b.setAttribute("aria-current",j===cur));}
+  },{passive:true});
+  addEventListener("resize",()=>{drawDots();go();},{passive:true});
+  start();
+  return {stop,start};
+}
