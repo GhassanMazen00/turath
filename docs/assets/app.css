@@ -387,20 +387,20 @@ a.nm2:hover{border-color:var(--acc);color:var(--acc)}
 
 /* ═══ الصفحة الرئيسية ═══ */
 .home{max-width:var(--max);margin:0 auto;padding:0 1.6rem 5rem}
-.band{padding:4rem 0;border-top:1px solid var(--hair)}
-.band:first-of-type{border-top:0}
-.band-tint{background:linear-gradient(180deg,var(--bg2),transparent)}
+.band{padding:4.6rem 0;position:relative}
+/* الفاصل: خطٌّ يتلاشى طرفاه بدل مسطرةٍ مبتورة الطرفين */
+.band::after{content:"";position:absolute;top:0;inset-inline:0;height:1px;background:var(--hair);
+  -webkit-mask-image:linear-gradient(to right,transparent,#000 16%,#000 84%,transparent);
+  mask-image:linear-gradient(to right,transparent,#000 16%,#000 84%,transparent)}
+.band:first-of-type::after{display:none}
+/* التظليل: هالةٌ تخفت عند أطرافها الأربعة — لا مستطيل له حافّتان حادّتان */
+.band-tint::before{content:"";position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(180deg,var(--bg2),transparent 76%);
+  -webkit-mask-image:linear-gradient(to right,transparent,#000 14%,#000 86%,transparent);
+  mask-image:linear-gradient(to right,transparent,#000 14%,#000 86%,transparent)}
 .center{text-align:center}
 /* البطل */
-.mast{padding:5rem 0 3rem;text-align:center;position:relative;isolation:isolate}
-/* علامةٌ واحدة كبيرة خلف الشعار — صنعةٌ مقصودة، لا زخرفة مكرَّرة */
-.mast::before{content:"";position:absolute;z-index:-1;pointer-events:none;
-  top:-6rem;left:50%;transform:translateX(-50%);width:46rem;height:46rem;max-width:120vw;
-  background:var(--ink);opacity:.05;
-  -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='none' stroke='%23000' stroke-width='.6'%3E%3Cpath d='M50 2l12.5 22.5L85 12.5 77.5 37.5 100 50 77.5 62.5 85 87.5 62.5 75.5 50 98 37.5 75.5 15 87.5 22.5 62.5 0 50 22.5 37.5 15 12.5 37.5 24.5z'/%3E%3Cpath d='M50 14l9.5 17L77 23l-6 19 17 8-17 8 6 19-17.5-8L50 86l-9.5-17L23 77l6-19-17-8 17-8-6-19 17.5 8z'/%3E%3Ccircle cx='50' cy='50' r='19'/%3E%3Ccircle cx='50' cy='50' r='27'/%3E%3C/g%3E%3C/svg%3E");
-  mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='none' stroke='%23000' stroke-width='.6'%3E%3Cpath d='M50 2l12.5 22.5L85 12.5 77.5 37.5 100 50 77.5 62.5 85 87.5 62.5 75.5 50 98 37.5 75.5 15 87.5 22.5 62.5 0 50 22.5 37.5 15 12.5 37.5 24.5z'/%3E%3Cpath d='M50 14l9.5 17L77 23l-6 19 17 8-17 8 6 19-17.5-8L50 86l-9.5-17L23 77l6-19-17-8 17-8-6-19 17.5 8z'/%3E%3Ccircle cx='50' cy='50' r='19'/%3E%3Ccircle cx='50' cy='50' r='27'/%3E%3C/g%3E%3C/svg%3E");
-  -webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
-@media(max-width:60rem){.mast::before{width:32rem;height:32rem;top:-3rem}}
+.mast{padding:5rem 0 3rem;text-align:center;position:relative}
 .mast .mark{width:4.2rem;height:4.2rem;color:var(--amber);margin:0 auto .9rem;display:block}
 .mast h1{font-family:"Reem Kufi",serif;font-size:clamp(4.2rem,13vw,8.5rem);line-height:.92;
   letter-spacing:-.05em;color:var(--ink);margin:0}
