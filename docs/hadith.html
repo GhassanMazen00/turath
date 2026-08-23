@@ -44,8 +44,12 @@ function vBooks(){
    '<div class="m"><bdi>'+AR(Object.keys(B).length)+' كتب</bdi><span class="sep">•</span><bdi>'+AR(tot)+' حديثًا</bdi></div></div>'+
    '<div id="s"></div><div class="sh"><h2>الكتب</h2><span class="ln"></span></div>'+
    '<div class="bento">'+Object.keys(B).map(k=>{const b=B[k];
-     return '<a class="cell b3" href="#/'+k+'"><h3>'+esc(b.ar)+'</h3><p>'+esc(b.author)+'</p>'+
-     '<div class="meta"><bdi>'+AR(b.total)+' حديثًا</bdi><span class="sep">•</span><bdi>'+AR(b.sections.length)+' كتابًا</bdi></div></a>';}).join('')+'</div>'+FOOT;
+     return '<a class="cell b3 card" href="#/'+k+'"><div class="ch"><h3>'+esc(b.ar)+'</h3>'+
+     '<span class="cn"><bdi>'+AR(b.total)+'</bdi><small>حديثًا</small></span></div>'+
+     '<p class="au">'+esc(b.author)+'</p>'+
+     (BOOKNOTE[k]?'<p>'+esc(BOOKNOTE[k])+'</p>':'')+
+     '<div class="meta"><bdi>'+AR(b.sections.length)+' كتابًا وبابًا</bdi>'+
+     '<span class="go">تصفَّح ←</span></div></a>';}).join('')+'</div>'+FOOT;
   mountSearch(document.getElementById('s'),{}); foot(); scrollTo(0,0);
 }
 function vSections(k){
@@ -74,12 +78,20 @@ async function vList(k,sec,page){
       return '<div class="pager">'+(pv?'<a href="'+pv+'">‹ السابق</a>':'<span class="off">‹ السابق</span>')+
       '<span class="mid"><bdi>صفحة '+AR(page)+' من '+AR(pages)+'</bdi></span>'+
       (nx?'<a href="'+nx+'">التالي ›</a>':'<span class="off">التالي ›</span>')+'</div>';};
+
+    // نصّ الباب كما ورد بالتشكيل — الفهرس المحلّي مطبَّعٌ للمطابقة لا للعرض
+    let orig={};
+    try{ const sd=await api.section(k,sec);
+      for(const h of (sd.hadiths||[])) orig[h.hadithnumber]=h.text;
+    }catch(e){}
+    const show=(num,txt)=>{const t=orig[num]||txt;
+      return esc(t.length>230?t.slice(0,230)+'…':t);};
     document.getElementById('body').innerHTML=pg()+rows.slice((page-1)*PER,page*PER).map(([num,,txt,g])=>{
       const gg=g&&g.length?'<span class="g '+gclass(g[0][1])+'">'+esc(g[0][1])+'</span>':'';
       const tk=(TAK[k+':'+num]||[]).length;
       return '<a class="hit" href="#/'+k+'/h/'+num+'"><div class="m"><span class="tag c">حديث '+AR(num)+'</span>'+gg+
         (tk?'<span class="tag"><bdi>'+AR(tk)+' تخريجًا</bdi></span>':'')+'</div>'+
-        '<div class="tx">'+esc(txt.slice(0,220))+'…</div></a>';}).join('')+pg();
+        '<div class="tx">'+show(num,txt)+'</div></a>';}).join('')+pg();
   }catch(e){ failed(document.getElementById('body'),e); }
 }
 function gdef(g){
@@ -121,6 +133,37 @@ async function vHadith(k,num){
       '<br><b>'+esc(top[0])+'</b>'+(grades.length>1?' — ووافقه <bdi>'+AR(agree-1)+'</bdi> من <bdi>'+AR(grades.length-1)+'</bdi> من المحدّثين الآخرين المذكورين':'')+'</span></div>'
       :'<div class="pane gband"><span class="gbig na">بلا حكم مرفق</span><span class="gdef">لم يرد حكم في المصدر لهذا الحديث'+
        ((k==='bukhari'||k==='muslim')?' — وهو من الصحيحين، وأهل العلم على تلقّي ما فيهما بالقبول.':'.')+'</span></div>';
+    // ── الرفّ الجانبي ──
+    const first=nodes.length?nodes[0]:null, last=nodes.length?nodes[nodes.length-1]:null;
+    const rail=
+      '<aside class="rail">'+
+        '<div class="rc glass"><h4>الموضع</h4><dl>'+
+          '<dt>الكتاب</dt><dd>'+esc(b.ar)+'</dd>'+
+          (sec?'<dt>الباب</dt><dd>'+esc(sec.ar)+'</dd>':'')+
+          '<dt>رقم الحديث</dt><dd><bdi>'+AR(num)+'</bdi></dd>'+
+          '<dt>الموضع المطبوع</dt><dd><bdi>'+AR(h.reference.book)+':'+AR(h.reference.hadith)+'</bdi></dd>'+
+        '</dl></div>'+
+        (nodes.length?'<div class="rc glass"><h4>الإسناد</h4><dl>'+
+          '<dt>عدد الرواة</dt><dd><bdi>'+AR(nodes.length)+'</bdi></dd>'+
+          (last?'<dt>الصحابي</dt><dd>'+esc(last.name)+'</dd>':'')+
+          (first?'<dt>شيخ المصنِّف</dt><dd>'+esc(first.name)+'</dd>':'')+
+        '</dl></div>':'')+
+        (grades.length?'<div class="rc glass"><h4>من حكم عليه</h4><div class="lnk">'+
+          grades.slice(0,6).map(g=>'<a href="#" onclick="return showTab(\'hukm\')"><span>'+esc(g[0])+'</span>'+
+            '<span class="g '+gclass(g[1])+'">'+esc(g[1])+'</span></a>').join('')+
+          (grades.length>6?'<a href="#" onclick="return showTab(\'hukm\')"><span>وآخرون</span><span class="n">'+AR(grades.length-6)+'</span></a>':'')+
+          '</div></div>':'')+
+        (tak.length?'<div class="rc glass"><h4>أخرجه أيضًا</h4><div class="lnk">'+
+          tak.map(r=>{const [bb,nn]=r.split(':');
+            return '<a href="#/'+bb+'/h/'+nn+'"><span>'+esc((B[bb]||{}).ar||bb)+'</span><span class="n">'+AR(nn)+'</span></a>';}).join('')+
+          '</div></div>':'')+
+        '<div class="rc glass"><h4>تصفّح</h4><div class="lnk">'+
+          (prev?'<a href="#/'+k+'/h/'+prev+'"><span>الحديث السابق</span><span class="n">'+AR(prev)+'</span></a>':'')+
+          (next?'<a href="#/'+k+'/h/'+next+'"><span>الحديث التالي</span><span class="n">'+AR(next)+'</span></a>':'')+
+          (sec?'<a href="#/'+k+'/'+sec.n+'/1"><span>كل أحاديث الباب</span><span class="n">'+AR(sec.count)+'</span></a>':'')+
+          '<a href="#/'+k+'"><span>أبواب '+esc(b.ar)+'</span><span class="n">'+AR(b.sections.length)+'</span></a>'+
+        '</div></div>'+
+      '</aside>';
     document.getElementById('body').innerHTML=
       '<nav class="crumb"><a href="#/">كتب الحديث</a><span class="sep">›</span><a href="#/'+k+'">'+esc(b.ar)+'</a>'+
       (sec?'<span class="sep">›</span><a href="#/'+k+'/'+sec.n+'/1">'+esc(sec.ar)+'</a>':'')+
@@ -128,8 +171,9 @@ async function vHadith(k,num){
       '<div class="ph"><div class="k">'+esc(b.ar)+(sec?' — '+esc(sec.ar):'')+'</div>'+
       '<h1>حديث '+AR(num)+'</h1><div class="m">'+esc(b.author)+
       '<span class="sep">•</span>الموضع <bdi>'+AR(h.reference.book)+':'+AR(h.reference.hadith)+'</bdi></div></div>'+
+      '<div class="dual"><div class="dcol">'+
       gband+
-      '<div class="pane matn">'+esc(sp.matn||h.text)+'</div>'+
+      '<div class="pane matn"><span>'+esc(sp.matn||h.text)+'</span></div>'+
       '<div class="tabs" role="tablist">'+
         '<button class="tab" role="tab" data-t="isnad" aria-selected="true">الإسناد<span class="c">'+AR(nodes.length)+'</span></button>'+
         '<button class="tab" role="tab" data-t="full" aria-selected="false">النصّ كاملًا</button>'+
@@ -138,12 +182,15 @@ async function vHadith(k,num){
         '<button class="tab" role="tab" data-t="sharh" aria-selected="false">الشرح</button>'+
       '</div>'+
       '<div class="panel on" data-p="isnad">'+
-        (nodes.length?'<div class="pane pad">'+nodes.map((n,j)=>'<div class="node'+(j===nodes.length-1?' last':'')+'">'+
-          '<span class="dot">'+AR(j+1)+'</span><span class="nm"><a href="'+n.href+'">'+esc(n.name)+'</a>'+
-          (n.sub?'<span class="sub">'+esc(n.sub)+'</span>':'')+'</span></div>').join('')+'</div>'+
+        (nodes.length?'<div class="pane pad">'+nodes.map((n,j)=>{
+          const role=j===0?'شيخ المصنِّف':(j===nodes.length-1?'الصحابي':'راوٍ');
+          return '<div class="node'+(j===nodes.length-1?' last':'')+'">'+
+          '<span class="dot">'+AR(j+1)+'</span><span class="nm"><span><span class="rl">'+role+'</span>'+
+          '<a href="'+n.href+'">'+esc(n.name)+'</a></span>'+
+          (n.sub?'<span class="sub">'+esc(n.sub)+'</span>':'')+'</span></div>';}).join('')+'</div>'+
           '<div class="note">'+(auth?'السلسلة من قاعدة رواة مفهرسة لكل حديث.':'لم تُفهرَس سلسلة هذا الحديث؛ استُخرجت الأسماء آليًّا وقد تنقص.')+'</div>'
          :'<div class="pane msg">لا سلسلة مفهرسة لهذا الحديث.</div>')+'</div>'+
-      '<div class="panel" data-p="full"><div class="pane full">'+esc(h.text)+'</div></div>'+
+      '<div class="panel" data-p="full"><div class="pane full"><span>'+esc(h.text)+'</span></div></div>'+
       '<div class="panel" data-p="hukm">'+
         (grades.length?'<div class="pane"><table class="t"><tr><th>المحدِّث</th><th>الحكم</th><th>معناه</th></tr>'+
           grades.map(g=>'<tr><td>'+esc(g[0])+'</td><td><span class="g '+gclass(g[1])+'">'+esc(g[1])+'</span></td>'+
@@ -158,9 +205,13 @@ async function vHadith(k,num){
           '<div class="note">مواضع ورود الحديث نفسه في كتبٍ أخرى، مستخرَجة بمطابقة المتن. المطابقة دقيقة متحفّظة، فقد تفوتها بعض الطرق.</div>'
          :'<div class="pane msg">لم يُعثر على تخريج لهذا الحديث في بقية الكتب المفهرسة.</div>')+'</div>'+
       '<div class="panel" data-p="sharh"><div id="sharh"></div></div>'+
-      '<div class="acts"><a class="act" href="index.html">ابحث عن ألفاظه</a></div>'+pg;
+      '</div>'+rail+'</div>'+
+      '<div class="acts"><a class="act" href="index.html">ابحث عن ألفاظه</a>'+
+      (sec?'<a class="act" href="#/'+k+'/'+sec.n+'/1">كل أحاديث الباب</a>':'')+'</div>'+pg;
     // التبويبات
     const root=document.getElementById('body');
+    window.showTab=t=>{const btn=root.querySelector('.tab[data-t="'+t+'"]');
+      if(btn){btn.click();btn.scrollIntoView({block:'center'});} return false;};
     root.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
       root.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected',x===t));
       root.querySelectorAll('.panel').forEach(p=>p.classList.toggle('on',p.dataset.p===t.dataset.t));

@@ -62,6 +62,15 @@ function vList(page){
      (v.k==='t'?'<span class="tag">استُخرج آليًّا</span>':'')+'</div></a>';}).join('');
   mountSearch(document.getElementById('s'),{}); foot(); scrollTo(0,0);
 }
+
+/* اسم شيخٍ أو تلميذ: الرقم بين المعقوفين مفتاح في فهرس الرواة،
+   فيُعرض بالاسم العربي موصولًا بترجمته؛ وما لا مفتاح له يبقى كما ورد. */
+function nameLink(raw){
+  const m=String(raw).match(/\[(\d+)\]\s*$/);
+  if(m){ const r=IDX[m[1]];
+    if(r) return '<a class="nm2" href="#/r/'+encodeURIComponent(m[1])+'">'+esc(r.n)+'</a>'; }
+  return '<span class="nm2 off">'+esc(String(raw).replace(/\s*\[\d+\]\s*$/,''))+'</span>';
+}
 async function vOne(key){
   sideTop(key);
   app().innerHTML='<div id="body"></div>'+FOOT;
@@ -71,24 +80,45 @@ async function vOne(key){
     if(!d){document.getElementById('body').innerHTML='<div class="pane msg">لا بيانات لهذا الراوي.</div>';return;}
     const nm=d.ar||d.en||v.n||key, hs=d.h||[];
     const facts=[['الطبقة',genAr(d.gen)],['الحكم',d.g],['مولده',placeAr(d.b)],['وفاته',dateAr(d.d)],['بلدانه',placeAr(d.p)],['نسبته',tribeAr(d.tg)]].filter(x=>x[1]);
+    // توزّع رواياته على الكتب — يملأ الرفّ بما ينفع بدل الفراغ
+    const dist={};
+    for(const x of hs){const b=x.split(':')[0]; dist[b]=(dist[b]||0)+1;}
+    const ord=Object.keys(dist).sort((a,b)=>dist[b]-dist[a]);
+    const rail=
+      '<aside class="rail">'+
+        '<div class="rc glass"><h4>بالأرقام</h4><dl>'+
+          '<dt>رواياته</dt><dd><bdi>'+AR(d.c||hs.length)+'</bdi></dd>'+
+          ((d.tea&&d.tea.length)?'<dt>شيوخه</dt><dd><bdi>'+AR(d.tea.length)+'</bdi></dd>':'')+
+          ((d.stu&&d.stu.length)?'<dt>تلاميذه</dt><dd><bdi>'+AR(d.stu.length)+'</bdi></dd>':'')+
+          (genAr(d.gen)?'<dt>طبقته</dt><dd>'+esc(genAr(d.gen))+'</dd>':'')+
+        '</dl></div>'+
+        (ord.length?'<div class="rc glass"><h4>في أيّ الكتب</h4><div class="lnk">'+
+          ord.map(b=>'<a href="hadith.html#/'+b+'"><span>'+esc((SEARCH.books[b]||{}).ar||b)+
+            '</span><span class="n">'+AR(dist[b])+'</span></a>').join('')+'</div></div>':'')+
+        '<div class="rc glass"><h4>ملحوظة</h4><p>الترجمة من تقريب التهذيب والكاشف. '+
+          'ما لم يرد في المصدر يُترك فارغًا ولا يُستنتج.</p></div>'+
+      '</aside>';
     document.getElementById('body').innerHTML=
       '<nav class="crumb"><a href="#/1">الرواة</a><span class="sep">›</span><span>'+esc(nm)+'</span></nav>'+
       '<section class="ph"><div class="k">راوٍ</div><h1 class="amiri">'+esc(nm)+'</h1>'+
       '<div class="m">'+esc(d.en||'')+(d.c?'<span class="sep">•</span><bdi>'+AR(d.c)+' رواية</bdi>':'')+'</div></section>'+
+      '<div class="dual"><div class="dcol">'+
       (d.k==='t'?'<div class="warn">هذا الاسم استُخرج آليًّا من نصّ السند ولم يُطابَق بترجمة مفهرسة.</div>':'')+
       (facts.length?'<div class="sh"><h2>الترجمة</h2><span class="ln"></span></div>'+
-        '<div class="pane"><table class="t">'+facts.map(f=>'<tr><td>'+esc(f[0])+'</td><td>'+esc(f[1])+'</td></tr>').join('')+'</table></div>':'')+
+        '<div class="pane pad facts">'+facts.map(f=>'<div class="fr"><span class="fk">'+esc(f[0])+
+          '</span><span class="fv">'+esc(f[1])+'</span></div>').join('')+'</div>':'')+
       ((d.tea&&d.tea.length)?'<div class="sh"><h2>شيوخه</h2><span class="cnt"><bdi>'+AR(d.tea.length)+'</bdi></span><span class="ln"></span></div>'+
-        '<div class="cell b3"><p style="line-height:2.2;font-size:1.02rem">'+d.tea.map(esc).join('<span class="sep">•</span>')+'</p></div>':'')+
+        '<div class="pane pad"><div class="names">'+d.tea.map(nameLink).join('')+'</div></div>':'')+
       ((d.stu&&d.stu.length)?'<div class="sh"><h2>تلاميذه</h2><span class="cnt"><bdi>'+AR(d.stu.length)+'</bdi></span><span class="ln"></span></div>'+
-        '<div class="cell b3"><p style="line-height:2.2;font-size:1.02rem">'+d.stu.map(esc).join('<span class="sep">•</span>')+'</p></div>':'')+
+        '<div class="pane pad"><div class="names">'+d.stu.map(nameLink).join('')+'</div></div>':'')+
       '<div class="sh"><h2>أحاديثه في الكتب</h2><span class="cnt"><bdi>'+AR(d.c)+'</bdi></span><span class="ln"></span></div>'+
       (hs.length?'<div class="tiles">'+hs.slice(0,90).map(x=>{const [b,n]=x.split(':');
         const bk=(SEARCH.books[b]||{}).ar||b;
         return '<a class="tile" href="hadith.html#/'+b+'/h/'+n+'"><span class="n">'+AR(n)+'</span>'+
           '<span class="t"><b>'+esc(bk)+'</b><span>حديث '+AR(n)+'</span></span></a>';}).join('')+'</div>'+
         (d.c>hs.length?'<div class="note">عُرض أول <bdi>'+AR(hs.length)+'</bdi> من <bdi>'+AR(d.c)+'</bdi>.</div>':'')
-       :'<div class="pane msg">لا أحاديث مفهرسة.</div>');
+       :'<div class="pane msg">لا أحاديث مفهرسة.</div>')+
+      '</div>'+rail+'</div>';
   }catch(e){ failed(document.getElementById('body'),e); }
 }
 </script></body></html>

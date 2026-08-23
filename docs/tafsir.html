@@ -60,8 +60,11 @@ function vPick(n){
    '<section class="ph"><div class="k">سورة</div><h1>'+esc(s.ar)+'</h1>'+
    '<div class="m">'+esc(s.rev)+'<span class="sep">•</span><bdi>'+AR(s.count)+' آية</bdi></div></section>'+
    '<div class="sh"><h2>اختر كتاب التفسير</h2><span class="cnt"><bdi>'+AR(T.length)+'</bdi></span><span class="ln"></span></div>'+
-   '<div class="bento">'+T.map(t=>'<a class="cell b3" href="#/'+n+'/'+t.slug+'/1"><h3>'+esc(t.ar)+'</h3>'+
-     '<p>'+esc(t.author)+'</p><div class="meta">'+esc(t.size)+'</div></a>').join('')+'</div>'+FOOT;
+   '<div class="bento">'+T.map(t=>'<a class="cell b3 card" href="#/'+n+'/'+t.slug+'/1">'+
+     '<div class="ch"><h3>'+esc(t.ar)+'</h3><span class="cn"><small>'+esc(t.size)+'</small></span></div>'+
+     '<p class="au">'+esc(t.author)+'</p>'+
+     (TAFNOTE[t.slug]?'<p>'+esc(TAFNOTE[t.slug])+'</p>':'')+
+     '<div class="meta"><bdi>'+AR(s.count)+' آية</bdi><span class="go">افتح ←</span></div></a>').join('')+'</div>'+FOOT;
   foot(); scrollTo(0,0);
 }
 async function vAyah(n,slug,a){
@@ -73,22 +76,39 @@ async function vAyah(n,slug,a){
     return '<div class="pager">'+(p?'<a href="'+p+'">‹ الآية السابقة</a>':'<span class="off">‹ السابقة</span>')+
     '<span class="mid"><bdi>الآية '+AR(a)+' من '+AR(s.count)+'</bdi></span>'+
     (x?'<a href="'+x+'">الآية التالية ›</a>':'<span class="off">التالية ›</span>')+'</div>';};
+  // الرفّ: التنقّل في السورة، وبقية التفاسير لهذه الآية بعينها
+  const near=[];
+  for(let i=Math.max(1,a-3);i<=Math.min(s.count,a+3);i++) near.push(i);
+  const rail=
+   '<aside class="rail">'+
+     '<div class="rc glass"><h4>الموضع</h4><dl>'+
+       '<dt>السورة</dt><dd>'+esc(s.ar)+'</dd>'+
+       '<dt>الآية</dt><dd><bdi>'+AR(a)+' من '+AR(s.count)+'</bdi></dd>'+
+       '<dt>النزول</dt><dd>'+esc(s.rev)+'</dd>'+
+       '<dt>التفسير</dt><dd>'+esc(t.ar)+'</dd>'+
+     '</dl></div>'+
+     '<div class="rc glass"><h4>آيات مجاورة</h4><div class="lnk">'+
+       near.map(i=>'<a href="#/'+n+'/'+slug+'/'+i+'"'+(i===a?' class="on"':'')+'>'+
+         '<span>الآية '+AR(i)+'</span>'+(i===a?'<span class="n">هنا</span>':'')+'</a>').join('')+
+     '</div></div>'+
+     '<div class="rc glass"><h4>الآية نفسها في كتبٍ أخرى</h4><div class="lnk">'+
+       T.filter(x=>x.slug!==slug).slice(0,9).map(x=>
+         '<a href="#/'+n+'/'+x.slug+'/'+a+'"><span>'+esc(x.ar)+'</span><span class="n">'+esc(x.size)+'</span></a>').join('')+
+     '</div></div>'+
+   '</aside>';
   app().innerHTML='<nav class="crumb"><a href="#/">السور</a><span class="sep">›</span><a href="#/'+n+'">سورة '+esc(s.ar)+'</a><span class="sep">›</span><span>'+esc(t.ar)+'</span></nav>'+
    '<section class="ph"><div class="k">'+esc(t.ar)+'</div><h1>سورة '+esc(s.ar)+'</h1>'+
-   '<div class="m">'+esc(t.author)+'</div></section>'+pg()+'<div id="body"></div>'+
-   '<div class="sh"><h2>الآية نفسها في كتب أخرى</h2><span class="ln"></span></div>'+
-   '<div class="grid g3" id="others"></div>'+FOOT;
+   '<div class="m">'+esc(t.author)+'</div></section>'+pg()+
+   '<div class="dual"><div class="dcol" id="body"></div>'+rail+'</div>'+
+   '<div id="botpg"></div>'+FOOT;
   loading(document.getElementById('body'),'جارٍ الجلب…'); foot(); scrollTo(0,0);
-  document.getElementById('others').innerHTML=T.filter(x=>x.slug!==slug).map(x=>
-   '<a class="tile wrap" href="#/'+n+'/'+x.slug+'/'+a+'">'+
-   '<span class="n"><svg viewBox="0 0 24 24" fill="none" width="14" height="14"><path d="M5 4h9a2 2 0 012 2v14H7a2 2 0 01-2-2z" stroke="currentColor" stroke-width="1.6"/></svg></span>'+
-   '<span class="t"><b>'+esc(x.ar)+'</b><span>'+esc(x.author)+'</span></span></a>').join('');
   try{
     const [av,tf]=await Promise.all([api.ayah(n,a),api.tafsir(slug,n,a)]);
     document.getElementById('body').innerHTML=
-      '<div class="pane ayah">'+esc(av.text)+'<span class="an">'+AR(a)+'</span></div>'+
+      '<div class="pane ayah"><span class="tx">'+esc(av.text)+'<span class="an">'+AR(a)+'</span></span></div>'+
       '<div class="sh"><h2>'+esc(t.ar)+'</h2><span class="ln"></span></div>'+
-      '<div class="pane pad">'+paras(tf.text)+'</div>'+pg();
+      '<div class="pane pad prose">'+paras(tf.text)+'</div>';
+    document.getElementById('botpg').innerHTML=pg();
   }catch(e){ failed(document.getElementById('body'),e); }
 }
 </script></body></html>

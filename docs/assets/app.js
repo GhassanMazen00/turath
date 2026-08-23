@@ -107,7 +107,7 @@ function gclass(g){
 /* ═══ محرّك البحث ═══
    يبحث في: أسماء السور · كتب التفسير · كتب الحديث وأبوابها · متون الأحاديث.
    فهارس الأحاديث تُجلب عند الحاجة وتُخزَّن، فالبحث الأول أبطأ ثم يصير فوريًا. */
-const SEARCH={books:null,surahs:null,tafsirs:null,idx:{},scope:"all"};
+const SEARCH={books:null,surahs:null,tafsirs:null,idx:{},scope:"all",kind:"all",quran:null};
 
 async function searchInit(){
   const [b,s,t]=await Promise.all([api.local("books.json"),api.local("surahs.json"),api.local("tafsirs.json")]);
@@ -118,19 +118,35 @@ async function loadIdx(k,onp){
   const r=await fetch(`data/idx/${k}.json`); const d=await r.json();
   SEARCH.idx[k]=d; if(onp)onp(); return d;
 }
-/* نتائج فورية من البيانات الخفيفة */
-function quickHits(q){
-  const n=norm(q); if(!n)return[];
+/* المصحف كاملًا — يُحمَّل عند أول بحث في القرآن فقط */
+async function loadQuran(){
+  if(SEARCH.quran)return SEARCH.quran;
+  const r=await fetch("data/quran.json"); const t=await r.json();
+  const rows=[]; let i=0;
+  for(const s of SEARCH.surahs){ for(let a=1;a<=s.count;a++,i++) rows.push([s.n,a,t[i],norm(t[i])]); }
+  SEARCH.quran=rows; return rows;
+}
+function quranHits(q,limit=40){
+  const n=norm(q); if(n.length<2)return[];
   const out=[];
-  for(const s of SEARCH.surahs){
+  for(const r of SEARCH.quran){ if(r[3].indexOf(n)<0)continue; out.push(r); if(out.length>=limit)break; }
+  return out;
+}
+/* نتائج فورية من البيانات الخفيفة */
+function quickHits(q,kind){
+  const n=norm(q); if(!n)return[];
+  kind=kind||"all";
+  const want=k=>kind==="all"||kind===k;
+  const out=[];
+  if(want("quran"))for(const s of SEARCH.surahs){
     if(norm(s.ar).includes(n)) out.push({kind:"سورة",title:"سورة "+s.ar,
       sub:`${s.rev} · ${AR(s.count)} آية`,href:`tafsir.html#/${s.n}`});
   }
-  for(const t of SEARCH.tafsirs){
+  if(want("tafsir"))for(const t of SEARCH.tafsirs){
     if(norm(t.ar).includes(n)||norm(t.author).includes(n))
       out.push({kind:"تفسير",title:t.ar,sub:t.author,href:`tafsir.html#/1/${t.slug}/1`});
   }
-  for(const k in SEARCH.books){const b=SEARCH.books[k];
+  if(want("hadith"))for(const k in SEARCH.books){const b=SEARCH.books[k];
     if(norm(b.ar).includes(n)||norm(b.author).includes(n))
       out.push({kind:"كتاب",title:b.ar,sub:`${b.author} · ${AR(b.total)} حديثًا`,href:`hadith.html#/${k}`});
     for(const sc of b.sections){
@@ -181,51 +197,98 @@ function groupHits(hits){
 function hl(t,q){const i=t.indexOf(q); if(i<0)return esc(t);
   return esc(t.slice(0,i))+"<mark>"+esc(t.slice(i,i+q.length))+"</mark>"+esc(t.slice(i+q.length));}
 
-function mountSearch(root,{autofocus=false,compact=false}={}){
+const KINDS=[["all","كل المحتوى"],["hadith","الحديث"],["quran","القرآن"],["tafsir","كتب التفسير"]];
+
+function mountSearch(root,{autofocus=false}={}){
   root.innerHTML=`<div class="sbox"><svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.7"/><path d="M16.5 16.5L21 21" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
-    <input id="q" type="search" placeholder="ابحث في الأحاديث والسور والأبواب…" autocomplete="off"><kbd>/</kbd></div>
-    <div class="chips" id="scope"></div><div class="sres" id="sres"></div>`;
-  const inp=root.querySelector("#q"),out=root.querySelector("#sres"),sc=root.querySelector("#scope");
+    <input id="q" type="search" placeholder="ابحث في متون الأحاديث وآيات المصحف والسور والأبواب…" autocomplete="off"><kbd>/</kbd></div>
+    <div class="chips" id="kind"></div><div class="chips sub" id="scope" hidden></div><div class="sres" id="sres"></div>`;
+  const inp=root.querySelector("#q"),out=root.querySelector("#sres"),
+        kd=root.querySelector("#kind"),sc=root.querySelector("#scope");
+
+  kd.innerHTML=KINDS.map(([v,l])=>`<button class="chip" data-k="${v}" aria-pressed="${v===SEARCH.kind}">${esc(l)}</button>`).join("");
   sc.innerHTML=[["all","كل الكتب"]].concat(Object.keys(SEARCH.books).map(k=>[k,SEARCH.books[k].ar]))
     .map(([v,l])=>`<button class="chip" data-s="${v}" aria-pressed="${v===SEARCH.scope}">${esc(l)}</button>`).join("");
+  const syncScope=()=>{ sc.hidden=!(SEARCH.kind==="hadith"); };
+  syncScope();
+
+  kd.addEventListener("click",e=>{const b=e.target.closest("button"); if(!b)return;
+    SEARCH.kind=b.dataset.k;
+    kd.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));
+    syncScope(); if(inp.value.trim())run();});
   sc.addEventListener("click",e=>{const b=e.target.closest("button"); if(!b)return;
     SEARCH.scope=b.dataset.s;
     sc.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));
     if(inp.value.trim())run();});
+
   document.addEventListener("keydown",e=>{
     if(e.key==="/"&&document.activeElement!==inp&&!/input|textarea/i.test(document.activeElement.tagName)){
       e.preventDefault();inp.focus();}
     if(e.key==="Escape"&&document.activeElement===inp)inp.blur();});
+
   let tmr,seq=0;
   const run=async()=>{
-    const q=inp.value.trim(),my=++seq;
+    const q=inp.value.trim(),my=++seq,kind=SEARCH.kind;
     if(!q){out.innerHTML="";return;}
-    const quick=quickHits(q);
+    const quick=quickHits(q,kind);
     const qh=quick.map(h=>`<a class="hit" href="${h.href}"><div class="m"><span class="tag c">${esc(h.kind)}</span>
       <span>${esc(h.sub)}</span></div><div class="tx">${esc(h.title)}</div></a>`).join("");
-    const draw=(groups,stat)=>{ if(my!==seq)return;
-      const gh=groups.map(g=>{
+
+    const draw=(stat,ayat,groups)=>{ if(my!==seq)return;
+      const ah=(ayat||[]).map(([sn,a,tx])=>{
+        const su=SEARCH.surahs.find(x=>x.n===sn);
+        return `<a class="hit ayahit" href="tafsir.html#/${sn}/ar-tafsir-ibn-kathir/${a}">
+          <div class="m"><span class="tag c">آية</span><span>سورة ${esc(su?su.ar:"")} <bdi>${AR(sn)}:${AR(a)}</bdi></span></div>
+          <div class="tx amiri">${esc(tx)}</div></a>`;}).join("");
+      const gh=(groups||[]).map(g=>{
         const chips=g.books.map(h=>{
           const gr=(h.grades&&h.grades.length)?`<span class="g ${gclass(h.grades[0][1])}">${esc(h.grades[0][1])}</span>`:"";
           return `<a class="bchip" href="${h.href}"><b>${esc(h.bookAr)}</b><span class="n">${AR(h.num)}</span>${gr}</a>`;
         }).join("");
         return `<div class="grp"><div class="grp-t">${hl(g.snippet,g.q)}</div>
           <div class="grp-b">${chips}</div></div>`;}).join("");
-      out.innerHTML=(stat||"")+qh+gh||`<div class="msg">لا نتائج لـ «${esc(q)}»</div>`;};
-    draw([],`<div class="sstat"><span class="spin"></span><span>يبحث…</span><span class="bar"><i style="width:6%"></i></span></div>`);
+      const body=qh+ah+gh;
+      const note=gh?`<div class="note">مقتطف المطابقة يُعرض بالرسم المجرَّد من التشكيل — وهو صورة البحث لا صورة الكتاب. النصّ كما ورد في صفحة الحديث.</div>`:"";
+      out.innerHTML=(stat||"")+(body||`<div class="msg">لا نتائج لـ «${esc(q)}»</div>`)+note;};
+
+    const wantQuran=kind==="all"||kind==="quran";
+    const wantHadith=kind==="all"||kind==="hadith";
+    if(!wantQuran&&!wantHadith){ draw("",[],[]); return; }
+    draw(`<div class="sstat"><span class="spin"></span><span>يبحث…</span><span class="bar"><i style="width:6%"></i></span></div>`,[],[]);
     try{
+      let ayat=[];
+      if(wantQuran){ await loadQuran(); if(my!==seq)return; ayat=quranHits(q,kind==="quran"?60:8); }
+      if(!wantHadith){
+        draw(`<div class="sstat"><bdi>${AR(ayat.length)} آية</bdi></div>`,ayat,[]); return; }
+      draw(`<div class="sstat"><span class="spin"></span><span>يبحث في المتون…</span><span class="bar"><i style="width:18%"></i></span></div>`,ayat,[]);
       const hits=await textHits(q,SEARCH.scope,(d,t,c)=>{ if(my!==seq)return;
-        const bar=out.querySelector(".bar i"); if(bar)bar.style.width=Math.round(d/t*100)+"%";
+        const bar=out.querySelector(".bar i"); if(bar)bar.style.width=Math.round(18+d/t*82)+"%";
         const st=out.querySelector(".sstat span:nth-child(2)");
-        if(st)st.textContent=`يبحث… ${AR(d)}/${AR(t)} — ${AR(c)} نتيجة`;});
+        if(st)st.textContent=`يبحث في المتون… ${AR(d)}/${AR(t)} — ${AR(c)} نتيجة`;});
       if(my!==seq)return;
       const groups=groupHits(hits);
-      draw(groups,`<div class="sstat"><bdi>${AR(groups.length)} نصًّا</bdi> — <bdi>${AR(hits.length)} موضعًا</bdi>${hits.length>=80?" (أول ٨٠)":""}</div>`);
-    }catch(e){ if(my===seq)draw([],`<div class="sstat">تعذّر البحث</div>`); }
+      const parts=[];
+      if(ayat.length)parts.push(`<bdi>${AR(ayat.length)} آية</bdi>`);
+      parts.push(`<bdi>${AR(groups.length)} نصًّا</bdi> في <bdi>${AR(hits.length)} موضعًا</bdi>${hits.length>=60?" (أول ٦٠)":""}`);
+      draw(`<div class="sstat">${parts.join(" <span class=\"sep\">•</span> ")}</div>`,ayat,groups);
+    }catch(e){ if(my===seq)draw(`<div class="sstat">تعذّر البحث</div>`,[],[]); }
   };
   inp.addEventListener("input",()=>{clearTimeout(tmr);tmr=setTimeout(run,240);});
   if(autofocus)setTimeout(()=>inp.focus(),300);
 }
+
+/* ── نبذة عن كل كتاب — تُستعمل في الرئيسية وصفحات الفهارس ── */
+const BOOKNOTE={bukhari:'أصحّ الكتب بعد كتاب الله، جمعه البخاري في نحو ستة عشر عامًا.',
+ muslim:'ثاني الصحيحين، امتاز بحسن السياق وجمع طرق الحديث في موضع واحد.',
+ abudawud:'عُني بأحاديث الأحكام، وهو أحد السنن الأربعة.',
+ tirmidhi:'يجمع الحديث وحكمه وأقوال الفقهاء فيه، ويذكر الباب وما فيه.',
+ nasai:'أدقّ السنن شرطًا في الرجال، وهو المجتبى.',
+ ibnmajah:'رابع السنن، فيه زوائد كثيرة على بقية الكتب.',
+ malik:'أقدم كتب السنّة المصنّفة، جمع الحديث مع عمل أهل المدينة.',
+ nawawi:'أربعون حديثًا جوامع، عليها مدار الدين، مع شرحها.',
+ qudsi:'أربعون من الأحاديث القدسية.',
+ dehlawi:'أربعون انتقاها شاه ولي الله الدهلوي.'};
+const TAFNOTE={"ar-tafsir-al-mukhtasar": "تفسير موجز بلغة معاصرة، يعطي المعنى الإجمالي للآية.","ar-tafsir-muyassar": "أوجز التفاسير وأيسرها عبارةً؛ مناسب لأول قراءة.","ar-tafsir-ibn-kathir": "تفسير بالمأثور: يفسّر القرآن بالقرآن ثم بالسنة وأقوال السلف.","ar-tafsir-al-tabari": "أمّ كتب التفسير بالمأثور، يسوق أقوال السلف بأسانيدها.","ar-tafseer-al-qurtubi": "يُعنى باستنباط الأحكام الفقهية من الآيات.","ar-tafsir-al-baghawi": "مختصر من تفسير الثعلبي، جامع للمأثور بعبارة سهلة.","ar-tafsir-as-saadi": "يُبرز المقاصد والفوائد التربوية بأسلوب واضح.","ar-tafsir-al-jalalayn": "غاية الإيجاز: كلمة بكلمة، بحجم المتن نفسه.","ar-tafsir-al-wasit": "تفسير معاصر متوسّط الحجم، يجمع بين المعنى واللغة.","tafsir-al-baydawi": "يُعنى بالبلاغة ووجوه الإعراب والاشتقاق.","tafsir-al-alusi": "موسوعة تجمع اللغة والقراءات وأقوال المفسّرين قبله.","al-bahr-al-muhit": "عمدة في الإعراب والنحو ووجوه القراءات.","fath-al-qadir-al-shawkani": "يجمع بين الرواية والدراية: المأثور مع النظر اللغوي.","tafsir-ibn-uthaymeen": "تفسير معاصر يستخرج الفوائد والأحكام مسألةً مسألة.","ar-tafseer-tahrir-al-tanwir": "أوسع تفسير حديث في البلاغة ونظم القرآن ومقاصده.","tafsir-al-razi": "يُعنى بالمسائل العقلية والكلامية ومناسبات الآيات.","al-muharrar-al-wajiz-ibn-atiyyah": "محرَّر في نقل الأقوال، مع ترجيح لغوي دقيق.","tafsir-ibn-al-jawzi": "يجمع وجوه التفسير المنقولة في الآية ويعدّدها."};
 
 /* ── المصادر: زرّ واحد في أسفل الموقع ── */
 const SOURCES=[
@@ -407,34 +470,68 @@ function carousel(root,{slides,interval=4200}={}){
   root.innerHTML=`<div class="track">${slides.map(s=>`<div class="slide">${s}</div>`).join("")}</div>
     <div class="dots"></div>`;
   const track=root.querySelector(".track"), dots=root.querySelector(".dots");
-  const per=()=>{const w=track.clientWidth,s=track.querySelector(".slide");
-    return Math.max(1,Math.round(w/(s?s.offsetWidth+16:w)));};
-  const pages=()=>Math.max(1,Math.ceil(slides.length/per()));
-  function drawDots(){
-    const n=pages(); dots.innerHTML=Array.from({length:n},(_,i)=>
-      `<button aria-label="الشريحة ${i+1}" aria-current="${i===cur}"></button>`).join("");
-    dots.querySelectorAll("button").forEach((b,i)=>b.onclick=()=>{cur=i;go();reset();});
+
+  /* هندسة الشريط: عرض الشريحة والفجوة كما هما فعلًا، لا تقديرًا من عرض الإطار.
+     الحساب بعرض الإطار كان يُزيح المقدار فتُقصّ البطاقة عند الحافة. */
+  function geo(){
+    const sl=track.querySelector(".slide");
+    const cs=getComputedStyle(track);
+    const gap=parseFloat(cs.columnGap||cs.gap)||0;
+    const inner=track.clientWidth-(parseFloat(cs.paddingInlineStart)||0)-(parseFloat(cs.paddingInlineEnd)||0);
+    const sw=sl?sl.getBoundingClientRect().width:inner;
+    return {sw,gap,inner,unit:sw+gap};
+  }
+  const per=()=>{const {sw,gap,inner}=geo();
+    return Math.max(1,Math.min(slides.length,Math.round((inner+gap)/(sw+gap))));};
+  /* مواقف الشريط كلها على بداية شريحة، وآخر موقف هو آخر ما يمكن بلوغه —
+     فلا تظهر بطاقة نصفها مقصوص في أيّ حال. */
+  function stops(){
+    const p=per(),last=Math.max(0,slides.length-p),out=[];
+    for(let i=0;i<last;i+=p)out.push(i);
+    out.push(last);
+    return out;
+  }
+  /* بعض المحركات تجعل scrollLeft سالبًا في RTL وبعضها موجبًا — يُكشف بالتجربة */
+  let sign=0;
+  function dir(){
+    if(sign)return sign;
+    const max=track.scrollWidth-track.clientWidth;
+    if(max<=1)return (sign=-1);
+    const keep=track.scrollLeft;
+    track.scrollLeft=-max; sign=track.scrollLeft<-1?-1:1; track.scrollLeft=keep;
+    return sign;
   }
   let cur=0,timer=null;
-  function go(){
-    const n=pages(); cur=((cur%n)+n)%n;
-    const step=track.clientWidth;
-    track.scrollTo({left:-(cur*step),behavior:"smooth"});   /* RTL: قيَم سالبة */
-    dots.querySelectorAll("button").forEach((b,i)=>b.setAttribute("aria-current",i===cur));
+  function drawDots(){
+    const n=stops().length;
+    if(cur>=n)cur=n-1;
+    dots.innerHTML=Array.from({length:n},(_,i)=>
+      `<button aria-label="الموضع ${i+1}" aria-current="${i===cur}"></button>`).join("");
+    dots.querySelectorAll("button").forEach((b,i)=>b.onclick=()=>{cur=i;go();reset();});
+  }
+  function mark(){dots.querySelectorAll("button").forEach((b,i)=>b.setAttribute("aria-current",i===cur));}
+  function go(smooth=true){
+    const st=stops(); cur=((cur%st.length)+st.length)%st.length;
+    const off=st[cur]*geo().unit;
+    track.scrollTo({left:dir()*off,behavior:smooth?"smooth":"auto"});
+    mark();
   }
   function tick(){ cur++; go(); }
   function start(){ if(matchMedia("(prefers-reduced-motion:reduce)").matches)return;
     stop(); timer=setInterval(tick,interval); }
   function stop(){ if(timer){clearInterval(timer);timer=null;} }
   function reset(){ start(); }
-  drawDots(); go();
+  drawDots(); go(false);
   root.addEventListener("mouseenter",stop); root.addEventListener("mouseleave",start);
   root.addEventListener("touchstart",stop,{passive:true});
   track.addEventListener("scroll",()=>{
-    const step=track.clientWidth||1, i=Math.round(Math.abs(track.scrollLeft)/step);
-    if(i!==cur){cur=i;dots.querySelectorAll("button").forEach((b,j)=>b.setAttribute("aria-current",j===cur));}
+    const {unit}=geo(); if(!unit)return;
+    const at=Math.abs(track.scrollLeft)/unit, st=stops();
+    let best=0,bd=Infinity;
+    st.forEach((v,i)=>{const d=Math.abs(v-at); if(d<bd){bd=d;best=i;}});
+    if(best!==cur){cur=best;mark();}
   },{passive:true});
-  addEventListener("resize",()=>{drawDots();go();},{passive:true});
+  addEventListener("resize",()=>{sign=0;drawDots();go(false);},{passive:true});
   start();
   return {stop,start};
 }

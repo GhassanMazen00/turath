@@ -86,21 +86,12 @@
 <script src="assets/app.js"></script>
 <script>
 theme(); document.getElementById('tg').innerHTML=TGL; mountFooter(document.getElementById('foot'));
-const TAFNOTE={"ar-tafsir-al-mukhtasar": "تفسير موجز بلغة معاصرة، يعطي المعنى الإجمالي للآية.","ar-tafsir-muyassar": "أوجز التفاسير وأيسرها عبارةً؛ مناسب لأول قراءة.","ar-tafsir-ibn-kathir": "تفسير بالمأثور: يفسّر القرآن بالقرآن ثم بالسنة وأقوال السلف.","ar-tafsir-al-tabari": "أمّ كتب التفسير بالمأثور، يسوق أقوال السلف بأسانيدها.","ar-tafseer-al-qurtubi": "يُعنى باستنباط الأحكام الفقهية من الآيات.","ar-tafsir-al-baghawi": "مختصر من تفسير الثعلبي، جامع للمأثور بعبارة سهلة.","ar-tafsir-as-saadi": "يُبرز المقاصد والفوائد التربوية بأسلوب واضح.","ar-tafsir-al-jalalayn": "غاية الإيجاز: كلمة بكلمة، بحجم المتن نفسه.","ar-tafsir-al-wasit": "تفسير معاصر متوسّط الحجم، يجمع بين المعنى واللغة.","tafsir-al-baydawi": "يُعنى بالبلاغة ووجوه الإعراب والاشتقاق.","tafsir-al-alusi": "موسوعة تجمع اللغة والقراءات وأقوال المفسّرين قبله.","al-bahr-al-muhit": "عمدة في الإعراب والنحو ووجوه القراءات.","fath-al-qadir-al-shawkani": "يجمع بين الرواية والدراية: المأثور مع النظر اللغوي.","tafsir-ibn-uthaymeen": "تفسير معاصر يستخرج الفوائد والأحكام مسألةً مسألة.","ar-tafseer-tahrir-al-tanwir": "أوسع تفسير حديث في البلاغة ونظم القرآن ومقاصده.","tafsir-al-razi": "يُعنى بالمسائل العقلية والكلامية ومناسبات الآيات.","al-muharrar-al-wajiz-ibn-atiyyah": "محرَّر في نقل الأقوال، مع ترجيح لغوي دقيق.","tafsir-ibn-al-jawzi": "يجمع وجوه التفسير المنقولة في الآية ويعدّدها."};
- const BOOKNOTE={bukhari:'أصحّ الكتب بعد كتاب الله، جمعه البخاري في نحو ستة عشر عامًا.',
- muslim:'ثاني الصحيحين، امتاز بحسن السياق وجمع طرق الحديث في موضع واحد.',
- abudawud:'عُني بأحاديث الأحكام، وهو أحد السنن الأربعة.',
- tirmidhi:'يجمع الحديث وحكمه وأقوال الفقهاء فيه، ويذكر الباب وما فيه.',
- nasai:'أدقّ السنن شرطًا في الرجال، وهو المجتبى.',
- ibnmajah:'رابع السنن، فيه زوائد كثيرة على بقية الكتب.',
- malik:'أقدم كتب السنّة المصنّفة، جمع الحديث مع عمل أهل المدينة.',
- nawawi:'أربعون حديثًا جوامع، عليها مدار الدين، مع شرحها.',
- qudsi:'أربعون من الأحاديث القدسية.',
- dehlawi:'أربعون انتقاها شاه ولي الله الدهلوي.'};
+
+ 
 (async()=>{
  try{ await searchInit(); }catch(e){ document.getElementById('search').innerHTML='<div class="pane msg">تعذّر تحميل الفهرس.</div>'; return; }
  mountSearch(document.getElementById('search'),{});
- const B=SEARCH.books,T=SEARCH.tafsirs,nb=Object.keys(B).length;
+ const B=SEARCH.books,T=SEARCH.tafsirs,S=SEARCH.surahs,nb=Object.keys(B).length;
  const th=Object.values(B).reduce((a,b)=>a+b.total,0);
  const ts=Object.values(B).reduce((a,b)=>a+b.sections.length,0);
  let rn=0,tk=0;
@@ -136,20 +127,37 @@ const TAFNOTE={"ar-tafsir-al-mukhtasar": "تفسير موجز بلغة معاص�
        <p>${esc(dateAr(v.d)?('توفّي '+dateAr(v.d)):'من رواة الأسانيد المفهرسة.')}</p>
        <div class="fo"><bdi>${AR(v.c)} رواية</bdi></div></a>`}),interval:4600});
  }catch(e){}
- // شريط الاقتراحات
- const picks=[['bukhari',2,'يُبتدأ به عادةً؛ أصل الدين وأركانه.'],
-   ['nawawi',null,'أربعون حديثًا جامعة، مع شرحها كاملًا في المنصة.'],
-   ['bukhari',10,'أحاديث الأذان والإقامة وسننهما.'],
-   ['muslim',4,'كتاب الصلاة في صحيح مسلم، مجموع الطرق.'],
-   ['bukhari',65,'تفسير النبي ﷺ للقرآن من صحيح البخاري.'],
-   ['malik',null,'أقدم المصنّفات، ومدخل حسن لعمل أهل المدينة.']];
- carousel(document.getElementById('carS'),{slides:picks.map(([b,n,note])=>{
-   const bk=B[b]; if(!bk)return '';
-   const s=n?bk.sections.find(x=>x.n===n):null;
-   const href=s?`hadith.html#/${b}/${n}/1`:`hadith.html#/${b}`;
-   return `<a class="scard" href="${href}"><div class="top"><span class="idx">${s?'باب':'كتاب'}</span></div>
-     <h3>${esc(s?s.ar:bk.ar)}</h3><div class="by">${esc(bk.ar)}</div>
-     <p>${esc(note)}</p>
-     <div class="fo"><bdi>${AR(s?s.count:bk.total)} حديثًا</bdi></div></a>`;}),interval:5400});
+ // شريط الاقتراحات — من الأقسام الثلاثة لا من الحديث وحده
+ const picks=[
+   {t:'h',b:'bukhari',n:2,  note:'يُبتدأ به عادةً؛ أصل الدين وأركانه.'},
+   {t:'q',n:1,slug:'ar-tafsir-al-mukhtasar', note:'أوّل المصحف، بتفسيرٍ موجز يسهل على المبتدئ.'},
+   {t:'h',b:'nawawi',n:null,note:'أربعون حديثًا جامعة، مع شرحها كاملًا في المنصة.'},
+   {t:'q',n:2,slug:'ar-tafsir-as-saadi',note:'أطول سور المصحف، بتفسيرٍ يُبرز المقاصد والفوائد.'},
+   {t:'t',slug:'ar-tafsir-ibn-kathir',note:'تفسير بالمأثور: القرآن بالقرآن ثم بالسنة وأقوال السلف.'},
+   {t:'h',b:'bukhari',n:65,note:'تفسير النبي ﷺ للقرآن من صحيح البخاري.'},
+   {t:'q',n:36,slug:'ar-tafsir-ibn-kathir',note:'سورة يس، من أكثر السور قراءةً وحفظًا.'},
+   {t:'h',b:'muslim',n:4,note:'كتاب الصلاة في صحيح مسلم، مجموع الطرق.'},
+   {t:'t',slug:'ar-tafseer-tahrir-al-tanwir',note:'أوسع تفسير حديث في البلاغة ونظم القرآن ومقاصده.'},
+   {t:'h',b:'malik',n:null,note:'أقدم المصنّفات، ومدخل حسن لعمل أهل المدينة.'}];
+ carousel(document.getElementById('carS'),{slides:picks.map(pk=>{
+   if(pk.t==='h'){
+     const bk=B[pk.b]; if(!bk)return '';
+     const sc=pk.n?bk.sections.find(x=>x.n===pk.n):null;
+     const href=sc?`hadith.html#/${pk.b}/${pk.n}/1`:`hadith.html#/${pk.b}`;
+     return `<a class="scard" href="${href}"><div class="top"><span class="idx">${sc?'باب':'كتاب حديث'}</span></div>
+       <h3>${esc(sc?sc.ar:bk.ar)}</h3><div class="by">${esc(bk.ar)}</div><p>${esc(pk.note)}</p>
+       <div class="fo"><bdi>${AR(sc?sc.count:bk.total)} حديثًا</bdi></div></a>`;
+   }
+   if(pk.t==='q'){
+     const su=S.find(x=>x.n===pk.n), tf=T.find(x=>x.slug===pk.slug); if(!su||!tf)return '';
+     return `<a class="scard" href="tafsir.html#/${pk.n}/${pk.slug}/1"><div class="top"><span class="idx">سورة</span></div>
+       <h3>سورة ${esc(su.ar)}</h3><div class="by">${esc(tf.ar)}</div><p>${esc(pk.note)}</p>
+       <div class="fo"><bdi>${AR(su.count)} آية</bdi><span class="sep">•</span>${esc(su.rev)}</div></a>`;
+   }
+   const tf=T.find(x=>x.slug===pk.slug); if(!tf)return '';
+   return `<a class="scard" href="tafsir.html#/1/${pk.slug}/1"><div class="top"><span class="idx">كتاب تفسير</span></div>
+     <h3>${esc(tf.ar)}</h3><div class="by">${esc(tf.author)}</div><p>${esc(pk.note)}</p>
+     <div class="fo">١١٤ سورة<span class="sep">•</span>${esc(tf.size)}</div></a>`;
+ }),interval:5400});
 })();
 </script></body></html>
