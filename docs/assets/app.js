@@ -319,35 +319,36 @@ function mountFooter(el){
 
 /* ── شرح الحديث: يُجلب من الموسوعة الحديثية (الدرر السنية) عبر وسيط عام.
    لا يُخزَّن عندنا ولا يُختلق؛ فإن تعذّر الاتصال عُرض رابط مباشر للشرح. ── */
-const SHARH_HOSTS=["https://dorar-hadith-api.herokuapp.com","https://hadeethenc-api.vercel.app",
-                   "https://dorar-hadith-api.vercel.app"];
+/* وسيط الشرح: الدرر السنية تُخرج الشرح صفحةَ HTML، وسياسة CORS تمنع المتصفح
+   من قراءتها. فيلزم وسيطٌ يُنشره صاحب الموقع ويضع عنوانه هنا. ما دام فارغًا
+   لا يُنتظر شيء: يُعرض رابط الشرح في الدرر مباشرةً بلا تعليق. */
+const SHARH_HOST="";
 async function fetchSharh(matn){
+  if(!SHARH_HOST) return null;
   const q=encodeURIComponent(matn.slice(0,60));
-  for(const h of SHARH_HOSTS){
-    try{
-      const c=new AbortController(); const to=setTimeout(()=>c.abort(),6000);
-      const r=await fetch(`${h}/v1/site/sharh/text/${q}`,{signal:c.signal});
-      clearTimeout(to);
-      if(!r.ok) continue;
-      const j=await r.json();
-      const d=j&&j.data;
-      if(d&&(d.sharhMetadata?.sharh||d.sharh)) return {text:(d.sharhMetadata?.sharh||d.sharh),host:h};
-    }catch(e){}
-  }
-  return null;
+  try{
+    const c=new AbortController(); const to=setTimeout(()=>c.abort(),6000);
+    const r=await fetch(`${SHARH_HOST}/v1/site/sharh/text/${q}`,{signal:c.signal});
+    clearTimeout(to);
+    if(!r.ok) return null;
+    const j=await r.json(), d=j&&j.data;
+    const t=d&&((d.sharhMetadata&&d.sharhMetadata.sharh)||d.sharh);
+    return t?{text:t}:null;
+  }catch(e){ return null; }
 }
 function sharhBlock(matn,mount){
+  const out=()=>`<div class="pane msg">لا يوجد شرحٌ مفهرس لهذا الحديث في المنصة.
+      <div class="note" style="margin:.7rem 0 1rem">الشروح المطبوعة لم تُدرَج بعد؛ لا يُختلق لها بديل.</div>
+      <a class="act" target="_blank" rel="noopener"
+      href="https://dorar.net/hadith/search?q=${encodeURIComponent(matn.slice(0,50))}">اطلبه في الموسوعة الحديثية ↗</a></div>`;
+  if(!SHARH_HOST){ mount.innerHTML=out(); return; }
   mount.innerHTML=`<div class="msg"><span class="spin"></span> جارٍ طلب الشرح…</div>`;
   fetchSharh(matn).then(r=>{
-    if(r){ mount.innerHTML=`<div class="body">${paras(r.text)}</div>
-      <div class="note">الشرح من الموسوعة الحديثية للدرر السنية.</div>`; }
-    else{ mount.innerHTML=`<div class="msg">تعذّر جلب الشرح آليًّا من هنا.
-      <div style="margin-top:.6rem"><a class="act" target="_blank" rel="noopener"
-      href="https://dorar.net/hadith/search?q=${encodeURIComponent(matn.slice(0,50))}">افتح الشرح في الدرر السنية ↗</a></div></div>`; }
-  }).catch(()=>{ mount.innerHTML=`<div class="msg">تعذّر جلب الشرح.</div>`; });
+    mount.innerHTML=r?`<div class="pane pad prose">${paras(r.text)}</div>
+      <div class="note">الشرح من الموسوعة الحديثية للدرر السنية.</div>`:out();
+  }).catch(()=>{ mount.innerHTML=out(); });
 }
 
-/* ── الرواة ── */
 const RJ={idx:null,sh:{}};
 const shardOf=(n)=>{let h=0;for(let i=0;i<n.length;i++)h=(h*31+n.charCodeAt(i))|0;return Math.abs(h)%24;};
 async function rijalIndex(){ if(!RJ.idx) RJ.idx=await api.local("rijal/index.json"); return RJ.idx; }
