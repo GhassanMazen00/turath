@@ -29,7 +29,11 @@ let IDX={},KEYS=[];
   addEventListener('hashchange',route); route(); })();
 function route(){
   const h=decodeURIComponent(location.hash.replace(/^#\/?/,''));
-  if(h.startsWith('r/')) return vOne(h.slice(2));
+  if(h.startsWith('r/')){
+    const rest=h.slice(2), i=rest.indexOf('/b/');
+    if(i>0){ const b=rest.slice(i+3).split('/p/')[0]; return vOne(rest.slice(0,i),b); }
+    return vOne(rest);
+  }
   vList(+(h||1));
 }
 function GC(g){const t=norm(g||'');
@@ -50,7 +54,7 @@ function vList(page){
   app().innerHTML='<nav class="crumb"><span>الرواة</span></nav>'+
    '<section class="ph"><div class="k">علم الرجال</div><h1>رواة الأسانيد</h1>'+
    '<div class="m"><bdi>'+AR(KEYS.length)+' راويًا</bdi><span class="sep">•</span>مرتّبون بعدد مروياتهم</div></section>'+
-   '<div id="s"></div>'+pg()+'<div class="grid g2" id="l"></div>'+pg()+FOOT;
+   '<div id="s"></div>'+pg()+'<div class="bento" id="l"></div>'+pg()+FOOT;
   document.getElementById('l').innerHTML=sl.map(k=>{const v=IDX[k];
     return '<a class="cell b3" href="#/r/'+encodeURIComponent(k)+'">'+
      '<h3 class="amiri" style="font-size:1.4rem;font-weight:400">'+esc(v.n)+'</h3>'+
@@ -71,29 +75,31 @@ function nameLink(raw){
     if(r) return '<a class="nm2" href="#/r/'+encodeURIComponent(m[1])+'">'+esc(r.n)+'</a>'; }
   return '<span class="nm2 off">'+esc(String(raw).replace(/\s*\[\d+\]\s*$/,''))+'</span>';
 }
-async function vOne(key){
+async function vOne(key,book){
   sideTop(key);
   app().innerHTML='<div id="body"></div>'+FOOT;
   loading(document.getElementById('body'),'جارٍ جلب الترجمة…'); foot(); scrollTo(0,0);
   try{
     const d=await rijalGet(key),v=IDX[key]||{};
     if(!d){document.getElementById('body').innerHTML='<div class="pane msg">لا بيانات لهذا الراوي.</div>';return;}
-    const nm=d.ar||d.en||v.n||key, hs=d.h||[];
+    const nm=d.ar||d.en||v.n||key, hb=d.hb||{};
     const facts=[['الطبقة',genAr(d.gen)],['الحكم',d.g],['مولده',placeAr(d.b)],['وفاته',dateAr(d.d)],['بلدانه',placeAr(d.p)],['نسبته',tribeAr(d.tg)]].filter(x=>x[1]);
-    // توزّع رواياته على الكتب — يملأ الرفّ بما ينفع بدل الفراغ
+    // توزّع رواياته على الكتب — محسوبٌ من سلاسل الأسانيد كاملةً
     const dist={};
-    for(const x of hs){const b=x.split(':')[0]; dist[b]=(dist[b]||0)+1;}
+    for(const b in hb) dist[b]=hb[b].length;
     const ord=Object.keys(dist).sort((a,b)=>dist[b]-dist[a]);
+    const total=ord.reduce((a,b)=>a+dist[b],0);
     const rail=
       '<aside class="rail">'+
         '<div class="rc glass"><h4>بالأرقام</h4><dl>'+
-          '<dt>رواياته</dt><dd><bdi>'+AR(d.c||hs.length)+'</bdi></dd>'+
+          '<dt>رواياته</dt><dd><bdi>'+AR(total)+'</bdi></dd>'+
           ((d.tea&&d.tea.length)?'<dt>شيوخه</dt><dd><bdi>'+AR(d.tea.length)+'</bdi></dd>':'')+
           ((d.stu&&d.stu.length)?'<dt>تلاميذه</dt><dd><bdi>'+AR(d.stu.length)+'</bdi></dd>':'')+
           (genAr(d.gen)?'<dt>طبقته</dt><dd>'+esc(genAr(d.gen))+'</dd>':'')+
         '</dl></div>'+
         (ord.length?'<div class="rc glass"><h4>في أيّ الكتب</h4><div class="lnk">'+
-          ord.map(b=>'<a href="hadith.html#/'+b+'"><span>'+esc((SEARCH.books[b]||{}).ar||b)+
+          ord.map(b=>'<a href="#/r/'+encodeURIComponent(key)+'/b/'+b+'"'+(b===book?' class="on"':'')+
+            '><span>'+esc((SEARCH.books[b]||{}).ar||b)+
             '</span><span class="n">'+AR(dist[b])+'</span></a>').join('')+'</div></div>':'')+
         '<div class="rc glass"><h4>ملحوظة</h4><p>الترجمة من تقريب التهذيب والكاشف. '+
           'ما لم يرد في المصدر يُترك فارغًا ولا يُستنتج.</p></div>'+
@@ -101,7 +107,7 @@ async function vOne(key){
     document.getElementById('body').innerHTML=
       '<nav class="crumb"><a href="#/1">الرواة</a><span class="sep">›</span><span>'+esc(nm)+'</span></nav>'+
       '<section class="ph"><div class="k">راوٍ</div><h1 class="amiri">'+esc(nm)+'</h1>'+
-      '<div class="m">'+esc(d.en||'')+(d.c?'<span class="sep">•</span><bdi>'+AR(d.c)+' رواية</bdi>':'')+'</div></section>'+
+      '<div class="m">'+esc(d.en||'')+(total?'<span class="sep">•</span><bdi>'+AR(total)+' رواية</bdi>':'')+'</div></section>'+
       '<div class="dual"><div class="dcol">'+
       (d.k==='t'?'<div class="warn">هذا الاسم استُخرج آليًّا من نصّ السند ولم يُطابَق بترجمة مفهرسة.</div>':'')+
       (facts.length?'<div class="sh"><h2>الترجمة</h2><span class="ln"></span></div>'+
@@ -111,14 +117,49 @@ async function vOne(key){
         '<div class="pane pad"><div class="names">'+d.tea.map(nameLink).join('')+'</div></div>':'')+
       ((d.stu&&d.stu.length)?'<div class="sh"><h2>تلاميذه</h2><span class="cnt"><bdi>'+AR(d.stu.length)+'</bdi></span><span class="ln"></span></div>'+
         '<div class="pane pad"><div class="names">'+d.stu.map(nameLink).join('')+'</div></div>':'')+
-      '<div class="sh"><h2>أحاديثه في الكتب</h2><span class="cnt"><bdi>'+AR(d.c)+'</bdi></span><span class="ln"></span></div>'+
-      (hs.length?'<div class="tiles">'+hs.slice(0,90).map(x=>{const [b,n]=x.split(':');
-        const bk=(SEARCH.books[b]||{}).ar||b;
-        return '<a class="tile" href="hadith.html#/'+b+'/h/'+n+'"><span class="n">'+AR(n)+'</span>'+
-          '<span class="t"><b>'+esc(bk)+'</b><span>حديث '+AR(n)+'</span></span></a>';}).join('')+'</div>'+
-        (d.c>hs.length?'<div class="note">عُرض أول <bdi>'+AR(hs.length)+'</bdi> من <bdi>'+AR(d.c)+'</bdi>.</div>':'')
-       :'<div class="pane msg">لا أحاديث مفهرسة.</div>')+
+      (function(){
+        if(!ord.length) return '<div class="sh"><h2>أحاديثه في الكتب</h2><span class="ln"></span></div>'+
+          '<div class="pane msg">لا أحاديث مفهرسة.</div>';
+        const pick=book&&dist[book]?book:null;
+        // صناديق الكتب: كل كتابٍ وعدد ما رواه فيه
+        const boxes='<div class="grid g3 bks">'+ord.map(b=>{
+          const bk=SEARCH.books[b]||{};
+          return '<a class="bk'+(b===pick?' on':'')+'" href="#/r/'+encodeURIComponent(key)+'/b/'+b+'">'+
+            '<span class="bn">'+esc(bk.ar||b)+'</span>'+
+            '<span class="bc"><bdi>'+AR(dist[b])+'</bdi><small>حديثًا</small></span></a>';}).join('')+'</div>';
+        return '<div class="sh"><h2>أحاديثه في الكتب</h2><span class="cnt"><bdi>'+AR(ord.length)+' كتب</bdi></span>'+
+          '<span class="ln"></span></div>'+boxes+
+          (pick?'<div id="bklist"></div>':'<div class="note">اضغط كتابًا لترى أحاديثه فيه.</div>');
+      })()+
       '</div>'+rail+'</div>';
+
+    // ── أحاديثه في الكتاب المختار: الرقم والباب والحكم، على صفحات ──
+    const holder=document.getElementById('bklist');
+    if(holder&&book&&dist[book]){
+      const nums=hb[book]||[], bk=SEARCH.books[book]||{};
+      const NP=48, pno=Math.min(Math.max(1,+(location.hash.split('/p/')[1]||1)),Math.ceil(nums.length/NP));
+      loading(holder,'جارٍ جلب الأبواب…');
+      try{
+        const idx=await loadIdx(book);
+        const meta={}; for(const r of idx) meta[r[0]]=r;
+        const secOf={}; for(const sc of (bk.sections||[])) secOf[sc.n]=sc.ar;
+        const pages=Math.ceil(nums.length/NP);
+        const base='#/r/'+encodeURIComponent(key)+'/b/'+book;
+        const pg=()=>'<div class="pager">'+
+          (pno>1?'<a href="'+base+'/p/'+(pno-1)+'">‹ السابق</a>':'<span class="off">‹ السابق</span>')+
+          '<span class="mid"><bdi>صفحة '+AR(pno)+' من '+AR(pages)+'</bdi></span>'+
+          (pno<pages?'<a href="'+base+'/p/'+(pno+1)+'">التالي ›</a>':'<span class="off">التالي ›</span>')+'</div>';
+        holder.innerHTML=
+          '<div class="sh"><h2>'+esc(bk.ar||book)+'</h2><span class="cnt"><bdi>'+AR(nums.length)+'</bdi></span>'+
+          '<span class="ln"></span><a class="tag" href="#/r/'+encodeURIComponent(key)+'">إغلاق ×</a></div>'+
+          pg()+'<div class="tiles">'+nums.slice((pno-1)*NP,pno*NP).map(n=>{
+            const r=meta[n], g=r&&r[3]&&r[3].length?r[3][0][1]:'';
+            return '<a class="tile wrap" href="hadith.html#/'+book+'/h/'+n+'">'+
+              '<span class="n">'+AR(n)+'</span><span class="t"><b>'+esc((r&&secOf[r[1]])||bk.ar||'')+'</b>'+
+              (g?'<span class="g '+gclass(g)+'" style="margin-top:.25rem;display:inline-block">'+esc(g)+'</span>':
+                  '<span>حديث '+AR(n)+'</span>')+'</span></a>';}).join('')+'</div>'+pg();
+      }catch(e){ failed(holder,e); }
+    }
   }catch(e){ failed(document.getElementById('body'),e); }
 }
 </script></body></html>

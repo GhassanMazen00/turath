@@ -1,73 +1,65 @@
 /* ═══ تُراث ═══ */
 :root{
-  --bg:#f5f5f3;--bg2:#ececeb;--surf:rgba(255,255,255,.78);--surf2:rgba(255,255,255,.55);
-  --ink:#14161a;--ink2:#39404a;--mut:#666e79;--faint:#949ba5;
-  --hair:rgba(20,26,34,.10);--hair2:rgba(20,26,34,.18);
-  --acc:#1d3b57;--acc2:#2c5a83;--accsoft:rgba(29,59,87,.08);--accink:#16304a;
-  --amber:#8a7340;--ambersoft:rgba(138,115,64,.12);
+  --bg:#f4f2ee;--bg2:#e8e5df;--surf:rgba(255,255,255,.80);--surf2:rgba(255,255,255,.56);
+  --ink:#11151b;--ink2:#333c47;--mut:#5f6a77;--faint:#8d97a3;
+  --hair:rgba(17,21,27,.10);--hair2:rgba(17,21,27,.19);
+  --acc:#17456d;--acc2:#22619a;--accsoft:rgba(23,69,109,.09);--accink:#123a5c;
+  --amber:#8a6d2f;--ambersoft:rgba(138,109,47,.13);
   --ok:#1c6146;--oksoft:rgba(28,97,70,.11);--warn:#7d5a1c;--warnsoft:rgba(125,90,28,.12);
   --bad:#8a3030;--badsoft:rgba(138,48,48,.10);
   --sh:0 1px 1px rgba(20,15,5,.04),0 4px 16px rgba(20,15,5,.05);
   --sh2:0 2px 4px rgba(20,15,5,.05),0 14px 44px rgba(20,15,5,.09);
-  --glass:linear-gradient(158deg,rgba(255,255,255,.88),rgba(255,255,255,.58));
-  --glass2:linear-gradient(158deg,rgba(255,255,255,.96),rgba(255,255,255,.72));
-  --glassline:rgba(20,26,34,.09);
-  --gloss:inset 0 1px 0 rgba(255,255,255,.9),inset 0 0 0 1px rgba(255,255,255,.28);
-  --wash1:rgba(138,115,64,.13);--wash2:rgba(29,59,87,.10);--wash3:rgba(28,97,70,.05);
-  --grain:.030;
+  --glass:linear-gradient(158deg,rgba(255,255,255,.90),rgba(255,255,255,.60));
+  --glass2:linear-gradient(158deg,rgba(255,255,255,.97),rgba(255,255,255,.74));
+  --glassline:rgba(17,21,27,.09);
+  --gloss:inset 0 1px 0 rgba(255,255,255,.95),inset 0 0 0 1px rgba(255,255,255,.30);
+  --wash1:rgba(138,109,47,.15);--wash2:rgba(23,69,109,.12);--wash3:rgba(23,69,109,.06);
   --r:18px;--side:16.5rem;--rail:20.5rem;--measure:46rem;--max:92rem;color-scheme:light;
 }
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0a0c0f;--bg2:#101318;--surf:rgba(255,255,255,.04);--surf2:rgba(255,255,255,.025);
-  --ink:#eceef1;--ink2:#c3c9d1;--mut:#8c95a1;--faint:#626b77;
-  --hair:rgba(255,255,255,.08);--hair2:rgba(255,255,255,.15);
-  --acc:#6f9fca;--acc2:#8fbbe0;--accsoft:rgba(111,159,202,.12);--accink:#9cc3e6;
-  --amber:#b09a63;--ambersoft:rgba(176,154,99,.13);
+  --bg:#080b12;--bg2:#0e131c;--surf:rgba(150,180,220,.055);--surf2:rgba(150,180,220,.032);
+  --ink:#eef1f5;--ink2:#c7cfda;--mut:#8b96a6;--faint:#5f6b7c;
+  --hair:rgba(170,195,230,.11);--hair2:rgba(170,195,230,.20);
+  --acc:#79b0e6;--acc2:#9ecbf5;--accsoft:rgba(121,176,230,.14);--accink:#a8d0f5;
+  --amber:#d3b473;--ambersoft:rgba(211,180,115,.15);
   --ok:#43c08c;--oksoft:rgba(67,192,140,.14);--warn:#d29a4e;--warnsoft:rgba(210,154,78,.15);
   --bad:#dd7570;--badsoft:rgba(221,117,112,.14);
   --sh:0 1px 1px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.35);
   --sh2:0 2px 4px rgba(0,0,0,.4),0 16px 46px rgba(0,0,0,.5);
-  --glass:linear-gradient(158deg,rgba(255,255,255,.078),rgba(255,255,255,.028));
-  --glass2:linear-gradient(158deg,rgba(255,255,255,.11),rgba(255,255,255,.045));
-  --glassline:rgba(255,255,255,.11);
-  --gloss:inset 0 1px 0 rgba(255,255,255,.10),inset 0 0 0 1px rgba(255,255,255,.03);
-  --wash1:rgba(176,154,99,.12);--wash2:rgba(111,159,202,.11);--wash3:rgba(67,192,140,.05);
-  --grain:.040;
+  --glass:linear-gradient(158deg,rgba(158,196,242,.105),rgba(158,196,242,.035));
+  --glass2:linear-gradient(158deg,rgba(158,196,242,.15),rgba(158,196,242,.055));
+  --glassline:rgba(170,200,240,.13);
+  --gloss:inset 0 1px 0 rgba(210,230,255,.14),inset 0 0 0 1px rgba(170,200,240,.035);
+  --wash1:rgba(211,180,115,.16);--wash2:rgba(90,150,215,.17);--wash3:rgba(60,120,175,.10);
   color-scheme:dark;}}
 :root[data-theme="dark"]{
-  --bg:#0a0c0f;--bg2:#101318;--surf:rgba(255,255,255,.04);--surf2:rgba(255,255,255,.025);
-  --ink:#eceef1;--ink2:#c3c9d1;--mut:#8c95a1;--faint:#626b77;
-  --hair:rgba(255,255,255,.08);--hair2:rgba(255,255,255,.15);
-  --acc:#6f9fca;--acc2:#8fbbe0;--accsoft:rgba(111,159,202,.12);--accink:#9cc3e6;
-  --amber:#b09a63;--ambersoft:rgba(176,154,99,.13);
+  --bg:#080b12;--bg2:#0e131c;--surf:rgba(150,180,220,.055);--surf2:rgba(150,180,220,.032);
+  --ink:#eef1f5;--ink2:#c7cfda;--mut:#8b96a6;--faint:#5f6b7c;
+  --hair:rgba(170,195,230,.11);--hair2:rgba(170,195,230,.20);
+  --acc:#79b0e6;--acc2:#9ecbf5;--accsoft:rgba(121,176,230,.14);--accink:#a8d0f5;
+  --amber:#d3b473;--ambersoft:rgba(211,180,115,.15);
   --ok:#43c08c;--oksoft:rgba(67,192,140,.14);--warn:#d29a4e;--warnsoft:rgba(210,154,78,.15);
   --bad:#dd7570;--badsoft:rgba(221,117,112,.14);
   --sh:0 1px 1px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.35);
   --sh2:0 2px 4px rgba(0,0,0,.4),0 16px 46px rgba(0,0,0,.5);
-  --glass:linear-gradient(158deg,rgba(255,255,255,.078),rgba(255,255,255,.028));
-  --glass2:linear-gradient(158deg,rgba(255,255,255,.11),rgba(255,255,255,.045));
-  --glassline:rgba(255,255,255,.11);
-  --gloss:inset 0 1px 0 rgba(255,255,255,.10),inset 0 0 0 1px rgba(255,255,255,.03);
-  --wash1:rgba(176,154,99,.12);--wash2:rgba(111,159,202,.11);--wash3:rgba(67,192,140,.05);
-  --grain:.040;
+  --glass:linear-gradient(158deg,rgba(158,196,242,.105),rgba(158,196,242,.035));
+  --glass2:linear-gradient(158deg,rgba(158,196,242,.15),rgba(158,196,242,.055));
+  --glassline:rgba(170,200,240,.13);
+  --gloss:inset 0 1px 0 rgba(210,230,255,.14),inset 0 0 0 1px rgba(170,200,240,.035);
+  --wash1:rgba(211,180,115,.16);--wash2:rgba(90,150,215,.17);--wash3:rgba(60,120,175,.10);
   color-scheme:dark;}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--ink);direction:rtl;font-size:17px;line-height:1.75;
   font-family:"IBM Plex Sans Arabic",system-ui,sans-serif;position:relative;min-height:100vh}
-/* غلالات لونية ثابتة — لتكون خلف الزجاج مادةٌ ينكسر عليها الضوء */
+/* الضوء بدل النقش: بؤرتان كبيرتان ناعمتان تعطيان الصفحة عمقًا،
+   وخلف الزجاج مادةً ينكسر عليها. لا شبكة مكرَّرة — كانت تُقرأ ورقَ حائط. */
 body::after{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
   background:
-    radial-gradient(58rem 40rem at 84% -10%,var(--wash1),transparent 72%),
-    radial-gradient(50rem 36rem at 4% 8%,var(--wash2),transparent 72%),
-    radial-gradient(64rem 44rem at 50% 108%,var(--wash3),transparent 72%),
-    linear-gradient(180deg,var(--bg2),transparent 30rem)}
-/* شبكة معيّنات — نقشٌ هندسي خافت يملأ الفراغ بلا ضجيج */
-body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
-  background:var(--ink);opacity:var(--grain);
-  -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cg fill='none' stroke='%23000' stroke-width='1'%3E%3Cpath d='M24 1l23 23-23 23L1 24z'/%3E%3Cpath d='M24 13l11 11-11 11-11-11z'/%3E%3C/g%3E%3C/svg%3E");
-  mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cg fill='none' stroke='%23000' stroke-width='1'%3E%3Cpath d='M24 1l23 23-23 23L1 24z'/%3E%3Cpath d='M24 13l11 11-11 11-11-11z'/%3E%3C/g%3E%3C/svg%3E");
-  -webkit-mask-size:48px 48px;mask-size:48px 48px}
+    radial-gradient(46rem 34rem at 78% -6%,var(--wash1),transparent 70%),
+    radial-gradient(54rem 40rem at 12% 6%,var(--wash2),transparent 72%),
+    radial-gradient(70rem 46rem at 50% 112%,var(--wash3),transparent 70%),
+    linear-gradient(180deg,var(--bg2),transparent 34rem)}
 a{color:var(--acc);text-decoration:none}a:hover{color:var(--acc2)}
 button{font:inherit;color:inherit;cursor:pointer;background:none;border:0}
 :focus-visible{outline:2px solid var(--acc);outline-offset:3px;border-radius:10px}
@@ -164,11 +156,18 @@ h1,h2,h3{margin:0;text-wrap:balance;letter-spacing:-.01em}
 .sh .cnt{font-size:.75rem;color:var(--mut);border:1px solid var(--hair);border-radius:14px;
   padding:.1rem .6rem;font-variant-numeric:tabular-nums}
 
+/* شبكات عامة — كانت .grid/.g2 مستعملة في الترميز وغير معرَّفة هنا،
+   فبقيت روابطها عناصر سطريّة متراكبة */
+.grid{display:grid;gap:.9rem}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:60rem){.g2,.g3{grid-template-columns:1fr}}
+
 /* bento */
 .bento{display:grid;gap:.9rem;grid-template-columns:repeat(6,1fr)}
 .b3{grid-column:span 3}.b2{grid-column:span 2}.b6{grid-column:span 6}
 @media(max-width:60rem){.b3,.b2{grid-column:span 6}}
-.cell{border-radius:var(--r);padding:1.5rem 1.6rem;transition:.2s;position:relative;overflow:hidden}
+.cell{display:block;border-radius:var(--r);padding:1.5rem 1.6rem;transition:.2s;position:relative;overflow:hidden}
 a.cell:hover{border-color:var(--hair2);background:var(--surf2);transform:translateY(-2px);box-shadow:var(--sh2)}
 .cell h3{font-family:"Reem Kufi",serif;font-size:1.35rem;letter-spacing:-.02em;margin-bottom:.3rem}
 .cell p{margin:0;color:var(--mut);font-size:.98rem;line-height:1.85}
@@ -271,7 +270,9 @@ table.t td:first-child{font-weight:600;white-space:nowrap}
 .pager .off{opacity:.3;color:var(--faint);font-weight:400}
 .pager .mid{border:0;background:none;box-shadow:none;color:var(--mut);font-weight:400;font-size:.87rem;
   font-variant-numeric:tabular-nums;-webkit-backdrop-filter:none;backdrop-filter:none}
-.acts{display:flex;gap:.5rem;flex-wrap:wrap}
+.acts{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.4rem}
+.acts+.pager{margin-top:1.5rem}
+.pager+.acts{margin-top:1.5rem}
 .act{display:inline-flex;align-items:center;gap:.4rem;border-radius:11px;
   padding:.65rem 1.15rem;font-size:.9rem;font-weight:600;color:var(--acc)}
 .act:hover{border-color:var(--acc)}
@@ -353,6 +354,25 @@ a.cell.card:hover .go{color:var(--acc2)}
 .fr:last-child{border-bottom:0}
 .fk{font-size:.85rem;color:var(--faint);white-space:nowrap}
 .fv{font-size:1.02rem;color:var(--ink2);font-weight:600;text-align:end}
+/* صناديق كتب الراوي، ثم أرقام أحاديثه في الكتاب المختار */
+.bks{gap:.7rem;margin-bottom:.4rem}
+.bk{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem 1.2rem;
+  border-radius:14px;border:1px solid var(--glassline);background:var(--glass);
+  -webkit-backdrop-filter:blur(16px) saturate(1.8);backdrop-filter:blur(16px) saturate(1.8);
+  box-shadow:var(--gloss),var(--sh);transition:.16s}
+.bk:hover{border-color:var(--acc)}
+.bk.on{border-color:var(--acc);background:var(--accsoft);box-shadow:none}
+.bk .bn{font-family:"Amiri",serif;font-size:1.2rem;color:var(--ink);line-height:1.4}
+.bk .bc{display:flex;align-items:baseline;gap:.3rem;font-family:"Reem Kufi",serif;font-size:1.35rem;
+  color:var(--acc);font-variant-numeric:tabular-nums;letter-spacing:-.03em;white-space:nowrap}
+.bk .bc small{font-family:"IBM Plex Sans Arabic",sans-serif;font-size:.68rem;color:var(--faint);letter-spacing:0}
+.nums{display:flex;flex-wrap:wrap;gap:.4rem}
+.hn{min-width:3.4rem;text-align:center;padding:.42rem .6rem;border-radius:10px;
+  border:1px solid var(--hair);color:var(--ink2);font-size:.92rem;font-variant-numeric:tabular-nums;
+  background:var(--surf2);transition:.14s}
+.hn:hover{border-color:var(--acc);color:var(--acc);background:var(--accsoft)}
+.sh a.tag{white-space:nowrap}
+
 /* أسماء الشيوخ والتلاميذ */
 .names{display:flex;flex-wrap:wrap;gap:.4rem}
 .nm2{font-family:"Amiri",serif;font-size:1.14rem;padding:.3rem .8rem;border-radius:11px;
@@ -372,7 +392,15 @@ a.nm2:hover{border-color:var(--acc);color:var(--acc)}
 .band-tint{background:linear-gradient(180deg,var(--bg2),transparent)}
 .center{text-align:center}
 /* البطل */
-.mast{padding:5rem 0 3rem;text-align:center}
+.mast{padding:5rem 0 3rem;text-align:center;position:relative;isolation:isolate}
+/* علامةٌ واحدة كبيرة خلف الشعار — صنعةٌ مقصودة، لا زخرفة مكرَّرة */
+.mast::before{content:"";position:absolute;z-index:-1;pointer-events:none;
+  top:-6rem;left:50%;transform:translateX(-50%);width:46rem;height:46rem;max-width:120vw;
+  background:var(--ink);opacity:.05;
+  -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='none' stroke='%23000' stroke-width='.6'%3E%3Cpath d='M50 2l12.5 22.5L85 12.5 77.5 37.5 100 50 77.5 62.5 85 87.5 62.5 75.5 50 98 37.5 75.5 15 87.5 22.5 62.5 0 50 22.5 37.5 15 12.5 37.5 24.5z'/%3E%3Cpath d='M50 14l9.5 17L77 23l-6 19 17 8-17 8 6 19-17.5-8L50 86l-9.5-17L23 77l6-19-17-8 17-8-6-19 17.5 8z'/%3E%3Ccircle cx='50' cy='50' r='19'/%3E%3Ccircle cx='50' cy='50' r='27'/%3E%3C/g%3E%3C/svg%3E");
+  mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='none' stroke='%23000' stroke-width='.6'%3E%3Cpath d='M50 2l12.5 22.5L85 12.5 77.5 37.5 100 50 77.5 62.5 85 87.5 62.5 75.5 50 98 37.5 75.5 15 87.5 22.5 62.5 0 50 22.5 37.5 15 12.5 37.5 24.5z'/%3E%3Cpath d='M50 14l9.5 17L77 23l-6 19 17 8-17 8 6 19-17.5-8L50 86l-9.5-17L23 77l6-19-17-8 17-8-6-19 17.5 8z'/%3E%3Ccircle cx='50' cy='50' r='19'/%3E%3Ccircle cx='50' cy='50' r='27'/%3E%3C/g%3E%3C/svg%3E");
+  -webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
+@media(max-width:60rem){.mast::before{width:32rem;height:32rem;top:-3rem}}
 .mast .mark{width:4.2rem;height:4.2rem;color:var(--amber);margin:0 auto .9rem;display:block}
 .mast h1{font-family:"Reem Kufi",serif;font-size:clamp(4.2rem,13vw,8.5rem);line-height:.92;
   letter-spacing:-.05em;color:var(--ink);margin:0}
@@ -402,8 +430,10 @@ a.nm2:hover{border-color:var(--acc);color:var(--acc)}
 .car{position:relative}
 /* overflow-x يفرض قصّ المحور الرأسي أيضًا، فتُبتر ظلال البطاقات وحوافّها.
    حشوةٌ داخلية بهامشٍ سالب تُعيد للظلّ مكانه دون إزاحة الشريط. */
+/* لا حشوة أفقية هنا: صندوق محتوى الوعاء يجب أن يساوي صندوق حشوته تمامًا،
+   وإلا أطلّت بطاقةٌ زائدة بمقدار الفرق. الفسحة الرأسية وحدها للظلال. */
 .track{display:flex;gap:1.1rem;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;
-  padding:.7rem .5rem 1.1rem;margin:-.7rem -.5rem -.5rem;scrollbar-width:none}
+  padding:.8rem 0 1.1rem;margin:-.8rem 0 -.6rem;scrollbar-width:none}
 .track::-webkit-scrollbar{display:none}
 .slide{flex:0 0 calc((100% - 2.2rem)/3);scroll-snap-align:start;min-width:0}
 @media(max-width:64rem){.slide{flex-basis:calc((100% - 1.1rem)/2)}}
