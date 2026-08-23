@@ -1,0 +1,35 @@
+name: جلب شروح الأحاديث
+
+# يُشغَّل بالضغط: تبويب Actions ← «جلب شروح الأحاديث» ← Run workflow.
+# يعمل على خوادم GitHub المجّانية للمستودعات العامة — لا استضافة ولا اشتراك.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: جلب الشروح ومطابقتها بالمتون
+        run: node tools/fetch-sharh.mjs
+
+      - name: حفظ الناتج في المستودع
+        run: |
+          if git diff --quiet -- docs/data/sharh.json; then
+            echo "لا جديد — لم يتغيّر الملف."
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/data/sharh.json
+          git commit -m "تحديث شروح الأحاديث من موسوعة الحديث النبوي"
+          git push

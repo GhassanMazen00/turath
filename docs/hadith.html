@@ -2,8 +2,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="light dark">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap"></noscript>
+<link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap"></noscript>
 <link rel="stylesheet" href="assets/app.css">
 <script>(function(){var t=localStorage.getItem("turath-theme");if(t)document.documentElement.setAttribute("data-theme",t);})();</script>
 <title>$1</title></head><body>
@@ -22,8 +22,13 @@ const app=()=>document.getElementById('app'), side=()=>document.getElementById('
 const FOOT='<footer class="foot" id="foot"></footer>';
 function foot(){const f=document.getElementById('foot'); if(f)mountFooter(f);}
 (async()=>{ try{ await searchInit(); B=SEARCH.books;
-    [TAK,GDEF,SHARH]=await Promise.all([api.local('takhrij.json').catch(()=>({})),
-      api.local('grades.json').catch(()=>({})),api.local('sharh.json').catch(()=>({}))]);
+    const [tk,gd,sh,shm]=await Promise.all([api.local('takhrij.json').catch(()=>({})),
+      api.local('grades.json').catch(()=>({})),api.local('sharh.json').catch(()=>({})),
+      api.local('sharh-manual.json').catch(()=>({}))]);
+    TAK=tk; GDEF=gd;
+    // اليدويّ يعلو على المجلوب آليًّا؛ ومفاتيح الدليل تُتخطّى
+    SHARH=Object.assign({},sh);
+    for(const k in shm){ if(k.charAt(0)==='_')continue; SHARH[k]=shm[k]; }
   }catch(e){ return failed(app(),e); }
   addEventListener('hashchange',route); route(); })();
 function route(){
@@ -217,7 +222,9 @@ async function vHadith(k,num){
       root.querySelectorAll('.panel').forEach(p=>p.classList.toggle('on',p.dataset.p===t.dataset.t));
     });
     const sm=document.getElementById('sharh');
-    if(sharh) sm.innerHTML='<div class="pane pad">'+paras(sharh.t)+'</div><div class="note">المصدر: '+esc(sharh.s)+'</div>';
+    if(sharh) sm.innerHTML='<div class="pane pad prose">'+paras(sharh.t)+'</div>'+
+      '<div class="note">المصدر: '+esc(sharh.s)+
+      (sharh.u?' <span class="sep">•</span> <a href="'+esc(sharh.u)+'" target="_blank" rel="noopener">الأصل ↗</a>':'')+'</div>';
     else sharhBlock(sp.matn||h.text,sm);
   }catch(e){ failed(document.getElementById('body'),e); }
 }

@@ -51,7 +51,7 @@
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--ink);direction:rtl;font-size:17px;line-height:1.75;
-  font-family:"IBM Plex Sans Arabic",system-ui,sans-serif;position:relative;min-height:100vh}
+  font-family:"Noto Sans Arabic",system-ui,sans-serif;position:relative;min-height:100vh}
 /* الضوء بدل النقش: بؤرتان كبيرتان ناعمتان تعطيان الصفحة عمقًا،
    وخلف الزجاج مادةً ينكسر عليها. لا شبكة مكرَّرة — كانت تُقرأ ورقَ حائط. */
 body::after{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
@@ -137,21 +137,21 @@ h1,h2,h3{margin:0;text-wrap:balance;letter-spacing:-.01em}
 .pad{padding:1.7rem 1.9rem}
 .hero{position:relative;padding:2.6rem 0 .6rem}
 .hero .ey{font-size:.72rem;letter-spacing:.3em;color:var(--amber);font-weight:700}
-.hero h1{font-family:"Reem Kufi",serif;font-size:clamp(3rem,8.5vw,5.4rem);line-height:.96;
-  letter-spacing:-.045em;margin:.5rem 0 0;
+.hero h1{font-family:"Noto Sans Arabic",sans-serif;font-weight:700;font-size:clamp(3rem,8.5vw,5.4rem);line-height:.96;
+  margin:.5rem 0 0;
   background:linear-gradient(150deg,var(--ink),var(--acc) 130%);-webkit-background-clip:text;
   background-clip:text;color:transparent}
 .hero .sub{font-family:"Amiri",serif;font-size:clamp(1.25rem,2.6vw,1.7rem);line-height:1.95;
   color:var(--ink2);max-width:46rem;margin:.9rem 0 0}
 .ph{padding:.2rem 0 .1rem}
 .ph .k{font-size:.72rem;letter-spacing:.2em;color:var(--amber);font-weight:700}
-.ph h1{font-family:"Reem Kufi",serif;font-size:clamp(1.8rem,4vw,2.7rem);letter-spacing:-.03em;
+.ph h1{font-family:"Noto Sans Arabic",sans-serif;font-weight:700;font-size:clamp(1.8rem,4vw,2.7rem);
   margin:.3rem 0 .25rem;color:var(--ink)}
 .ph .m{font-size:.92rem;color:var(--mut);font-variant-numeric:tabular-nums}
 .crumb{font-size:.84rem;color:var(--mut);display:flex;gap:.35rem;flex-wrap:wrap}
 .sep{color:var(--hair2);margin:0 .35rem}
 .sh{display:flex;align-items:center;gap:.7rem}
-.sh h2{font-family:"Reem Kufi",serif;font-size:1.2rem;letter-spacing:-.02em;color:var(--ink)}
+.sh h2{font-family:"Noto Sans Arabic",sans-serif;font-weight:700;font-size:1.2rem;color:var(--ink)}
 .sh .ln{flex:1;height:1px;background:var(--hair)}
 .sh .cnt{font-size:.75rem;color:var(--mut);border:1px solid var(--hair);border-radius:14px;
   padding:.1rem .6rem;font-variant-numeric:tabular-nums}
@@ -169,11 +169,11 @@ h1,h2,h3{margin:0;text-wrap:balance;letter-spacing:-.01em}
 @media(max-width:60rem){.b3,.b2{grid-column:span 6}}
 .cell{display:block;border-radius:var(--r);padding:1.5rem 1.6rem;transition:.2s;position:relative;overflow:hidden}
 a.cell:hover{border-color:var(--hair2);background:var(--surf2);transform:translateY(-2px);box-shadow:var(--sh2)}
-.cell h3{font-family:"Reem Kufi",serif;font-size:1.35rem;letter-spacing:-.02em;margin-bottom:.3rem}
+.cell h3{font-family:"Noto Sans Arabic",sans-serif;font-weight:700;font-size:1.35rem;margin-bottom:.3rem}
 .cell p{margin:0;color:var(--mut);font-size:.98rem;line-height:1.85}
 .cell .k{font-size:.72rem;letter-spacing:.18em;color:var(--amber);font-weight:700;margin-bottom:.5rem}
-.cell .big{font-family:"Reem Kufi",serif;font-size:2.6rem;line-height:1.1;color:var(--acc);
-  font-variant-numeric:tabular-nums;letter-spacing:-.03em}
+.cell .big{font-family:"Noto Sans Arabic",sans-serif;font-weight:700;font-size:2.6rem;line-height:1.1;color:var(--acc);
+  font-variant-numeric:tabular-nums;}
 .cell .ic{width:1.9rem;height:1.9rem;color:var(--amber);margin-bottom:.6rem}
 .cell .meta{margin-top:.8rem;font-size:.84rem;color:var(--amber);font-weight:600;font-variant-numeric:tabular-nums}
 
@@ -196,7 +196,7 @@ a.cell:hover{border-color:var(--hair2);background:var(--surf2);transform:transla
   background:var(--glass2)}
 .ayah>span.tx{display:block;max-width:38rem;margin:0 auto}
 .ayah .an{display:inline-grid;place-items:center;width:2.5rem;height:2.5rem;border:1px solid var(--amber);
-  border-radius:50%;color:var(--amber);font-family:"IBM Plex Sans Arabic",sans-serif;font-size:.9rem;
+  border-radius:50%;color:var(--amber);font-family:"Noto Sans Arabic",sans-serif;font-size:.9rem;
   font-weight:700;margin-inline-start:.6rem;vertical-align:middle}
 .para{margin:0 0 1.5rem;font-family:"Amiri",serif;font-size:1.5rem;line-height:2.45;color:var(--ink);
   text-align:justify;max-width:var(--measure)}
@@ -209,7 +209,7 @@ a.cell:hover{border-color:var(--hair2);background:var(--surf2);transform:transla
 
 /* grade */
 .gband{display:flex;align-items:flex-start;gap:1.2rem;flex-wrap:wrap;padding:1.4rem 1.6rem}
-.gbig{font-family:"Reem Kufi",serif;font-size:1.7rem;letter-spacing:-.02em;padding:.35rem 1.2rem;
+.gbig{font-family:"Noto Sans Arabic",sans-serif;font-weight:700;font-size:1.7rem;padding:.35rem 1.2rem;
   border-radius:14px}
 .gbig.ok{background:var(--oksoft);color:var(--ok)}.gbig.mid{background:var(--warnsoft);color:var(--warn)}
 .gbig.bad{background:var(--badsoft);color:var(--bad)}.gbig.na{background:var(--surf2);color:var(--mut)}
@@ -320,7 +320,7 @@ dialog.srcdlg{border-radius:var(--r);padding:0;max-width:40rem;
   background:var(--glass2);-webkit-backdrop-filter:blur(30px) saturate(1.8);backdrop-filter:blur(30px) saturate(1.8)}
 dialog.srcdlg::backdrop{background:rgba(5,4,2,.6);backdrop-filter:blur(5px)}
 .srcdlg .hd{display:flex;align-items:center;justify-content:space-between;padding:1.2rem 1.5rem;border-bottom:1px solid var(--hair)}
-.srcdlg .hd b{font-family:"Reem Kufi",serif;font-size:1.25rem}
+.srcdlg .hd b{font-family:"Noto Sans Arabic",sans-serif;font-weight:700;font-size:1.25rem}
 .srcdlg .bd{padding:1.1rem 1.5rem;max-height:62vh;overflow:auto}
 .srcdlg .it{padding:.95rem 0;border-bottom:1px solid var(--hair)}
 .srcdlg .it:last-child{border-bottom:0}
@@ -336,10 +336,10 @@ dialog.srcdlg::backdrop{background:rgba(5,4,2,.6);backdrop-filter:blur(5px)}
    فلا يبقى ثلثا البطاقة بياضًا كما كان */
 .cell.card{display:flex;flex-direction:column;gap:.45rem;padding:1.7rem 1.8rem}
 .cell.card .ch{display:flex;align-items:baseline;justify-content:space-between;gap:1.5rem}
-.cell.card .cn{display:flex;align-items:baseline;gap:.35rem;font-family:"Reem Kufi",serif;
-  font-size:1.5rem;color:var(--acc);font-variant-numeric:tabular-nums;letter-spacing:-.03em;
+.cell.card .cn{display:flex;align-items:baseline;gap:.35rem;font-family:"Noto Sans Arabic",sans-serif;font-weight:700;
+  font-size:1.5rem;color:var(--acc);font-variant-numeric:tabular-nums;
   white-space:nowrap}
-.cell.card .cn small{font-family:"IBM Plex Sans Arabic",sans-serif;font-size:.72rem;
+.cell.card .cn small{font-family:"Noto Sans Arabic",sans-serif;font-weight:500;font-size:.72rem;
   color:var(--faint);letter-spacing:0}
 .cell.card .au{color:var(--amber);font-size:.88rem;font-weight:600}
 .cell.card .meta{display:flex;align-items:center;justify-content:space-between;gap:1rem;
@@ -363,9 +363,9 @@ a.cell.card:hover .go{color:var(--acc2)}
 .bk:hover{border-color:var(--acc)}
 .bk.on{border-color:var(--acc);background:var(--accsoft);box-shadow:none}
 .bk .bn{font-family:"Amiri",serif;font-size:1.2rem;color:var(--ink);line-height:1.4}
-.bk .bc{display:flex;align-items:baseline;gap:.3rem;font-family:"Reem Kufi",serif;font-size:1.35rem;
-  color:var(--acc);font-variant-numeric:tabular-nums;letter-spacing:-.03em;white-space:nowrap}
-.bk .bc small{font-family:"IBM Plex Sans Arabic",sans-serif;font-size:.68rem;color:var(--faint);letter-spacing:0}
+.bk .bc{display:flex;align-items:baseline;gap:.3rem;font-family:"Noto Sans Arabic",sans-serif;font-weight:700;font-size:1.35rem;
+  color:var(--acc);font-variant-numeric:tabular-nums;white-space:nowrap}
+.bk .bc small{font-family:"Noto Sans Arabic",sans-serif;font-weight:500;font-size:.68rem;color:var(--faint);letter-spacing:0}
 .nums{display:flex;flex-wrap:wrap;gap:.4rem}
 .hn{min-width:3.4rem;text-align:center;padding:.42rem .6rem;border-radius:10px;
   border:1px solid var(--hair);color:var(--ink2);font-size:.92rem;font-variant-numeric:tabular-nums;
@@ -412,8 +412,8 @@ a.nm2:hover{border-color:var(--acc);color:var(--acc)}
 .figs{display:grid;grid-template-columns:repeat(3,1fr);gap:2.4rem 2rem;margin:3.4rem auto 0;max-width:58rem}
 @media(max-width:46rem){.figs{grid-template-columns:repeat(2,1fr)}}
 .fig{text-align:center}
-.fig b{display:block;font-family:"Reem Kufi",serif;font-size:clamp(2.4rem,4.4vw,3.4rem);
-  line-height:1;color:var(--ink);font-variant-numeric:tabular-nums;letter-spacing:-.035em}
+.fig b{display:block;font-family:"Noto Sans Arabic",sans-serif;font-weight:700;font-size:clamp(2.4rem,4.4vw,3.4rem);
+  line-height:1;color:var(--ink);font-variant-numeric:tabular-nums;}
 .fig .lb{display:block;font-size:.92rem;color:var(--ink2);margin-top:.45rem;font-weight:600}
 .fig .sub{display:block;font-size:.8rem;color:var(--faint);margin-top:.1rem}
 /* عنوان قسم */
@@ -421,7 +421,7 @@ a.nm2:hover{border-color:var(--acc);color:var(--acc)}
   margin-bottom:1.6rem}
 .sect .l{max-width:44rem}
 .sect .k{font-size:.72rem;letter-spacing:.24em;color:var(--amber);font-weight:700}
-.sect h2{font-family:"Reem Kufi",serif;font-size:clamp(1.8rem,3.4vw,2.5rem);letter-spacing:-.03em;
+.sect h2{font-family:"Noto Sans Arabic",sans-serif;font-weight:700;font-size:clamp(1.8rem,3.4vw,2.5rem);
   color:var(--ink);margin:.35rem 0 0}
 .sect p{color:var(--mut);font-size:1.02rem;line-height:1.9;margin:.6rem 0 0}
 .sect .more{font-size:.95rem;font-weight:600;white-space:nowrap;border-radius:11px;padding:.65rem 1.25rem}
@@ -443,7 +443,7 @@ a.nm2:hover{border-color:var(--acc);color:var(--acc)}
 a.scard:hover{border-color:var(--acc);background:var(--surf2);transform:translateY(-2px)}
 .scard .top{display:flex;align-items:center;justify-content:space-between;gap:.6rem}
 .scard .idx{font-size:.72rem;letter-spacing:.16em;color:var(--amber);font-weight:700}
-.scard h3{font-family:"Reem Kufi",serif;font-size:1.35rem;letter-spacing:-.02em;color:var(--ink)}
+.scard h3{font-family:"Noto Sans Arabic",sans-serif;font-weight:700;font-size:1.35rem;color:var(--ink)}
 .scard .by{font-size:.86rem;color:var(--mut)}
 .scard p{margin:0;font-size:.92rem;color:var(--mut);line-height:1.85}
 .scard .fo{margin-top:auto;padding-top:.7rem;font-size:.85rem;color:var(--ink2);font-weight:600;
@@ -453,7 +453,7 @@ a.scard:hover{border-color:var(--acc);background:var(--surf2);transform:translat
 .dots button[aria-current="true"]{background:var(--acc);width:1.5rem;border-radius:4px}
 /* قوائم بسيطة */
 .plain{display:grid;gap:1.6rem 3rem;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr))}
-.plain .it h3{font-family:"Reem Kufi",serif;font-size:1.2rem;color:var(--ink);margin-bottom:.3rem}
+.plain .it h3{font-family:"Noto Sans Arabic",sans-serif;font-weight:700;font-size:1.2rem;color:var(--ink);margin-bottom:.3rem}
 .plain .it p{margin:0;color:var(--mut);font-size:.96rem;line-height:1.9}
 .plain .it .n{font-size:.72rem;letter-spacing:.2em;color:var(--amber);font-weight:700;display:block;margin-bottom:.4rem}
 .rules{display:grid;gap:.9rem 2.6rem;grid-template-columns:1fr 1fr}
