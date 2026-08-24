@@ -460,14 +460,17 @@ a.nm2:hover{border-color:var(--acc);color:var(--acc)}
   mask-image:linear-gradient(to right,transparent,#000 14%,#000 86%,transparent)}
 .center{text-align:center}
 /* البطل */
-.mast{padding:6rem 0 3.4rem;text-align:center;position:relative}
+.mast{padding:5rem 0 3.4rem;text-align:center;position:relative}
 /* أفقٌ مضيء يفصل الترويسة عمّا تحتها — يُقرأ حدًّا لا فراغًا */
 .mast::after{content:"";position:absolute;bottom:0;inset-inline:0;height:1px;
   background:linear-gradient(90deg,transparent,var(--hair2) 18%,var(--acc) 50%,var(--hair2) 82%,transparent);
   box-shadow:0 0 18px -2px var(--acc-glow)}
 .mast .mark{width:4.2rem;height:4.2rem;color:var(--amber);margin:0 auto .9rem;display:block}
-.mast h1{font-family:"Reem Kufi",serif;font-size:clamp(4.6rem,14vw,9rem);line-height:.92;
-  letter-spacing:-.05em;margin:0;
+/* مع background-clip:text لا يُطلى إلا ما وقع داخل صندوق العنصر، وارتفاعُ
+   الصندوق هو line-height. فسطرٌ أقصر من قياس الخطّ يقطع ما علا الحرف —
+   وكانت ضمّة «تُراث» تُقصّ من أعلاها. فيُفسَح للسطر ولما فوقه. */
+.mast h1{font-family:"Reem Kufi",serif;font-size:clamp(4.6rem,14vw,9rem);line-height:1.24;
+  padding-top:.1em;letter-spacing:-.05em;margin:0;
   background:linear-gradient(168deg,var(--ink) 32%,var(--acc));
   -webkit-background-clip:text;background-clip:text;color:transparent;
   filter:drop-shadow(0 0 34px var(--acc-glow))}
