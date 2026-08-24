@@ -4,6 +4,11 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  # إيداعات GitHub Actions لا تُشغِّل سواها من العمليات (منعًا للتسلسل اللانهائي)،
+  # فلولا هذا لبقي ما يجلبه عملُ الشروح في المستودع دون أن يُنشر.
+  workflow_run:
+    workflows: ["جلب شروح الأحاديث"]
+    types: [completed]
 
 permissions:
   contents: read
