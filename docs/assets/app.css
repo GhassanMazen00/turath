@@ -347,6 +347,12 @@ dialog.srcdlg::backdrop{background:rgba(5,4,2,.6);backdrop-filter:blur(5px)}
 .cell.card .go{color:var(--acc);font-weight:600}
 a.cell.card:hover .go{color:var(--acc2)}
 
+/* قراءة الشروح */
+.shh{font-family:"Noto Sans Arabic",sans-serif;font-weight:700;font-size:1.15rem;color:var(--amber);
+  margin:2rem 0 .9rem;padding-bottom:.5rem;border-bottom:1px solid var(--hair);max-width:var(--measure)}
+.prose .para.here{background:var(--ambersoft);border-radius:10px;
+  box-shadow:0 0 0 .7rem var(--ambersoft)}
+
 /* سجلّ الترجمة: مصطلحٌ وقيمة على طرفَي سطرٍ محدود العرض */
 .facts{max-width:44rem;display:flex;flex-direction:column}
 .fr{display:flex;align-items:baseline;justify-content:space-between;gap:2rem;

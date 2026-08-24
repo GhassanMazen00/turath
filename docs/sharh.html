@@ -1,0 +1,132 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap"></noscript>
+<link rel="stylesheet" href="assets/app.css">
+<script>(function(){var t=localStorage.getItem("turath-theme");if(t)document.documentElement.setAttribute("data-theme",t);})();</script>
+<title>شروح الحديث · تُراث</title></head><body>
+<header class="nav"><div class="navin">
+  <a class="brand" href="index.html"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2.2l2.3 1.9 3-.3.8 2.9 2.6 1.6-1.2 2.8 1.2 2.8-2.6 1.6-.8 2.9-3-.3L12 21.8l-2.3-1.9-3 .3-.8-2.9L3.3 15.7l1.2-2.8-1.2-2.8 2.6-1.6.8-2.9 3 .3z" stroke="currentColor" stroke-width="1.2"/><circle cx="12" cy="12" r="3.6" stroke="currentColor" stroke-width="1.2"/></svg>تُراث</a>
+  <nav class="navl"><a href="tafsir.html">التفسير</a><a href="hadith.html">الحديث</a><a href="rijal.html">الرواة</a><a href="sharh.html" class="on">الشروح</a>
+  <span id="mnw"></span><span id="tg"></span></nav>
+</div></header>
+<div class="shell"><aside class="side" id="side"></aside><main class="main" id="app"></main></div>
+<script src="assets/app.js"></script>
+<script>
+theme(); document.getElementById('tg').innerHTML=TGL; document.getElementById('mnw').innerHTML=MENU;
+mountMenu(document.getElementById('mn'),document.getElementById('side'));
+const app=()=>document.getElementById('app'), side=()=>document.getElementById('side');
+const FOOT='<footer class="foot" id="foot"></footer>';
+function foot(){const f=document.getElementById('foot'); if(f)mountFooter(f);}
+let BS=[];
+(async()=>{ try{ await searchInit(); BS=await sharhBooks(); }
+  catch(e){ return failed(app(),e); }
+  addEventListener('hashchange',route); route(); })();
+
+function route(){
+  const h=decodeURIComponent(location.hash.replace(/^#\/?/,''));
+  if(!h) return vBooks();
+  const p=h.split('/');
+  const b=BS.find(x=>x.slug===p[0]);
+  if(!b) return vBooks();
+  if(p[1]==='q') return vSearch(b,p.slice(2).join('/'));
+  if(p[1]==='r') return vRead(b,+p[2]||0,+p[3]||0);
+  return vBook(b);
+}
+function sideBooks(active){
+  sidebar(side(),{title:'كتب الشروح',active,
+    items:BS.map(b=>({key:b.slug,href:'#/'+b.slug,label:b.ar,side:AR(b.vols)+' ج'}))});
+}
+function vBooks(){
+  sideBooks();
+  app().innerHTML='<nav class="crumb"><span>شروح الحديث</span></nav>'+
+   '<section class="ph"><div class="k">شروح المحدّثين</div><h1>شروح الحديث</h1>'+
+   '<div class="m"><bdi>'+AR(BS.length)+' كتب</bdi><span class="sep">•</span>'+
+   '<bdi>'+AR(BS.reduce((a,b)=>a+b.paras,0))+' فقرة</bdi></div></section>'+
+   '<div class="note" style="margin-bottom:1rem">هذه الشروح كتبٌ متّصلة الكلام، لا سجلّاتٌ لكل حديث. '+
+   'فتُقرأ وتُبحث كما هي، ولا يُنسَب منها شرحٌ إلى حديثٍ بعينه بغير دليل.</div>'+
+   '<div class="bento">'+BS.map(b=>
+     '<a class="cell b3 card" href="#/'+b.slug+'"><div class="ch"><h3>'+esc(b.ar)+'</h3>'+
+     '<span class="cn"><bdi>'+AR(b.vols)+'</bdi><small>مجلّدًا</small></span></div>'+
+     '<p class="au">'+esc(b.author)+'<span class="sep">•</span>ت'+AR(b.died)+'هـ</p>'+
+     '<p>'+esc(b.full)+'</p>'+
+     '<div class="meta"><bdi>'+AR(b.paras)+' فقرة</bdi><span class="go">افتح ←</span></div></a>').join('')+
+   '</div>'+FOOT;
+  foot(); scrollTo(0,0);
+}
+function box(b,q){
+  return '<div class="sbox"><svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.7"/><path d="M16.5 16.5L21 21" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>'+
+   '<input id="q" type="search" placeholder="ابحث في '+esc(b.ar)+'…" value="'+esc(q||'')+'" autocomplete="off"><kbd>↵</kbd></div>';
+}
+function wire(b){
+  const i=document.getElementById('q'); if(!i)return;
+  i.onkeydown=e=>{ if(e.key==='Enter'&&i.value.trim()) location.hash='#/'+b.slug+'/q/'+encodeURIComponent(i.value.trim()); };
+}
+async function vBook(b){
+  sideBooks(b.slug);
+  app().innerHTML='<nav class="crumb"><a href="#/">الشروح</a><span class="sep">›</span><span>'+esc(b.ar)+'</span></nav>'+
+   '<section class="ph"><div class="k">'+esc(b.author)+'<span class="sep">•</span>ت'+AR(b.died)+'هـ</div>'+
+   '<h1>'+esc(b.ar)+'</h1><div class="m">'+esc(b.full)+'</div></section>'+
+   box(b)+
+   '<div class="acts"><a class="act" href="#/'+b.slug+'/r/0/0">اقرأ من أوّله</a>'+
+   '<a class="act" href="hadith.html#/'+b.on+'">'+esc(b.onAr)+' ←</a></div>'+
+   '<div class="sh"><h2>الأبواب</h2><span class="cnt" id="tn"></span><span class="ln"></span></div>'+
+   '<div id="toc"></div>'+FOOT;
+  wire(b); foot(); scrollTo(0,0);
+  const toc=await sharhToc(b.slug);
+  document.getElementById('tn').innerHTML='<bdi>'+AR(toc.length)+'</bdi>';
+  document.getElementById('toc').innerHTML='<div class="tiles">'+toc.map(t=>
+    '<a class="tile wrap" href="#/'+b.slug+'/r/'+t[1]+'/'+t[2]+'"><span class="n">'+AR(t[3])+'</span>'+
+    '<span class="t"><b>'+esc(t[0])+'</b><span>ج'+AR(t[3])+' ص'+AR(t[4])+'</span></span></a>').join('')+'</div>';
+}
+async function vSearch(b,q){
+  sideBooks(b.slug);
+  app().innerHTML='<nav class="crumb"><a href="#/">الشروح</a><span class="sep">›</span>'+
+   '<a href="#/'+b.slug+'">'+esc(b.ar)+'</a><span class="sep">›</span><span>بحث</span></nav>'+
+   '<section class="ph"><div class="k">بحث في '+esc(b.ar)+'</div><h1>«'+esc(q)+'»</h1></section>'+
+   box(b,q)+'<div id="res"></div>'+FOOT;
+  wire(b); foot(); scrollTo(0,0);
+  const res=document.getElementById('res');
+  res.innerHTML='<div class="sstat"><span class="spin"></span><span>يبحث…</span><span class="bar"><i style="width:8%"></i></span></div>';
+  try{
+    const hits=await sharhFind(b.slug,q,{limit:40,onprog:(d,t)=>{
+      const bar=res.querySelector('.bar i'); if(bar)bar.style.width=Math.round(8+d/t*92)+'%';}});
+    if(!hits.length){ res.innerHTML='<div class="pane msg">لا مواضع لـ«'+esc(q)+'» في '+esc(b.ar)+'.</div>'; return; }
+    res.innerHTML='<div class="sstat"><bdi>'+AR(hits.length)+' موضعًا</bdi>'+(hits.length>=40?' (أول ٤٠)':'')+'</div>'+
+      hits.map(h=>'<a class="hit" href="#/'+b.slug+'/r/'+h.c+'/'+h.i+'">'+
+        '<div class="m"><span class="tag c">ج'+AR(h.v)+' ص'+AR(h.p)+'</span>'+
+        (h.exact?'':'<span class="tag">بالكلمات</span>')+'</div>'+
+        '<div class="tx amiri">'+sharhMark(h.t.slice(0,420),q)+(h.t.length>420?'…':'')+'</div></a>').join('');
+  }catch(e){ failed(res,e); }
+}
+async function vRead(b,ci,pi){
+  sideBooks(b.slug);
+  app().innerHTML='<nav class="crumb"><a href="#/">الشروح</a><span class="sep">›</span>'+
+   '<a href="#/'+b.slug+'">'+esc(b.ar)+'</a><span class="sep">›</span><span>قراءة</span></nav>'+
+   '<section class="ph" id="ph"></section>'+box(b)+'<div id="body"></div>'+FOOT;
+  wire(b); foot(); loading(document.getElementById('body'),'جارٍ فتح الموضع…');
+  try{
+    const rows=await sharhChunk(b.slug,ci);
+    const at=Math.min(Math.max(0,pi),rows.length-1);
+    const cur=rows[at];
+    document.getElementById('ph').innerHTML='<div class="k">'+esc(b.ar)+'</div>'+
+      '<h1>الجزء '+AR(cur[1])+' — صفحة '+AR(cur[2])+'</h1>'+
+      '<div class="m">'+esc(b.author)+'</div>';
+    const pg=()=>{const pv=at>0?'#/'+b.slug+'/r/'+ci+'/'+(at-1):(ci>0?'#/'+b.slug+'/r/'+(ci-1)+'/999999':null);
+      const nx=at<rows.length-1?'#/'+b.slug+'/r/'+ci+'/'+(at+1):(ci<b.chunks-1?'#/'+b.slug+'/r/'+(ci+1)+'/0':null);
+      return '<div class="pager">'+(pv?'<a href="'+pv+'">‹ السابق</a>':'<span class="off">‹ السابق</span>')+
+      '<span class="mid"><bdi>ج'+AR(cur[1])+' ص'+AR(cur[2])+'</bdi></span>'+
+      (nx?'<a href="'+nx+'">التالي ›</a>':'<span class="off">التالي ›</span>')+'</div>';};
+    // الموضع وما يليه، ليقرأ متّصلًا
+    const win=rows.slice(at,Math.min(rows.length,at+12));
+    document.getElementById('body').innerHTML=pg()+
+      '<div class="pane pad prose">'+win.map((r,k)=>
+        (r[3]?'<h3 class="shh">'+esc(r[0])+'</h3>':
+         '<p class="para'+(k===0?' here':'')+'">'+esc(r[0])+'</p>')).join('')+'</div>'+
+      '<div class="note">'+esc(b.full)+' — ج'+AR(cur[1])+' ص'+AR(cur[2])+'. النصّ كما ورد في المصدر.</div>'+pg();
+    scrollTo(0,0);
+  }catch(e){ failed(document.getElementById('body'),e); }
+}
+</script></body></html>

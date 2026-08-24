@@ -277,6 +277,74 @@ function mountSearch(root,{autofocus=false}={}){
   if(autofocus)setTimeout(()=>inp.focus(),300);
 }
 
+
+/* ── شروح الحديث: كتبٌ تُقرأ وتُبحث، لا شرحٌ يُنسَب إلى حديثٍ بعينه ──
+   المصدر نصٌّ متّصل، ونسبة فقرةٍ منه إلى حديثٍ بذاته تُخطئ بصمت. فالبحث
+   هو الواسطة: القارئ يرى الموضع بجزئه وصفحته ويحكم بنفسه. */
+const SH={books:null,idx:{},chunk:{}};
+async function sharhBooks(){ if(!SH.books) SH.books=await api.local("sharh/books.json"); return SH.books; }
+async function sharhMeta(slug){ const bs=await sharhBooks(); return bs.find(b=>b.slug===slug); }
+async function sharhIdx(slug){
+  if(!SH.idx[slug]) SH.idx[slug]=await api.local(`sharh/${slug}/idx.json`);
+  return SH.idx[slug];
+}
+async function sharhToc(slug){
+  const k="toc:"+slug;
+  if(!SH.idx[k]) SH.idx[k]=await api.local(`sharh/${slug}/toc.json`);
+  return SH.idx[k];
+}
+async function sharhChunk(slug,n){
+  const k=slug+":"+n;
+  if(!SH.chunk[k]) SH.chunk[k]=await api.local(`sharh/${slug}/c${n}.json`);
+  return SH.chunk[k];
+}
+/* بحثٌ في كتاب: الفهرس المعكوس يحصر الأجزاء، ثم تُمسح وحدها */
+async function sharhFind(slug,q,{limit=40,onprog}={}){
+  const n=norm(q); if(n.length<3) return [];
+  const words=[...new Set(n.split(" ").filter(w=>w.length>2))];
+  if(!words.length) return [];
+  const idx=await sharhIdx(slug);
+  // أندر الكلمات أولًا، ثم تقاطعها
+  const lists=words.map(w=>idx[w]).filter(Boolean).sort((a,b)=>a.length-b.length);
+  let cand;
+  if(!lists.length) cand=null;                       // كلها شائعة: امسح الكلّ
+  else { cand=new Set(lists[0]);
+    for(const l of lists.slice(1,3)){ const s=new Set(l); cand=new Set([...cand].filter(x=>s.has(x))); }
+    if(!cand.size) cand=new Set(lists[0]); }
+  const meta=await sharhMeta(slug);
+  const list=cand?[...cand].sort((a,b)=>a-b):Array.from({length:meta.chunks},(_,i)=>i);
+  const out=[]; let done=0;
+  for(const ci of list){
+    const rows=await sharhChunk(slug,ci);
+    rows.forEach((r,i)=>{
+      if(out.length>=limit) return;
+      const t=norm(r[0]);
+      let at=t.indexOf(n);
+      if(at<0 && words.length>1 && !words.every(w=>t.includes(w))) return;   // لا العبارة ولا كل الكلمات
+      if(at<0) at=t.indexOf(words[0]);
+      out.push({t:r[0],v:r[1],p:r[2],c:ci,i,exact:t.includes(n)});
+    });
+    if(onprog) onprog(++done,list.length,out.length);
+    if(out.length>=limit) break;
+  }
+  out.sort((a,b)=>(b.exact-a.exact));
+  return out;
+}
+/* إبراز الموضع في النصّ الأصلي: المطابقة على المطبَّع والقصّ على الأصل */
+function sharhMark(text,q){
+  const n=norm(q); if(!n) return esc(text);
+  const map=[]; let acc="";
+  for(let i=0;i<text.length;i++){
+    const c=norm(text[i]);
+    if(c){ acc+=c; for(let k=0;k<c.length;k++) map.push(i); }
+    else if(acc && !acc.endsWith(" ")){ acc+=" "; map.push(i); }
+  }
+  const at=acc.indexOf(n);
+  if(at<0||at>=map.length) return esc(text);
+  const s=map[at], e=map[Math.min(at+n.length,map.length-1)];
+  return esc(text.slice(0,s))+"<mark>"+esc(text.slice(s,e+1))+"</mark>"+esc(text.slice(e+1));
+}
+
 /* ── نبذة عن كل كتاب — تُستعمل في الرئيسية وصفحات الفهارس ── */
 const BOOKNOTE={bukhari:'أصحّ الكتب بعد كتاب الله، جمعه البخاري في نحو ستة عشر عامًا.',
  muslim:'ثاني الصحيحين، امتاز بحسن السياق وجمع طرق الحديث في موضع واحد.',
@@ -298,6 +366,7 @@ const SOURCES=[
  ["نصّ القرآن الكريم","الرسم الإملائي المعياري.","https://github.com/fawazahmed0/quran-api"],
  ["كتب التفسير","ثمانية عشر كتابًا من الطبري وابن كثير والقرطبي إلى ابن عاشور.","https://github.com/spa5k/tafsir_api"],
  ["شروح الأحاديث","تُجلب من الموسوعة الحديثية للدرر السنية عند توفّر الاتصال.","https://dorar.net"],
+ ["شروح الحديث — أربعة كتب","فتح الباري لابن حجر، والمنهاج للنووي، وعون المعبود، وتحفة الأحوذي — من مدوّنة OpenITI الأكاديمية المنشورة، نصوصًا مرقونة لا ممسوحة ضوئيًّا.","https://github.com/OpenITI"],
 ];
 function mountFooter(el){
   el.innerHTML=`<a class="srcbtn" href="#" id="srcOpen">
@@ -336,17 +405,40 @@ async function fetchSharh(matn){
     return t?{text:t}:null;
   }catch(e){ return null; }
 }
-function sharhBlock(matn,mount){
-  const out=()=>`<div class="pane msg">لا يوجد شرحٌ مفهرس لهذا الحديث في المنصة.
-      <div class="note" style="margin:.7rem 0 1rem">الشروح المطبوعة لم تُدرَج بعد؛ لا يُختلق لها بديل.</div>
-      <a class="act" target="_blank" rel="noopener"
-      href="https://dorar.net/hadith/search?q=${encodeURIComponent(matn.slice(0,50))}">اطلبه في الموسوعة الحديثية ↗</a></div>`;
-  if(!SHARH_HOST){ mount.innerHTML=out(); return; }
-  mount.innerHTML=`<div class="msg"><span class="spin"></span> جارٍ طلب الشرح…</div>`;
-  fetchSharh(matn).then(r=>{
-    mount.innerHTML=r?`<div class="pane pad prose">${paras(r.text)}</div>
-      <div class="note">الشرح من الموسوعة الحديثية للدرر السنية.</div>`:out();
-  }).catch(()=>{ mount.innerHTML=out(); });
+/* ألفاظ المتن المميِّزة: ما بعد آخر علامة رفعٍ إلى النبي ﷺ — فما قبلها إسناد.
+   وإن لم تُوجد علامة، فآخر الحديث متنٌ لا إسناد. */
+function matnPhrase(text,n=7){
+  const t=norm(text);
+  const MARK=/صلي الله عليه وسلم/g;
+  let last=-1,m;
+  while((m=MARK.exec(t))) last=m.index+m[0].length;
+  let rest=last>0?t.slice(last):"";
+  rest=rest.replace(/^\s*(?:يقول|قال|انه قال|قالت|فقال|أنه قال)\s*/,"").trim();
+  const w=(rest||t).split(" ").filter(Boolean);
+  if(w.length<3){ const all=t.split(" ").filter(Boolean); return all.slice(-n).join(" "); }
+  return w.slice(0,n).join(" ");
+}
+/* الشرح على صفحة الحديث: لا يُدَّعى أنّ هذا شرحُ هذا الحديث — بل يُفتح
+   البحث في كتب الشروح عندنا بألفاظ متنه، فيرى القارئ الموضع بجزئه وصفحته. */
+const SHARH_ON={bukhari:"fath-albari",muslim:"minhaj-nawawi",
+                abudawud:"awn-almabud",tirmidhi:"tuhfat-alahwadhi"};
+const SHARH_ONAR={"fath-albari":"فتح الباري لابن حجر","minhaj-nawawi":"المنهاج للنووي",
+                  "awn-almabud":"عون المعبود","tuhfat-alahwadhi":"تحفة الأحوذي"};
+function sharhBlock(matn,mount,book){
+  const slug=SHARH_ON[book];
+  const q=matnPhrase(matn);
+  if(!slug){
+    mount.innerHTML='<div class="pane msg">لا شرحَ مفهرسًا لهذا الحديث، ولا كتابَ شرحٍ لهذا المصنَّف في المنصة بعدُ.'+
+      '<div class="note" style="margin:.7rem 0 1rem">المشحون: فتح الباري، والمنهاج، وعون المعبود، وتحفة الأحوذي.</div>'+
+      '<a class="act" href="sharh.html">تصفَّح كتب الشروح ←</a></div>';
+    return;
+  }
+  mount.innerHTML='<div class="pane pad"><p style="margin:0 0 1rem;color:var(--mut);line-height:1.95">'+
+    'لم يُفهرَس لهذا الحديث شرحٌ منسوبٌ إليه بعينه. و<b>'+esc(SHARH_ONAR[slug])+'</b> شرحُ هذا المصنَّف، '+
+    'وهو عندنا كاملًا — ابحث فيه بألفاظ المتن وانظر الموضع بجزئه وصفحته.</p>'+
+    '<div class="acts"><a class="act" href="sharh.html#/'+slug+'/q/'+encodeURIComponent(q)+'">'+
+    'ابحث عن هذا المتن في '+esc(SHARH_ONAR[slug])+' ←</a>'+
+    '<a class="act" href="sharh.html#/'+slug+'">تصفَّح الكتاب</a></div></div>';
 }
 
 const RJ={idx:null,sh:{}};
