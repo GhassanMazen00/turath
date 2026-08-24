@@ -276,17 +276,25 @@ a.cell:hover{border-color:var(--hair2);background:var(--surf2);transform:transla
 .tab .c{font-size:.74rem;opacity:.75;margin-inline-start:.3rem;font-variant-numeric:tabular-nums}
 .panel{display:none}.panel.on{display:flex;flex-direction:column;gap:1.2rem}
 
-/* التبويبات على الشاشات الضيّقة: خمسة تبويبات تلتفّ إلى سطرين، فيقع الخطّ
-   المضيء للتبويب المختار بين السطرين، فيبدو السطر الثاني (التخريج والشرح)
-   محتوًى تحت فاصل لا تبويبات. فتصير سطرًا واحدًا يُمرَّر أفقيًّا، ويُكتفى
-   بتظليل المختار عن الخطّ. */
+.tab .tl{display:inline}.tab .ts{display:none}
+
+/* التبويبات على الشاشات الضيّقة.
+   لا تُمرَّر: خمسةٌ التفّت أوّلًا إلى سطرين فوقع خطّ المختار بينهما، ثم
+   صُيِّرت سطرًا يُمرَّر فغاب «الشرح» عن الشاشة ولا شيء يدلّ على أنّه وراءها.
+   وأيّ إخفاءٍ يحتاج إلى دليلٍ على نفسه فهو عيب. فصارت شبكةً من خمسة أعمدة
+   متساوية تسع الشاشة كلَّها، ويُقصَّر لفظ «النصّ كاملًا» ليتّسع. */
 @media(max-width:52rem){
-  .tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:.6rem;
-    -webkit-overflow-scrolling:touch;scroll-snap-type:x proximity}
-  .tabs::-webkit-scrollbar{display:none}
-  .tab{flex:0 0 auto;white-space:nowrap;scroll-snap-align:end}
-  .tab[aria-selected="true"]::after{display:none}
-  .tab[aria-selected="true"]{box-shadow:inset 0 0 0 1px var(--acc)}
+  .tabs{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:.25rem;
+    overflow:visible;padding-bottom:.7rem}
+  .tab{padding:.5rem .18rem;font-size:.81rem;min-width:0;white-space:nowrap;
+    display:flex;align-items:center;justify-content:center}
+  .tab .c{font-size:.68rem;margin-inline-start:.18rem}
+  .tab .tl{display:none}.tab .ts{display:inline}
+  .tab[aria-selected="true"]::after{inset-inline:.3rem;bottom:-.73rem}
+}
+@media(max-width:23rem){
+  .tab{font-size:.73rem;padding:.5rem .1rem}
+  .tab .c{display:none}
 }
 
 /* chain */
@@ -361,6 +369,35 @@ table.t td:first-child{font-weight:600;white-space:nowrap}
   border-radius:18px;padding:.35rem .9rem;color:var(--ink);transition:.15s}
 .bchip:hover{border-color:var(--acc);color:var(--acc)}
 .bchip .n{color:var(--mut);font-variant-numeric:tabular-nums}
+/* ── بطاقة الموضع بدليله ──
+   القارئ لا يستطيع أن يحكم على موضعٍ سيق إليه مجرَّدًا. فيُقدَّم الدليل على
+   النصّ: ما اقتُبس من المتن، وتحت أيّ باب وقع. واللون يُلخّص ولا يُغني عنه. */
+.evlead{color:var(--mut);line-height:1.95;margin:0 0 1rem;max-width:var(--measure)}
+.ev{border:1px solid var(--hair);border-radius:var(--r);background:var(--panel);
+  padding:1.05rem 1.2rem;margin-bottom:.85rem;position:relative;overflow:hidden}
+.ev::before{content:"";position:absolute;inset-block:0;inset-inline-start:0;width:3px;background:var(--evc)}
+.ev{--evc:var(--hair)}
+.ev-sure{--evc:#1f9d6b}
+.ev-strong{--evc:var(--acc)}
+.ev-bab{--evc:#b78a1e}
+.ev-weak{--evc:var(--faint)}
+.evh{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:.65rem}
+.evb{font-size:.76rem;font-weight:700;letter-spacing:.01em;padding:.24rem .68rem;border-radius:999px;
+  color:var(--evc);background:color-mix(in srgb,var(--evc) 12%,transparent);
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--evc) 34%,transparent)}
+.evp{font-size:.78rem;color:var(--faint);margin-inline-start:auto}
+.evw{list-style:none;margin:0 0 .85rem;padding:0;display:grid;gap:.4rem}
+.evw li{font-size:.87rem;line-height:1.85;color:var(--mut);padding-inline-start:1.5rem;position:relative}
+.evw li::before{position:absolute;inset-inline-start:0;top:0;font-weight:700;font-size:.9rem}
+.evw li.ok::before{content:"✓";color:#1f9d6b}
+.evw li.mid::before{content:"•";color:var(--faint)}
+.evw li.no::before{content:"✕";color:var(--faint)}
+.evw .wc{font-size:.75rem;color:var(--faint)}
+.evt{font-family:"Amiri",serif;font-size:1.24rem;line-height:2.05;color:var(--ink2);
+  border-top:1px solid var(--hair);padding-top:.85rem}
+.evgo{display:inline-block;margin-top:.85rem;font-size:.85rem;font-weight:600;color:var(--acc)}
+.evgo:hover{text-decoration:underline}
+.ev mark{background:color-mix(in srgb,var(--acc) 20%,transparent);color:inherit;border-radius:3px;padding:0 .12em}
 .hit{display:block;border-radius:14px;padding:1.1rem 1.3rem;margin-bottom:.6rem;transition:.16s}
 .hit:hover{border-color:var(--acc)}
 .hit .m{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;font-size:.78rem;color:var(--faint);margin-bottom:.4rem}

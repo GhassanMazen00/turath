@@ -94,11 +94,10 @@ async function vSearch(b,q){
     const hits=await sharhFind(b.slug,q,{limit:40,onprog:(d,t)=>{
       const bar=res.querySelector('.bar i'); if(bar)bar.style.width=Math.round(8+d/t*92)+'%';}});
     if(!hits.length){ res.innerHTML='<div class="pane msg">لا مواضع لـ«'+esc(q)+'» في '+esc(b.ar)+'.</div>'; return; }
-    res.innerHTML='<div class="sstat"><bdi>'+AR(hits.length)+' موضعًا</bdi>'+(hits.length>=40?' (أول ٤٠)':'')+'</div>'+
-      hits.map(h=>'<a class="hit" href="#/'+b.slug+'/r/'+h.c+'/'+h.i+'">'+
-        '<div class="m"><span class="tag c">ج'+AR(h.v)+' ص'+AR(h.p)+'</span>'+
-        (h.exact?'':'<span class="tag">بالكلمات</span>')+'</div>'+
-        '<div class="tx amiri">'+sharhMark(h.t.slice(0,420),q)+(h.t.length>420?'…':'')+'</div></a>').join('');
+    // المطلوبُ نفسه يُقابَل به عنوانُ باب كل موضع
+    res.innerHTML='<div class="sstat"><bdi>'+AR(hits.length)+' موضعًا</bdi>'+(hits.length>=40?' (أول ٤٠)':'')+
+      '<span class="sep">•</span><span>مع دليل كل موضع</span></div>'+
+      sharhRank(hits,q,null).map(h=>sharhCard(b.slug,h,q,null)).join('');
   }catch(e){ failed(res,e); }
 }
 async function vRead(b,ci,pi){

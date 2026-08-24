@@ -181,7 +181,8 @@ async function vHadith(k,num){
       '<div class="pane matn"><span>'+esc(sp.matn||h.text)+'</span></div>'+
       '<div class="tabs" role="tablist">'+
         '<button class="tab" role="tab" data-t="isnad" aria-selected="true">الإسناد<span class="c">'+AR(nodes.length)+'</span></button>'+
-        '<button class="tab" role="tab" data-t="full" aria-selected="false">النصّ كاملًا</button>'+
+        '<button class="tab" role="tab" data-t="full" aria-selected="false">'+
+          '<span class="tl">النصّ كاملًا</span><span class="ts">النصّ</span></button>'+
         '<button class="tab" role="tab" data-t="hukm" aria-selected="false">الأحكام<span class="c">'+AR(grades.length)+'</span></button>'+
         '<button class="tab" role="tab" data-t="takh" aria-selected="false">التخريج<span class="c">'+AR(tak.length)+'</span></button>'+
         '<button class="tab" role="tab" data-t="sharh" aria-selected="false">الشرح</button>'+
@@ -225,7 +226,7 @@ async function vHadith(k,num){
     if(sharh) sm.innerHTML='<div class="pane pad prose">'+paras(sharh.t)+'</div>'+
       '<div class="note">المصدر: '+esc(sharh.s)+
       (sharh.u?' <span class="sep">•</span> <a href="'+esc(sharh.u)+'" target="_blank" rel="noopener">الأصل ↗</a>':'')+'</div>';
-    else sharhBlock(sp.matn||h.text,sm,k);
+    else sharhBlock(sp.matn||h.text,sm,k,nodes.map(n=>n.name));
   }catch(e){ failed(document.getElementById('body'),e); }
 }
 </script></body></html>

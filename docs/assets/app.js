@@ -301,7 +301,51 @@ async function sharhChunk(slug,n){
 /* ألفاظٌ لا تدلّ على موضع: أدوات وألفاظ إسنادٍ ورفع، تَرِد في كل صفحة */
 const SH_STOP=new Set(("عن قال قالت قوله انه اني اذا الذي التي هذا هذه ذلك وقد كان كانت ثم "+
  "لا ما لم في من الي علي هو هي به له بن ابن ابي ابو رسول الله النبي صلي عليه وسلم "+
- "حدثنا اخبرنا انبانا وهو وهي وقال فقال ايضا كذا وفي وقيل قلت").split(" "));
+ "حدثنا اخبرنا انبانا وهو وهي وقال فقال ايضا كذا وفي وقيل قلت "+
+ /* ألفاظ الرواية والتحمّل: تدور في كل صفحةٍ من الشرح فلا تميّز حديثًا */
+ "اسناد بالاسناد بهذا نحوه مثله بلفظ بمعناه رواه روي ورواه واخرجه اخرجه حدثني "+
+ "اخبرني يسنده مرفوعا موقوفا طريق وجه رضي عنه عنها عنهم اخر اخري لفظه سنده "+
+ "متنه معناه ورد وردت وذكره ذكره تقدم ياتي سياتي مضي المصنف الشارح المولف").split(" "));
+
+/* آخر عنوانٍ قبل جزءٍ بعينه — يُؤخذ من الفهرس لا بتحميل الجزء السابق */
+async function sharhBabBefore(slug,ci){
+  if(!ci) return null;
+  const toc=await sharhToc(slug);
+  let last=null;
+  for(const t of toc){ if(t[1]>=ci) break; last=t[0]; }
+  return last;
+}
+/* عنوان الباب كما يُعرض: تُزال منه علامات الترقيم وأرقام الطبعة و«قوله»
+   كما يُفعل في فهرس الكتاب، ويبقى اللفظ كما ورد. */
+function babClean(t){
+  return String(t||"").replace(/^\d+\s*/,"").replace(/^[(]\s*/,"").replace(/\s*[)]\s*$/,"")
+    .replace(/^\d+\s*/,"").replace(/^[(]\s*/,"").replace(/^قوله\s+/,"")
+    .replace(/\s*[)]\s*$/,"").replace(/\s+/g," ").trim();
+}
+/* كلمات الباب المميِّزة — «باب» و«كتاب» و«ما جاء في» لا تفرّق بابًا عن باب */
+const BAB_STOP=new Set(("باب كتاب ابواب ما جاء في من الي علي عن ذكر ذلك اذا قول قوله وما "+
+ "الرجل النبي رسول الله صلي عليه وسلم و هو هي التي الذي بين لا وفي كان").split(" "));
+const babWords=(s)=>[...new Set(norm(s).split(" ").filter(w=>w.length>2&&!BAB_STOP.has(w)))];
+/* أَعنوانُ الباب من ألفاظ هذا الحديث؟
+ * أبواب البخاري والترمذي وغيرِهما تُصاغ غالبًا من لفظ الحديث نفسه، فوجودُ
+ * كلمات العنوان في المتن دليلٌ على أنّ الباب بابُه. ويُقاس بنسبتها من كلمات
+ * العنوان وحده — فالمتن أطولُ منه، فأخذُ الأقصر يرفع النسبة بلا وجه.
+ * (وبابُ الحديث في مصدرنا كتابٌ لا باب — «كتاب الإيمان» — فلا يصلح للمقابلة.)
+ */
+function babInText(bab,text){
+  const A=babWords(bab); if(A.length<2) return 0;
+  const t=" "+norm(text)+" ";
+  let n=0; for(const w of A) if(t.includes(" "+w)) n++;
+  return n/A.length;
+}
+/* موضع بابٍ عنوانه من ألفاظ المتن — يُستعمل حين يخفق البحث في الفقرات */
+async function sharhBabFind(slug,matn){
+  const toc=await sharhToc(slug);
+  let best=null,bs=0;
+  for(const t of toc){ const r=babInText(t[0],matn);
+    if(r>bs){ bs=r; best={ar:babClean(t[0]),c:t[1],i:t[2],v:t[3],p:t[4],ratio:+r.toFixed(2)}; } }
+  return bs>=0.75?best:null;
+}
 
 /* بحثٌ في كتاب.
  * الشروح تقتبس المتن مُقطَّعًا («قوله: كذا» ثم كلام، ثم «قوله: كذا»)، فاشتراط
@@ -327,16 +371,31 @@ async function sharhFind(slug,q,{limit=40,onprog,minScore=0.5,scan=16,noRetry=fa
   }
 
   // نوافذ متتابعة: ورودُها متّصلةً أقوى دلالةً من تناثر الكلمات
-  const W=3, wins=[];
-  for(let i=0;i+W<=all.length;i++) wins.push(all.slice(i,i+W).join(" "));
+  const W=3, wins=[], winDist=[];
+  for(let i=0;i+W<=all.length;i++){
+    const seg=all.slice(i,i+W);
+    wins.push(seg.join(" "));
+    winDist.push(seg.filter(w=>w.length>2&&!SH_STOP.has(w)).length);
+  }
 
   const out=[]; let done=0;
   for(const ci of list){
     const rows=await sharhChunk(slug,ci);
+    /* عنوان الباب الذي يقع الموضع تحته: عناوين هذه الكتب أبوابُ المصنَّف
+       نفسه، فهي أوثق دليلٍ يراه القارئ — يقابل باب الحديث بباب الشرح. */
+    let bab=null, babAt=-1;
+    for(let k=0;k<rows.length;k++) if(rows[k][3]){ bab=rows[k][0]; babAt=k; break; }
+    if(babAt!==0) bab=await sharhBabBefore(slug,ci);
     for(let i=0;i<rows.length;i++){
+      if(rows[i][3]){ bab=rows[i][0]; babAt=i; }
       const t=norm(rows[i][0]);
       const exact=n.length>10&&t.includes(n);
-      let winHit=0; for(const w of wins) if(t.includes(w)) winHit++;
+      let winHit=0, bestWin=-1, bestDist=-1;
+      for(let k=0;k<wins.length;k++) if(t.includes(wins[k])){ winHit++;
+        /* تُختار أكثرُ النوافذ ألفاظًا مميِّزة لا أوّلُها: صدرُ المتن كثيرًا
+           ما يكون «وقد روي عن النبي صلى الله عليه وسلم» وأمثالَه، فيُعرَض
+           على القارئ اقتباسٌ طويلٌ لا يدلّ على حديثه بشيء. */
+        const d=winDist[k]; if(d>bestDist){ bestDist=d; bestWin=k; } }
       /* الاقتباس الحرفي شرطٌ لا مكافأة: تغطيةُ الكلمات وحدها تُخرج مواضع
          لا صلة لها (طُلب «لا صلاة لمن لم يقرأ بفاتحة الكتاب» فجاء شرحُ حديثٍ
          آخر فيه «صلاة» و«يقرأ» و«الكتاب» متفرّقةً). فلا يُقبل موضعٌ إلا وفيه
@@ -348,7 +407,22 @@ async function sharhFind(slug,q,{limit=40,onprog,minScore=0.5,scan=16,noRetry=fa
          لا صلة له. فيلزم إمّا اقتباسان، أو اقتباسٌ مع تغطيةٍ معتبرة. */
       if(!exact && winHit<2 && cov<minScore) continue;
       const score=(exact?2:0)+winHit+cov*0.5;
+      /* أطول لفظٍ من المطلوب ورد في الموضع متّصلًا — هو الدليل الذي يُعرَض:
+         بغيره لا يدري القارئ لِمَ سيق له هذا الكلام. */
+      let qn="";
+      if(exact) qn=n;
+      else if(bestWin>=0){
+        let a=bestWin,b=bestWin+W;
+        while(b<all.length && t.includes(all.slice(a,b+1).join(" "))) b++;
+        while(a>0 && t.includes(all.slice(a-1,b).join(" "))) a--;
+        qn=all.slice(a,b).join(" ");
+      }
       out.push({t:rows[i][0],v:rows[i][1],p:rows[i][2],c:ci,i,exact,
+                bab:babAt>=0||bab?bab:null,babAt:babAt>=0?babAt:null,
+                qn,quote:qn?origOf(rows[i][0],qn):"",
+                words:qn?qn.split(" ").length:0,
+                dist:qn?qn.split(" ").filter(w=>w.length>2&&!SH_STOP.has(w)).length:0,
+                cov:+cov.toFixed(2),
                 win:winHit>0,score:+score.toFixed(3)});
     }
     if(onprog) onprog(++done,list.length,out.length);
@@ -370,19 +444,35 @@ async function sharhFind(slug,q,{limit=40,onprog,minScore=0.5,scan=16,noRetry=fa
   }
   return [];
 }
-/* إبراز الموضع في النصّ الأصلي: المطابقة على المطبَّع والقصّ على الأصل */
-function sharhMark(text,q){
-  const n=norm(q); if(!n) return esc(text);
+/* خريطة بين النصّ المطبَّع وموضع كل حرف في الأصل — للإبراز واقتطاع
+   اللفظ كما ورد. النصّ لا يُعرض إلا أصلًا، والمطبَّع للمطابقة فقط. */
+function normMap(text){
   const map=[]; let acc="";
   for(let i=0;i<text.length;i++){
     const c=norm(text[i]);
     if(c){ acc+=c; for(let k=0;k<c.length;k++) map.push(i); }
     else if(acc && !acc.endsWith(" ")){ acc+=" "; map.push(i); }
   }
+  return {acc,map};
+}
+/* موضع عبارةٍ مطبَّعة في الأصل: [بداية، نهاية] أو null */
+function origSpan(text,n){
+  if(!n) return null;
+  const {acc,map}=normMap(text);
   const at=acc.indexOf(n);
-  if(at<0||at>=map.length) return esc(text);
-  const s=map[at], e=map[Math.min(at+n.length,map.length-1)];
-  return esc(text.slice(0,s))+"<mark>"+esc(text.slice(s,e+1))+"</mark>"+esc(text.slice(e+1));
+  if(at<0||at>=map.length) return null;
+  return [map[at],map[Math.min(at+n.length,map.length-1)]];
+}
+/* اللفظ كما ورد في الأصل، مقابلًا لعبارةٍ مطبَّعة */
+function origOf(text,n){
+  const sp=origSpan(text,n);
+  return sp?text.slice(sp[0],sp[1]+1).trim():"";
+}
+/* إبراز الموضع في النصّ الأصلي: المطابقة على المطبَّع والقصّ على الأصل */
+function sharhMark(text,q){
+  const sp=origSpan(text,norm(q));
+  if(!sp) return esc(text);
+  return esc(text.slice(0,sp[0]))+"<mark>"+esc(text.slice(sp[0],sp[1]+1))+"</mark>"+esc(text.slice(sp[1]+1));
 }
 
 /* ── نبذة عن كل كتاب — تُستعمل في الرئيسية وصفحات الفهارس ── */
@@ -461,27 +551,126 @@ function matnPhrase(text,n=12){
   return w.slice(0,n).join(" ");
 }
 
-/* الشرح على صفحة الحديث: لا يُدَّعى أنّ هذا شرحُ هذا الحديث — بل يُفتح
-   البحث في كتب الشروح عندنا بألفاظ متنه، فيرى القارئ الموضع بجزئه وصفحته. */
+/* الشرح على صفحة الحديث.
+ *
+ * الإشكال الذي عولج هنا: كان يُعرض الموضع مجرَّدًا، فلا يدري القارئ أَشَرحُ
+ * حديثِه هو أم كلامٌ آخر وقعت فيه ألفاظٌ متشابهة. والحكم بالظنّ عليه وحده
+ * مخالفٌ لأصل المنصة: لا معلومة بلا دليلٍ ظاهر.
+ * فصار كلّ موضعٍ يُساق بدليله معروضًا: اللفظ المقتبَس من المتن كما ورد،
+ * والبابُ الذي وقع تحته في الشرح مقابَلًا بباب الحديث في أصله. والمنصة
+ * تُبيّن قوّة الدليل ولا تجزم بما لم يقم عليه.
+ */
 const SHARH_ON={bukhari:"fath-albari",muslim:"minhaj-nawawi",
                 abudawud:"awn-almabud",tirmidhi:"tuhfat-alahwadhi"};
 const SHARH_ONAR={"fath-albari":"فتح الباري لابن حجر","minhaj-nawawi":"المنهاج للنووي",
                   "awn-almabud":"عون المعبود","tuhfat-alahwadhi":"تحفة الأحوذي"};
-function sharhBlock(matn,mount,book){
+
+/* وزن الدليل: اقتباسٌ حرفي من المتن، وعنوانُ بابٍ من ألفاظه. لا يُرفع الموضع
+   إلى «مؤكَّد» إلا باجتماعهما — فاللفظ وحده قد يتكرّر في الكتاب، والعنوانُ
+   وحده يجمع تحته أحاديث الباب كلَّها. */
+/* ألفاظ الاقتباس المميِّزة: ما ليس من أدوات الرواية ولا من أسماء رجال السند */
+function distOf(qn,isnad){
+  if(!qn) return 0;
+  const bad=isnad||new Set();
+  return qn.split(" ").filter(w=>w.length>2&&!SH_STOP.has(w)&&!bad.has(w)).length;
+}
+/* أسماء رجال السند مُطبَّعة، كلمةً كلمة */
+function isnadWords(names){
+  const s=new Set();
+  for(const n of names||[]) for(const w of norm(n).split(" ")) if(w.length>2) s.add(w);
+  return s.size?s:null;
+}
+function sharhEvid(h,matn,isnad){
+  /* طولُ الاقتباس وحده لا يزن: ثمانُ كلماتٍ من ألفاظ الإسناد لا تدلّ على
+     حديثٍ بعينه، وثلاثٌ من لفظ المتن تدلّ. فالعبرة بالمميِّز منها. */
+  /* لا يُعدّ الاقتباس حجّةً إلا بلفظين من صُلب المتن: أسماءُ رجال السند
+     وألفاظُ الرواية تَرِد في كل بابٍ، فاقتباسها لا يدلّ على حديثٍ بعينه ولو
+     طال. وأسماءُ رجال هذا السند تُعرَف من سلسلته المفهرسة، فتُطرح. */
+  const w=h.words||0, d=isnad?distOf(h.qn,isnad):(h.dist==null?w:h.dist);
+  const quoted=d>=2&&(h.exact||w>=3);
+  const bab=h.bab?babClean(h.bab):"";
+  const br=bab&&matn?babInText(bab,matn):0;
+  const same=br>=0.75;
+  const why=[];
+  if(h.quote){
+    why.push([quoted?"ok":"mid",
+      (quoted?"يقتبس من متن الحديث لفظًا بلفظ":"فيه من ألفاظ المتن")+
+      ": «"+esc(h.quote)+"»"+(w?' <bdi class="wc">'+AR(w)+" "+(w<=10?"كلمات":"كلمة")+'</bdi>':"")]);
+    if(!quoted) why.push(["no","وأكثرُه أسماءُ رجال السند أو ألفاظُ رواية، تَرِد في كل بابٍ فلا تخصّ هذا الحديث"]);
+  }else why.push(["no","لم يرد لفظٌ متّصل من المتن في هذا الموضع"]);
+  if(bab) why.push([same?"ok":"mid","تحت باب «"+esc(bab)+"»"+
+    (same?" — وعنوانه من ألفاظ هذا الحديث":"")]);
+  const lvl=quoted&&same?"sure":quoted?"strong":same?"bab":"weak";
+  return {lvl,why,quoted,same,bab,
+    label:{sure:"مطابقة مؤكَّدة",strong:"اقتباس حرفي",bab:"الباب موافق",weak:"موضع محتمل"}[lvl]};
+}
+/* بطاقة موضع: الدليل أوّلًا ثم النصّ، لا العكس */
+function sharhCard(slug,h,matn,isnad,{open=true}={}){
+  const e=sharhEvid(h,matn,isnad);
+  const t=h.t.length>700?h.t.slice(0,700)+"…":h.t;
+  return '<div class="ev ev-'+e.lvl+'">'+
+    '<div class="evh"><span class="evb">'+e.label+'</span>'+
+    '<span class="evp"><bdi>ج'+AR(h.v)+' ص'+AR(h.p)+'</bdi></span></div>'+
+    '<ul class="evw">'+e.why.map(x=>'<li class="'+x[0]+'">'+x[1]+'</li>').join("")+'</ul>'+
+    '<div class="evt amiri">'+(h.qn?sharhMark(t,h.qn):esc(t))+'</div>'+
+    (open?'<a class="evgo" href="sharh.html#/'+slug+'/r/'+h.c+'/'+h.i+'">اقرأ الموضع في الكتاب وما حوله ←</a>':"")+
+  '</div>';
+}
+/* ترتيبٌ يقدّم ما وافق بابه: اللفظ يتكرّر في الكتاب، والبابُ يحصر الموضع */
+function sharhRank(hits,matn,isnad){
+  return hits.map(h=>{const e=sharhEvid(h,matn,isnad);
+    return {h,k:(e.same?2:0)+(e.quoted?1.5:0)+h.score/10};})
+   .sort((a,b)=>b.k-a.k).map(x=>x.h);
+}
+
+async function sharhBlock(matn,mount,book,names){
   const slug=SHARH_ON[book];
-  const q=matnPhrase(matn);
   if(!slug){
-    mount.innerHTML='<div class="pane msg">لا شرحَ مفهرسًا لهذا الحديث، ولا كتابَ شرحٍ لهذا المصنَّف في المنصة بعدُ.'+
+    mount.innerHTML='<div class="pane msg">لا كتابَ شرحٍ لهذا المصنَّف في المنصة بعدُ.'+
       '<div class="note" style="margin:.7rem 0 1rem">المشحون: فتح الباري، والمنهاج، وعون المعبود، وتحفة الأحوذي.</div>'+
       '<a class="act" href="sharh.html">تصفَّح كتب الشروح ←</a></div>';
     return;
   }
-  mount.innerHTML='<div class="pane pad"><p style="margin:0 0 1rem;color:var(--mut);line-height:1.95">'+
-    'لم يُفهرَس لهذا الحديث شرحٌ منسوبٌ إليه بعينه. و<b>'+esc(SHARH_ONAR[slug])+'</b> شرحُ هذا المصنَّف، '+
-    'وهو عندنا كاملًا، فابحث فيه بألفاظ المتن وانظر الموضع بجزئه وصفحته.</p>'+
-    '<div class="acts"><a class="act" href="sharh.html#/'+slug+'/q/'+encodeURIComponent(q)+'">'+
-    'ابحث عن هذا المتن في '+esc(SHARH_ONAR[slug])+' ←</a>'+
-    '<a class="act" href="sharh.html#/'+slug+'">تصفَّح الكتاب</a></div></div>';
+  const bar=esc(SHARH_ONAR[slug]);
+  const q=matnPhrase(matn);
+  mount.innerHTML='<div class="sstat"><span class="spin"></span><span>يبحث في '+bar+'…</span>'+
+    '<span class="bar"><i style="width:8%"></i></span></div>';
+  try{
+    const [hits,babAt]=await Promise.all([
+      sharhFind(slug,q,{limit:12,onprog:(d,t)=>{const i=mount.querySelector(".bar i");
+        if(i)i.style.width=Math.round(8+d/t*92)+"%";}}),
+      sharhBabFind(slug,matn).catch(()=>null)]);
+    const isnad=isnadWords(names);
+    const top=sharhRank(hits,matn,isnad).slice(0,3);
+    const head='<p class="evlead">هذه مواضعُ من <b>'+bar+'</b> — شرحِ هذا المصنَّف — عُثر عليها '+
+      'بألفاظ متن الحديث. مع كلّ موضعٍ دليلُ اختياره لتحكم بنفسك؛ '+
+      'والمنصة لا تنسب شرحًا إلى حديثٍ بغير دليلٍ ظاهر.</p>';
+    const acts='<div class="acts"><a class="act" href="sharh.html#/'+slug+'/q/'+encodeURIComponent(q)+'">'+
+      'كل المواضع في '+bar+' ←</a>'+
+      (babAt?'<a class="act" href="sharh.html#/'+slug+'/r/'+babAt.c+'/'+babAt.i+'">افتح الباب في الشرح</a>':"")+
+      '<a class="act" href="sharh.html#/'+slug+'">تصفَّح الكتاب</a></div>';
+    if(top.length){
+      mount.innerHTML=head+top.map(h=>sharhCard(slug,h,matn,isnad)).join("")+acts+
+        '<div class="note">النصّ كما ورد في '+bar+'، بجزئه وصفحته. '+
+        'الشروح كلامٌ متّصل، فقد يقع شرح الحديث في مواضع أخرى منها.</div>';
+    }else if(babAt){
+      mount.innerHTML='<p class="evlead">لم يُعثر على موضعٍ يقتبس ألفاظ هذا المتن في <b>'+bar+'</b>. '+
+        'لكنّ بابه موجود، فيُفتح لتقرأه:</p>'+
+        '<div class="ev ev-bab"><div class="evh"><span class="evb">الباب نفسه</span>'+
+        '<span class="evp"><bdi>ج'+AR(babAt.v)+' ص'+AR(babAt.p)+'</bdi></span></div>'+
+        '<ul class="evw"><li class="ok">عنوان الباب «'+esc(babAt.ar)+'» من ألفاظ هذا الحديث</li>'+
+        '<li class="no">وليس في الباب اقتباسٌ حرفي من هذا المتن، فقد يشرح غيره من أحاديثه</li></ul>'+
+        '<a class="evgo" href="sharh.html#/'+slug+'/r/'+babAt.c+'/'+babAt.i+'">اقرأ الباب في الكتاب ←</a></div>'+acts;
+    }else{
+      mount.innerHTML='<div class="pane msg">لم يُعثر في <b>'+bar+'</b> على موضعٍ يقتبس ألفاظ هذا المتن.'+
+        '<div class="note" style="margin:.7rem 0 1rem">لا يعني هذا أنّه غير مشروح: قد يشرحه الشارح بلفظٍ '+
+        'آخر أو في موضعٍ لم تبلغه المطابقة. ابحث بلفظٍ من المتن تختاره أنت.</div></div>'+acts;
+    }
+  }catch(e){
+    mount.innerHTML='<div class="pane msg">تعذّر البحث في '+bar+'.'+
+      '<div class="acts" style="margin-top:1rem"><a class="act" href="sharh.html#/'+slug+'/q/'+
+      encodeURIComponent(q)+'">جرّب في صفحة الشروح ←</a></div></div>';
+  }
 }
 
 const RJ={idx:null,sh:{}};
