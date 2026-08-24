@@ -298,37 +298,77 @@ async function sharhChunk(slug,n){
   if(!SH.chunk[k]) SH.chunk[k]=await api.local(`sharh/${slug}/c${n}.json`);
   return SH.chunk[k];
 }
-/* بحثٌ في كتاب: الفهرس المعكوس يحصر الأجزاء، ثم تُمسح وحدها */
-async function sharhFind(slug,q,{limit=40,onprog}={}){
+/* ألفاظٌ لا تدلّ على موضع: أدوات وألفاظ إسنادٍ ورفع، تَرِد في كل صفحة */
+const SH_STOP=new Set(("عن قال قالت قوله انه اني اذا الذي التي هذا هذه ذلك وقد كان كانت ثم "+
+ "لا ما لم في من الي علي هو هي به له بن ابن ابي ابو رسول الله النبي صلي عليه وسلم "+
+ "حدثنا اخبرنا انبانا وهو وهي وقال فقال ايضا كذا وفي وقيل قلت").split(" "));
+
+/* بحثٌ في كتاب.
+ * الشروح تقتبس المتن مُقطَّعًا («قوله: كذا» ثم كلام، ثم «قوله: كذا»)، فاشتراط
+ * ورود كل كلمات العبارة في فقرةٍ واحدة يُسقط الموضع الصحيح غالبًا. وكذلك أخذُ
+ * تقاطع مواضع أندر الكلمات يحذف الجزء الصحيح قبل مسحه. فصار الترشيح باتّحادها
+ * مرتَّبًا بعدد ما تحويه، والقبول بدرجةٍ لا بشرطٍ قاطع.
+ */
+async function sharhFind(slug,q,{limit=40,onprog,minScore=0.5,scan=16,noRetry=false}={}){
   const n=norm(q); if(n.length<3) return [];
-  const words=[...new Set(n.split(" ").filter(w=>w.length>2))];
+  const all=n.split(" ").filter(Boolean);
+  const words=[...new Set(all.filter(w=>w.length>2&&!SH_STOP.has(w)))];
   if(!words.length) return [];
-  const idx=await sharhIdx(slug);
-  // أندر الكلمات أولًا، ثم تقاطعها
-  const lists=words.map(w=>idx[w]).filter(Boolean).sort((a,b)=>a.length-b.length);
-  let cand;
-  if(!lists.length) cand=null;                       // كلها شائعة: امسح الكلّ
-  else { cand=new Set(lists[0]);
-    for(const l of lists.slice(1,3)){ const s=new Set(l); cand=new Set([...cand].filter(x=>s.has(x))); }
-    if(!cand.size) cand=new Set(lists[0]); }
-  const meta=await sharhMeta(slug);
-  const list=cand?[...cand].sort((a,b)=>a-b):Array.from({length:meta.chunks},(_,i)=>i);
+  const idx=await sharhIdx(slug), meta=await sharhMeta(slug);
+
+  // أجزاءٌ مرشَّحة: اتّحادُ مواضع الكلمات، مرتَّبةً بعدد كلمات الاستعلام فيها
+  const posted=words.map(w=>idx[w]).filter(Boolean).sort((a,b)=>a.length-b.length);
+  let list;
+  if(!posted.length) list=Array.from({length:meta.chunks},(_,i)=>i);
+  else{
+    const cnt=new Map();
+    for(const l of posted.slice(0,8)) for(const c of l) cnt.set(c,(cnt.get(c)||0)+1);
+    list=[...cnt.entries()].sort((a,b)=>b[1]-a[1]||a[0]-b[0]).map(x=>x[0]).slice(0,scan);
+  }
+
+  // نوافذ متتابعة: ورودُها متّصلةً أقوى دلالةً من تناثر الكلمات
+  const W=3, wins=[];
+  for(let i=0;i+W<=all.length;i++) wins.push(all.slice(i,i+W).join(" "));
+
   const out=[]; let done=0;
   for(const ci of list){
     const rows=await sharhChunk(slug,ci);
-    rows.forEach((r,i)=>{
-      if(out.length>=limit) return;
-      const t=norm(r[0]);
-      let at=t.indexOf(n);
-      if(at<0 && words.length>1 && !words.every(w=>t.includes(w))) return;   // لا العبارة ولا كل الكلمات
-      if(at<0) at=t.indexOf(words[0]);
-      out.push({t:r[0],v:r[1],p:r[2],c:ci,i,exact:t.includes(n)});
-    });
+    for(let i=0;i<rows.length;i++){
+      const t=norm(rows[i][0]);
+      const exact=n.length>10&&t.includes(n);
+      let winHit=0; for(const w of wins) if(t.includes(w)) winHit++;
+      /* الاقتباس الحرفي شرطٌ لا مكافأة: تغطيةُ الكلمات وحدها تُخرج مواضع
+         لا صلة لها (طُلب «لا صلاة لمن لم يقرأ بفاتحة الكتاب» فجاء شرحُ حديثٍ
+         آخر فيه «صلاة» و«يقرأ» و«الكتاب» متفرّقةً). فلا يُقبل موضعٌ إلا وفيه
+         سلسلةُ أربع كلماتٍ من المطلوب متّصلةً، أو المطلوبُ كلّه. */
+      if(!exact && !winHit){ if(all.length>=W || !t.includes(n)) continue; }
+      let cov=0; for(const w of words) if(t.includes(w)) cov++;
+      cov/=words.length;
+      /* سلسلةٌ واحدة قصيرة مع تغطيةٍ ضعيفة قد تقع اتفاقًا، فتُخرج موضعًا
+         لا صلة له. فيلزم إمّا اقتباسان، أو اقتباسٌ مع تغطيةٍ معتبرة. */
+      if(!exact && winHit<2 && cov<minScore) continue;
+      const score=(exact?2:0)+winHit+cov*0.5;
+      out.push({t:rows[i][0],v:rows[i][1],p:rows[i][2],c:ci,i,exact,
+                win:winHit>0,score:+score.toFixed(3)});
+    }
     if(onprog) onprog(++done,list.length,out.length);
-    if(out.length>=limit) break;
+    if(out.length>=limit*6) break;
   }
-  out.sort((a,b)=>(b.exact-a.exact));
-  return out;
+  out.sort((a,b)=>b.score-a.score);
+  if(out.length) return out.slice(0,limit);
+
+  /* لا شيء: قد تكون النافذة المختارة من المتن ممّا لم يُعلّق عليه الشارح.
+     تُجرَّب نوافذُ أخرى منه قبل الإقرار بالخيبة. وخفضُ العتبة ليس بديلًا:
+     جُرِّب فأخرج مواضع لا صلة لها (شرحُ «القنع» لحديث الكسوف). */
+  if(!noRetry && all.length>7){
+    for(const st of [Math.floor(all.length/3),Math.floor(all.length/2),Math.max(0,all.length-7)]){
+      const sub=all.slice(st,st+7).join(" ");
+      if(sub.split(" ").filter(w=>w.length>2&&!SH_STOP.has(w)).length<3) continue;
+      const r=await sharhFind(slug,sub,{limit,minScore,scan,noRetry:true});
+      if(r.length) return r;
+    }
+  }
+  return [];
 }
 /* إبراز الموضع في النصّ الأصلي: المطابقة على المطبَّع والقصّ على الأصل */
 function sharhMark(text,q){
@@ -407,17 +447,20 @@ async function fetchSharh(matn){
 }
 /* ألفاظ المتن المميِّزة: ما بعد آخر علامة رفعٍ إلى النبي ﷺ — فما قبلها إسناد.
    وإن لم تُوجد علامة، فآخر الحديث متنٌ لا إسناد. */
-function matnPhrase(text,n=7){
+function matnPhrase(text,n=12){
   const t=norm(text);
   const MARK=/صلي الله عليه وسلم/g;
   let last=-1,m;
   while((m=MARK.exec(t))) last=m.index+m[0].length;
   let rest=last>0?t.slice(last):"";
-  rest=rest.replace(/^\s*(?:يقول|قال|انه قال|قالت|فقال|أنه قال)\s*/,"").trim();
+  // القطعُ قد يقع داخل كلمة، فيُسقَط ما قبل أوّل مسافة
+  if(rest && !/^\s/.test(rest)){ const sp=rest.indexOf(" "); rest=sp<0?"":rest.slice(sp); }
+  rest=rest.replace(/^\s*(?:يقول|قال|انه قال|قالت|فقال|انه)\s*/,"").trim();
   const w=(rest||t).split(" ").filter(Boolean);
-  if(w.length<3){ const all=t.split(" ").filter(Boolean); return all.slice(-n).join(" "); }
+  if(w.length<4){ const a=t.split(" ").filter(Boolean); return a.slice(-n).join(" "); }
   return w.slice(0,n).join(" ");
 }
+
 /* الشرح على صفحة الحديث: لا يُدَّعى أنّ هذا شرحُ هذا الحديث — بل يُفتح
    البحث في كتب الشروح عندنا بألفاظ متنه، فيرى القارئ الموضع بجزئه وصفحته. */
 const SHARH_ON={bukhari:"fath-albari",muslim:"minhaj-nawawi",
