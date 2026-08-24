@@ -38,8 +38,8 @@
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--bg);color:var(--ink);direction:rtl;font-size:17px;line-height:1.75;
-  font-family:"Noto Sans Arabic",system-ui,sans-serif;position:relative;min-height:100vh}
+body{margin:0;background:var(--bg);color:var(--ink);direction:rtl;font-size:17.5px;line-height:1.95;
+  font-family:"Noto Naskh Arabic",serif;position:relative;min-height:100vh}
 /* هالاتٌ ضوئية كبيرة: تعطي العمق ويقع عليها انكسار الحواف */
 body::after{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
   background:
@@ -171,7 +171,7 @@ a.cell:hover,a.scard:hover,.tile:hover,.hit:hover,.act:hover,.srcbtn:hover,
 .pad{padding:1.7rem 1.9rem}
 .hero{position:relative;padding:2.6rem 0 .6rem}
 .hero .ey{font-size:.72rem;letter-spacing:.3em;color:var(--amber);font-weight:700}
-.hero h1{font-family:"Noto Sans Arabic",sans-serif;font-weight:700;font-size:clamp(3rem,8.5vw,5.4rem);line-height:.96;
+.hero h1{font-family:"Noto Naskh Arabic",serif;font-weight:700;font-size:clamp(3rem,8.5vw,5.4rem);line-height:.96;
   margin:.5rem 0 0;
   background:linear-gradient(150deg,var(--ink),var(--acc) 130%);-webkit-background-clip:text;
   background-clip:text;color:transparent}
@@ -180,14 +180,14 @@ a.cell:hover,a.scard:hover,.tile:hover,.hit:hover,.act:hover,.srcbtn:hover,
 .ph{padding:.2rem 0 .1rem}
 .ph .k{font-size:.68rem;letter-spacing:.26em;color:var(--acc);font-weight:700;
   text-transform:uppercase}
-.ph h1{font-family:"Noto Sans Arabic",sans-serif;font-weight:700;font-size:clamp(1.9rem,4.2vw,2.8rem);
+.ph h1{font-family:"Noto Naskh Arabic",serif;font-weight:700;font-size:clamp(1.9rem,4.2vw,2.8rem);
   margin:.35rem 0 .3rem;background:linear-gradient(170deg,var(--ink) 42%,var(--acc));
   -webkit-background-clip:text;background-clip:text;color:transparent}
 .ph .m{font-size:.92rem;color:var(--mut);font-variant-numeric:tabular-nums}
 .crumb{font-size:.84rem;color:var(--mut);display:flex;gap:.35rem;flex-wrap:wrap}
 .sep{color:var(--hair2);margin:0 .35rem}
 .sh{display:flex;align-items:center;gap:.7rem}
-.sh h2{font-family:"Noto Sans Arabic",sans-serif;font-weight:700;font-size:1.2rem;color:var(--ink)}
+.sh h2{font-family:"Noto Naskh Arabic",serif;font-weight:700;font-size:1.2rem;color:var(--ink)}
 .sh .ln{flex:1;height:1px;background:var(--hair)}
 .sh .cnt{font-size:.75rem;color:var(--mut);border:1px solid var(--hair);border-radius:14px;
   padding:.1rem .6rem;font-variant-numeric:tabular-nums}
@@ -205,10 +205,10 @@ a.cell:hover,a.scard:hover,.tile:hover,.hit:hover,.act:hover,.srcbtn:hover,
 @media(max-width:60rem){.b3,.b2{grid-column:span 6}}
 .cell{display:block;border-radius:var(--r);padding:1.5rem 1.6rem;transition:.2s;position:relative;overflow:hidden}
 a.cell:hover{border-color:var(--hair2);background:var(--surf2);transform:translateY(-2px);box-shadow:var(--sh2)}
-.cell h3{font-family:"Noto Sans Arabic",sans-serif;font-weight:700;font-size:1.35rem;margin-bottom:.3rem}
+.cell h3{font-family:"Noto Naskh Arabic",serif;font-weight:700;font-size:1.35rem;margin-bottom:.3rem}
 .cell p{margin:0;color:var(--mut);font-size:.98rem;line-height:1.85}
 .cell .k{font-size:.68rem;letter-spacing:.22em;color:var(--acc);font-weight:700;margin-bottom:.5rem}
-.cell .big{font-family:"Noto Sans Arabic",sans-serif;font-weight:700;font-size:2.6rem;line-height:1.1;color:var(--acc);
+.cell .big{font-family:"Noto Naskh Arabic",serif;font-weight:700;font-size:2.6rem;line-height:1.1;color:var(--acc);
   font-variant-numeric:tabular-nums;}
 .cell .ic{width:1.9rem;height:1.9rem;color:var(--amber);margin-bottom:.6rem}
 .cell .meta{margin-top:.8rem;font-size:.84rem;color:var(--amber);font-weight:600;font-variant-numeric:tabular-nums}
@@ -232,7 +232,7 @@ a.cell:hover{border-color:var(--hair2);background:var(--surf2);transform:transla
   background:var(--panel2)}
 .ayah>span.tx{display:block;max-width:38rem;margin:0 auto}
 .ayah .an{display:inline-grid;place-items:center;width:2.5rem;height:2.5rem;border:1px solid var(--amber);
-  border-radius:50%;color:var(--amber);font-family:"Noto Sans Arabic",sans-serif;font-size:.9rem;
+  border-radius:50%;color:var(--amber);font-family:"Noto Naskh Arabic",serif;font-size:.9rem;
   font-weight:700;margin-inline-start:.6rem;vertical-align:middle}
 .para{margin:0 0 1.5rem;font-family:"Amiri",serif;font-size:1.5rem;line-height:2.45;color:var(--ink);
   text-align:justify;max-width:var(--measure)}
@@ -248,7 +248,7 @@ a.cell:hover{border-color:var(--hair2);background:var(--surf2);transform:transla
 
 /* grade */
 .gband{display:flex;align-items:flex-start;gap:1.2rem;flex-wrap:wrap;padding:1.4rem 1.6rem}
-.gbig{font-family:"Noto Sans Arabic",sans-serif;font-weight:700;font-size:1.7rem;padding:.42rem 1.3rem;
+.gbig{font-family:"Noto Naskh Arabic",serif;font-weight:700;font-size:1.7rem;padding:.42rem 1.3rem;
   border-radius:var(--r2);position:relative}
 .gbig.ok{box-shadow:inset 0 0 0 1px rgba(62,224,160,.34),0 0 26px -8px rgba(62,224,160,.6)}
 .gbig.mid{box-shadow:inset 0 0 0 1px rgba(255,192,97,.34),0 0 26px -8px rgba(255,192,97,.55)}
@@ -363,7 +363,7 @@ dialog.srcdlg{border-radius:var(--r);padding:0;max-width:40rem;
   width:calc(100% - 2rem);color:var(--ink);box-shadow:var(--sh2);background:var(--bg2)}
 dialog.srcdlg::backdrop{background:rgba(5,4,2,.6);backdrop-filter:blur(5px)}
 .srcdlg .hd{display:flex;align-items:center;justify-content:space-between;padding:1.2rem 1.5rem;border-bottom:1px solid var(--hair)}
-.srcdlg .hd b{font-family:"Noto Sans Arabic",sans-serif;font-weight:700;font-size:1.25rem}
+.srcdlg .hd b{font-family:"Noto Naskh Arabic",serif;font-weight:700;font-size:1.25rem}
 .srcdlg .bd{padding:1.1rem 1.5rem;max-height:62vh;overflow:auto}
 .srcdlg .it{padding:.95rem 0;border-bottom:1px solid var(--hair)}
 .srcdlg .it:last-child{border-bottom:0}
@@ -379,10 +379,10 @@ dialog.srcdlg::backdrop{background:rgba(5,4,2,.6);backdrop-filter:blur(5px)}
    فلا يبقى ثلثا البطاقة بياضًا كما كان */
 .cell.card{display:flex;flex-direction:column;gap:.45rem;padding:1.7rem 1.8rem}
 .cell.card .ch{display:flex;align-items:baseline;justify-content:space-between;gap:1.5rem}
-.cell.card .cn{display:flex;align-items:baseline;gap:.35rem;font-family:"Noto Sans Arabic",sans-serif;font-weight:700;
+.cell.card .cn{display:flex;align-items:baseline;gap:.35rem;font-family:"Noto Naskh Arabic",serif;font-weight:700;
   font-size:1.5rem;color:var(--acc);font-variant-numeric:tabular-nums;
   white-space:nowrap}
-.cell.card .cn small{font-family:"Noto Sans Arabic",sans-serif;font-weight:500;font-size:.72rem;
+.cell.card .cn small{font-family:"Noto Naskh Arabic",serif;font-weight:500;font-size:.72rem;
   color:var(--faint);letter-spacing:0}
 .cell.card .au{color:var(--amber);font-size:.88rem;font-weight:600}
 .cell.card .meta{display:flex;align-items:center;justify-content:space-between;gap:1rem;
@@ -391,7 +391,7 @@ dialog.srcdlg::backdrop{background:rgba(5,4,2,.6);backdrop-filter:blur(5px)}
 a.cell.card:hover .go{color:var(--acc2)}
 
 /* قراءة الشروح */
-.shh{font-family:"Noto Sans Arabic",sans-serif;font-weight:700;font-size:1.15rem;color:var(--amber);
+.shh{font-family:"Noto Naskh Arabic",serif;font-weight:700;font-size:1.15rem;color:var(--amber);
   margin:2rem 0 .9rem;padding-bottom:.5rem;border-bottom:1px solid var(--hair);max-width:var(--measure)}
 .prose .para.here{background:var(--ambersoft);border-radius:10px;
   box-shadow:0 0 0 .7rem var(--ambersoft)}
@@ -410,9 +410,9 @@ a.cell.card:hover .go{color:var(--acc2)}
 .bk:hover{border-color:var(--acc)}
 .bk.on{border-color:var(--acc);background:var(--accsoft);box-shadow:none}
 .bk .bn{font-family:"Amiri",serif;font-size:1.2rem;color:var(--ink);line-height:1.4}
-.bk .bc{display:flex;align-items:baseline;gap:.3rem;font-family:"Noto Sans Arabic",sans-serif;font-weight:700;font-size:1.35rem;
+.bk .bc{display:flex;align-items:baseline;gap:.3rem;font-family:"Noto Naskh Arabic",serif;font-weight:700;font-size:1.35rem;
   color:var(--acc);font-variant-numeric:tabular-nums;white-space:nowrap}
-.bk .bc small{font-family:"Noto Sans Arabic",sans-serif;font-weight:500;font-size:.68rem;color:var(--faint);letter-spacing:0}
+.bk .bc small{font-family:"Noto Naskh Arabic",serif;font-weight:500;font-size:.68rem;color:var(--faint);letter-spacing:0}
 .nums{display:flex;flex-wrap:wrap;gap:.4rem}
 .hn{min-width:3.4rem;text-align:center;padding:.42rem .6rem;border-radius:10px;
   border:1px solid var(--hair);color:var(--ink2);font-size:.92rem;font-variant-numeric:tabular-nums;
@@ -462,11 +462,27 @@ a.nm2:hover{border-color:var(--acc);color:var(--acc)}
   margin:.7rem auto 0;max-width:40rem;line-height:1.9}
 .mast .search{max-width:44rem;margin:2.2rem auto 0}
 .mast .chips{justify-content:center}
+/* اختصارات الأقسام تحت شريط البحث */
+.jump{display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem;margin:1.6rem auto 0;max-width:46rem}
+@media(max-width:40rem){.jump{grid-template-columns:repeat(2,1fr)}}
+.jmp{display:flex;flex-direction:column;align-items:center;gap:.2rem;padding:.95rem .6rem;
+  border-radius:var(--r2);position:relative;background:var(--panel);box-shadow:var(--sh);
+  color:var(--ink);transition:.16s}
+.jmp::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;
+  background:var(--edge);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  mask-composite:exclude}
+.jmp:hover::after{background:var(--edgeHot)}
+.jmp:hover{box-shadow:var(--sh),0 0 22px -8px var(--acc-glow)}
+.jmp b{font-size:1.05rem;font-weight:700}
+.jmp span{font-size:.76rem;color:var(--faint);font-variant-numeric:tabular-nums}
+
 /* أرقام بلا صناديق */
 .figs{display:grid;grid-template-columns:repeat(3,1fr);gap:2.4rem 2rem;margin:3.4rem auto 0;max-width:58rem}
 @media(max-width:46rem){.figs{grid-template-columns:repeat(2,1fr)}}
 .fig{text-align:center}
-.fig b{display:block;font-family:"Noto Sans Arabic",sans-serif;font-weight:700;font-size:clamp(2.4rem,4.4vw,3.4rem);
+.fig b{display:block;font-family:"Noto Naskh Arabic",serif;font-weight:700;font-size:clamp(2.4rem,4.4vw,3.4rem);
   line-height:1;font-variant-numeric:tabular-nums;
   background:linear-gradient(180deg,var(--ink),var(--acc));-webkit-background-clip:text;
   background-clip:text;color:transparent}
@@ -484,7 +500,7 @@ a.nm2:hover{border-color:var(--acc);color:var(--acc)}
   display:inline-flex;align-items:center;gap:.55rem}
 .sect .k::before{content:"";width:1.6rem;height:1px;background:var(--acc);
   box-shadow:0 0 8px var(--acc-glow)}
-.sect h2{font-family:"Noto Sans Arabic",sans-serif;font-weight:700;font-size:clamp(1.9rem,3.6vw,2.6rem);
+.sect h2{font-family:"Noto Naskh Arabic",serif;font-weight:700;font-size:clamp(1.9rem,3.6vw,2.6rem);
   margin:.4rem 0 0;background:linear-gradient(170deg,var(--ink) 42%,var(--acc));
   -webkit-background-clip:text;background-clip:text;color:transparent}
 .sect p{color:var(--mut);font-size:1.02rem;line-height:1.9;margin:.6rem 0 0}
@@ -496,7 +512,10 @@ a.nm2:hover{border-color:var(--acc);color:var(--acc)}
    حشوةٌ داخلية بهامشٍ سالب تُعيد للظلّ مكانه دون إزاحة الشريط. */
 /* لا حشوة أفقية هنا: صندوق محتوى الوعاء يجب أن يساوي صندوق حشوته تمامًا،
    وإلا أطلّت بطاقةٌ زائدة بمقدار الفرق. الفسحة الرأسية وحدها للظلال. */
-.track{display:flex;gap:1.1rem;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;
+/* لا scroll-behavior هنا: وجودها في CSS يجعل إسنادَ scrollLeft غير متزامن،
+   فيقرأ اختبارُ اتجاه التمرير صفرًا ويستنتج الإشارة عكسًا، فلا يتحرّك الشريط
+   أبدًا. النعومة تُمرَّر خيارًا في scrollTo بدلها. */
+.track{display:flex;gap:1.1rem;overflow-x:auto;scroll-snap-type:x mandatory;
   padding:.8rem 0 1.1rem;margin:-.8rem 0 -.6rem;scrollbar-width:none}
 .track::-webkit-scrollbar{display:none}
 .slide{flex:0 0 calc((100% - 2.2rem)/3);scroll-snap-align:start;min-width:0}
@@ -507,7 +526,7 @@ a.nm2:hover{border-color:var(--acc);color:var(--acc)}
 a.scard:hover{border-color:var(--acc);background:var(--surf2);transform:translateY(-2px)}
 .scard .top{display:flex;align-items:center;justify-content:space-between;gap:.6rem}
 .scard .idx{font-size:.72rem;letter-spacing:.16em;color:var(--amber);font-weight:700}
-.scard h3{font-family:"Noto Sans Arabic",sans-serif;font-weight:700;font-size:1.35rem;color:var(--ink)}
+.scard h3{font-family:"Noto Naskh Arabic",serif;font-weight:700;font-size:1.35rem;color:var(--ink)}
 .scard .by{font-size:.86rem;color:var(--mut)}
 .scard p{margin:0;font-size:.92rem;color:var(--mut);line-height:1.85}
 .scard .fo{margin-top:auto;padding-top:.7rem;font-size:.85rem;color:var(--ink2);font-weight:600;
@@ -518,7 +537,7 @@ a.scard:hover{border-color:var(--acc);background:var(--surf2);transform:translat
   box-shadow:0 0 12px var(--acc-glow)}
 /* قوائم بسيطة */
 .plain{display:grid;gap:1.6rem 3rem;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr))}
-.plain .it h3{font-family:"Noto Sans Arabic",sans-serif;font-weight:700;font-size:1.2rem;color:var(--ink);margin-bottom:.3rem}
+.plain .it h3{font-family:"Noto Naskh Arabic",serif;font-weight:700;font-size:1.2rem;color:var(--ink);margin-bottom:.3rem}
 .plain .it p{margin:0;color:var(--mut);font-size:.96rem;line-height:1.9}
 .plain .it .n{font-size:.72rem;letter-spacing:.2em;color:var(--amber);font-weight:700;display:block;margin-bottom:.4rem}
 .rules{display:grid;gap:.9rem 2.6rem;grid-template-columns:1fr 1fr}

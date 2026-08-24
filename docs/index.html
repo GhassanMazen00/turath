@@ -2,8 +2,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="light dark">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap"></noscript>
+<link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap"></noscript>
 <link rel="stylesheet" href="assets/app.css">
 <script>(function(){var t=localStorage.getItem("turath-theme");if(t)document.documentElement.setAttribute("data-theme",t);})();</script>
 <title>$1</title></head><body>
@@ -18,12 +18,12 @@
       <path d="M12 1.6l2.5 2.1 3.3-.3.9 3.2 2.8 1.7-1.3 3.2 1.3 3.2-2.8 1.7-.9 3.2-3.3-.3L12 22.4l-2.5-2.1-3.3.3-.9-3.2-2.8-1.7 1.3-3.2L2.5 9.3l2.8-1.7.9-3.2 3.3.3z" stroke="currentColor" stroke-width="1"/>
       <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1"/></svg>
     <h1>تُراث</h1>
-    <p class="lede">القرآن بتفاسيره، والسنّة بأسانيدها وأحكام المحدّثين عليها — بترقيمها المعتمد، وكلُّ نصٍّ موصولٌ بمصدره.</p>
+    <p class="lede">القرآن بتفاسيره، والسنّة بأسانيدها وأحكام المحدّثين عليها بترقيمها المعتمد، وكلُّ نصٍّ موصولٌ بمصدره.</p>
     <div class="search" id="search"></div>
-    <div class="figs" id="figs"></div>
+    <nav class="jump" id="jump" aria-label="اختصارات الأقسام"></nav>
   </section>
 
-  <section class="band band-tint">
+  <section class="band band-tint" id="s-hadith">
     <div class="sect"><div class="l"><div class="k">السنّة النبوية</div>
       <h2>الحديث الشريف</h2>
       <p>الكتب الستة والموطأ والأربعينات، بترقيمها المعتمد المطبوع. كل حديث يُعرض بحكمه ومعناه، ثم متنه، ثم سلسلة رواته، وتخريجه في بقية الكتب، وشرحه حيث توفّر.</p></div>
@@ -31,7 +31,7 @@
     <div class="car" id="carH"></div>
   </section>
 
-  <section class="band">
+  <section class="band" id="s-tafsir">
     <div class="sect"><div class="l"><div class="k">القرآن الكريم</div>
       <h2>التفسير</h2>
       <p>مئة وأربع عشرة سورة، وثمانية عشر كتاب تفسير من الطبري وابن كثير والقرطبي إلى ابن عاشور. اختر السورة، ثم الكتاب، ثم تصفّح الآيات آيةً آية بنصٍّ كبير مريح.</p></div>
@@ -39,7 +39,7 @@
     <div class="car" id="carT"></div>
   </section>
 
-  <section class="band band-tint">
+  <section class="band band-tint" id="s-rijal">
     <div class="sect"><div class="l"><div class="k">علم الرجال</div>
       <h2>الرواة</h2>
       <p>تراجم رواة الأسانيد: الطبقة والحكم والمولد والوفاة والبلدان والشيوخ والتلاميذ، وكل حديث ورد فيه الراوي. اضغط أيّ اسم في أيّ إسناد لتصل إلى ترجمته.</p></div>
@@ -47,16 +47,30 @@
     <div class="car" id="carR"></div>
   </section>
 
+  <section class="band" id="s-sharh">
+    <div class="sect"><div class="l"><div class="k">شروح المحدّثين</div>
+      <h2>شرح الحديث</h2>
+      <p>أربعة شروحٍ كاملة: فتح الباري لابن حجر، والمنهاج للنووي، وعون المعبود، وتحفة الأحوذي. تُقرأ كتبًا وتُبحث بألفاظها، ويُعرض كل موضعٍ بجزئه وصفحته المطبوعين.</p></div>
+      <a class="more" href="sharh.html">كل الشروح ←</a></div>
+    <div class="car" id="carSh"></div>
+  </section>
+
   <section class="band">
     <div class="sect"><div class="l"><div class="k">دليل</div><h2>كيف تستعمل المنصة</h2>
       <p>المنصة أداة بحث ومراجعة، لا مرجعًا يُفتي.</p></div></div>
     <div class="plain">
-      <div class="it"><span class="n">خطوة ١</span><h3>ابحث</h3>
-        <p>اكتب لفظًا فيمسح متون الأحاديث كلها. يُعرض النصّ مرة واحدة وتحته الكتب التي أخرجته، فتختار أيّها تفتح.</p></div>
-      <div class="it"><span class="n">خطوة ٢</span><h3>اقرأ بالإسناد</h3>
-        <p>الحكم بارزٌ مع معناه ومن قاله، ثم المتن، ثم تبويب للإسناد والنصّ الكامل والأحكام والتخريج والشرح.</p></div>
-      <div class="it"><span class="n">خطوة ٣</span><h3>تحقّق من الراوي</h3>
-        <p>اضغط أيّ راوٍ في السلسلة لترى ترجمته وطبقته ومشايخه وتلاميذه وبقية ما رواه.</p></div>
+      <div class="it"><span class="n">القرآن</span><h3>سورة، ثم تفسير</h3>
+        <p>اختر السورة من فهرس السور، ثم كتاب التفسير الذي تريده من ثمانية عشر كتابًا، ثم تصفّح الآيات آيةً آية. وفي كل آية تجد بقية التفاسير لها في الرفّ الجانبي، فتقارن بينها دون أن تفقد موضعك.</p></div>
+      <div class="it"><span class="n">الحديث</span><h3>حكمٌ ثم متن ثم إسناد</h3>
+        <p>ابحث بلفظٍ من المتن فيُعرض النصّ مرة واحدة وتحته الكتب التي أخرجته، فتختار أيّها تفتح. وفي صفحة الحديث: حكمه ومعناه ومن قاله، ثم متنه، ثم الإسناد والنصّ الكامل والأحكام والتخريج.</p></div>
+      <div class="it"><span class="n">الرواة</span><h3>من روى، وأين</h3>
+        <p>اضغط أيّ اسمٍ في أيّ إسناد لتصل إلى ترجمته: طبقته وحكمه ووفاته وبلدانه وشيوخه وتلاميذه. وفي ترجمته صناديق الكتب التي روى فيها بعدد ما رواه في كلّ كتاب.</p></div>
+      <div class="it"><span class="n">الشروح</span><h3>اقرأ الشرح في موضعه</h3>
+        <p>الشروح كتبٌ كاملة تُقرأ بفهرس أبوابها أو تُبحث بألفاظها. ومن صفحة أيّ حديث يفتح لك تبويب «الشرح» بحثًا في شرح ذلك المصنَّف بألفاظ متنه، فترى الموضع بجزئه وصفحته.</p></div>
+      <div class="it"><span class="n">البحث</span><h3>ابحث في كل شيء</h3>
+        <p>شريط البحث في الأعلى يمسح متون الأحاديث وآيات المصحف كاملًا وأسماء السور والأبواب وكتب التفسير. وتحته مرشّحات تحصر البحث في نوعٍ واحد أو في كتابٍ بعينه.</p></div>
+      <div class="it"><span class="n">المصادر</span><h3>تحقّق بنفسك</h3>
+        <p>كل نصٍّ يحمل موضعه المطبوع: الكتاب والباب والرقم المعتمد، أو الجزء والصفحة في الشروح. وزرّ «المصادر» في أسفل كل صفحة يعرض كل مصدرٍ بُنيت عليه المنصة برابطه.</p></div>
     </div>
   </section>
 
@@ -76,8 +90,6 @@
       <div class="rule no"><span class="mk">✕</span><div><b>لا نختلق نصًّا</b><span>ما لم يُجلب من مصدر نقول إنه لم يُجلب، ولا نملأ فراغه.</span></div></div>
       <div class="rule yes"><span class="mk">✓</span><div><b>التخريج بالمطابقة</b><span>مضبوط على الدقة لا السَّعة، فقد تفوته بعض الطرق.</span></div></div>
       <div class="rule no"><span class="mk">✕</span><div><b>لا نجزم بهوية ملتبسة</b><span>حين يتعدّد المسمَّون باسمٍ في السند لا نختار واحدًا.</span></div></div>
-      <div class="rule yes"><span class="mk">✓</span><div><b>الشرح حيث توفّر</b><span>للأربعين النووية من مصدر مُتحقَّق، ولغيرها يُطلب عند توفّر الوسيط.</span></div></div>
-      <div class="rule no"><span class="mk">✕</span><div><b>الفقه والسيرة مؤجَّلان</b><span>حتى يتوفّر مصدر مهيكل موثّق.</span></div></div>
     </div>
   </section>
 
@@ -91,17 +103,27 @@ theme(); document.getElementById('tg').innerHTML=TGL; mountFooter(document.getEl
 (async()=>{
  try{ await searchInit(); }catch(e){ document.getElementById('search').innerHTML='<div class="pane msg">تعذّر تحميل الفهرس.</div>'; return; }
  mountSearch(document.getElementById('search'),{});
- const B=SEARCH.books,T=SEARCH.tafsirs,S=SEARCH.surahs,nb=Object.keys(B).length;
+ const B=SEARCH.books,T=SEARCH.tafsirs,S=SEARCH.surahs;
+ const SHB=await sharhBooks().catch(()=>[]);
+ // اختصارات تنزل إلى الأقسام، وتحت كلٍّ منها ما فيه من عدد
  const th=Object.values(B).reduce((a,b)=>a+b.total,0);
- const ts=Object.values(B).reduce((a,b)=>a+b.sections.length,0);
- let rn=0,tk=0;
- try{ rn=Object.keys(await rijalIndex()).length; }catch(e){}
- try{ tk=Object.keys(await api.local('takhrij.json')).length; }catch(e){}
- document.getElementById('figs').innerHTML=[
-   [th,'حديثًا','من '+AR(nb)+' كتب'],[ts,'كتابًا وبابًا','مفهرسة بأسمائها'],
-   [rn,'راويًا','بتراجمهم وطبقاتهم'],[tk,'حديثًا له تخريج','في كتب أخرى'],
-   [114,'سورة','بنصّها الكامل'],[18,'كتاب تفسير','من الطبري إلى ابن عاشور']
- ].map(([n,l,s])=>`<div class="fig"><b>${AR(n)}</b><span class="lb">${l}</span><span class="sub">${s}</span></div>`).join('');
+ let rn=0; try{ rn=Object.keys(await rijalIndex()).length; }catch(e){}
+ const shp=SHB.reduce((a,b)=>a+b.paras,0);
+ document.getElementById('jump').innerHTML=[
+   ['s-tafsir','تفسير',AR(T.length)+' كتاب تفسير'],
+   ['s-hadith','حديث',AR(th)+' حديثًا'],
+   ['s-rijal','رواة',AR(rn)+' راويًا'],
+   ['s-sharh','شرح الحديث',AR(SHB.length)+' شروح'],
+ ].map(([id,t,n])=>`<a class="jmp" href="#${id}"><b>${t}</b><span>${n}</span></a>`).join('');
+ // النزول سلسًا مع ترك مسافةٍ للترويسة اللاصقة
+ document.getElementById('jump').addEventListener('click',e=>{
+   const a=e.target.closest('.jmp'); if(!a)return;
+   const el=document.getElementById(a.getAttribute('href').slice(1)); if(!el)return;
+   e.preventDefault();
+   const y=el.getBoundingClientRect().top+scrollY-72;
+   scrollTo({top:y,behavior:'smooth'});
+   history.replaceState(null,'',a.getAttribute('href'));
+ });
  // شريط الحديث
  carousel(document.getElementById('carH'),{slides:Object.keys(B).map(k=>{const b=B[k];
    return `<a class="scard" href="hadith.html#/${k}"><div class="top"><span class="idx">كتاب</span></div>
@@ -117,7 +139,7 @@ theme(); document.getElementById('tg').innerHTML=TGL; mountFooter(document.getEl
  // شريط الرواة
  try{
    const rline=v=>{const gen=genAr(v.gen)||"",g=(v.g||"").trim();
-     return [(/صحاب/.test(gen)&&/صحاب/.test(g))?"":g,gen].filter(Boolean).join(" — ");};
+     return [(/صحاب/.test(gen)&&/صحاب/.test(g))?"":g,gen].filter(Boolean).join("، ");};
    const RI=await rijalIndex();
    const top=Object.keys(RI).sort((a,b)=>RI[b].c-RI[a].c).slice(0,12);
    carousel(document.getElementById('carR'),{slides:top.map(k=>{const v=RI[k];
@@ -127,6 +149,13 @@ theme(); document.getElementById('tg').innerHTML=TGL; mountFooter(document.getEl
        <p>${esc(dateAr(v.d)?('توفّي '+dateAr(v.d)):'من رواة الأسانيد المفهرسة.')}</p>
        <div class="fo"><bdi>${AR(v.c)} رواية</bdi></div></a>`}),interval:4600});
  }catch(e){}
+ // شريط الشروح
+ if(SHB.length) carousel(document.getElementById('carSh'),{slides:SHB.map(b=>
+   `<a class="scard" href="sharh.html#/${b.slug}"><div class="top"><span class="idx">شرح</span></div>
+     <h3>${esc(b.ar)}</h3><div class="by">${esc(b.author)}<span class="sep">•</span>ت${AR(b.died)}هـ</div>
+     <p>${esc(b.full)}</p>
+     <div class="fo"><bdi>${AR(b.vols)} مجلّدًا</bdi><span class="sep">•</span><bdi>${AR(b.paras)} فقرة</bdi></div></a>`),
+   interval:5800});
  // شريط الاقتراحات — من الأقسام الثلاثة لا من الحديث وحده
  const picks=[
    {t:'h',b:'bukhari',n:2,  note:'يُبتدأ به عادةً؛ أصل الدين وأركانه.'},

@@ -50,7 +50,7 @@ const norm=s=>(s||"").normalize("NFKC").replace(DIA,"")
   .replace(/[أإآٱ]/g,"ا").replace(/[ىئ]/g,"ي").replace(/ة/g,"ه").replace(/ؤ/g,"و")
   .replace(/[^ء-ي ]/g," ").replace(/\s+/g," ").trim();
 const paras=t=>(t||"").split("\n").map(x=>x.trim()).filter(Boolean)
-  .map(x=>`<p class="para">${esc(x)}</p>`).join("")||'<p class="para">—</p>';
+  .map(x=>`<p class="para">${esc(x)}</p>`).join("")||'<p class="para">…</p>';
 function loading(n,l){n.innerHTML=`<div class="msg"><span class="spin"></span> ${esc(l||"جارٍ الجلب…")}</div>`;}
 function failed(n,e){n.innerHTML=`<div class="msg">تعذّر جلب البيانات من المصدر.<br>
   <span style="font-size:.76rem">${esc(String(e&&e.message||e))}</span></div>`;}
@@ -248,7 +248,7 @@ function mountSearch(root,{autofocus=false}={}){
         return `<div class="grp"><div class="grp-t">${hl(g.snippet,g.q)}</div>
           <div class="grp-b">${chips}</div></div>`;}).join("");
       const body=qh+ah+gh;
-      const note=gh?`<div class="note">مقتطف المطابقة يُعرض بالرسم المجرَّد من التشكيل — وهو صورة البحث لا صورة الكتاب. النصّ كما ورد في صفحة الحديث.</div>`:"";
+      const note=gh?`<div class="note">مقتطف المطابقة يُعرض بالرسم المجرَّد من التشكيل، وهو صورة البحث لا صورة الكتاب. النصّ كما ورد في صفحة الحديث.</div>`:"";
       out.innerHTML=(stat||"")+(body||`<div class="msg">لا نتائج لـ «${esc(q)}»</div>`)+note;};
 
     const wantQuran=kind==="all"||kind==="quran";
@@ -264,7 +264,7 @@ function mountSearch(root,{autofocus=false}={}){
       const hits=await textHits(q,SEARCH.scope,(d,t,c)=>{ if(my!==seq)return;
         const bar=out.querySelector(".bar i"); if(bar)bar.style.width=Math.round(18+d/t*82)+"%";
         const st=out.querySelector(".sstat span:nth-child(2)");
-        if(st)st.textContent=`يبحث في المتون… ${AR(d)}/${AR(t)} — ${AR(c)} نتيجة`;});
+        if(st)st.textContent=`يبحث في المتون… ${AR(d)}/${AR(t)}، ${AR(c)} نتيجة`;});
       if(my!==seq)return;
       const groups=groupHits(hits);
       const parts=[];
@@ -366,7 +366,7 @@ const SOURCES=[
  ["نصّ القرآن الكريم","الرسم الإملائي المعياري.","https://github.com/fawazahmed0/quran-api"],
  ["كتب التفسير","ثمانية عشر كتابًا من الطبري وابن كثير والقرطبي إلى ابن عاشور.","https://github.com/spa5k/tafsir_api"],
  ["شروح الأحاديث","تُجلب من الموسوعة الحديثية للدرر السنية عند توفّر الاتصال.","https://dorar.net"],
- ["شروح الحديث — أربعة كتب","فتح الباري لابن حجر، والمنهاج للنووي، وعون المعبود، وتحفة الأحوذي — من مدوّنة OpenITI الأكاديمية المنشورة، نصوصًا مرقونة لا ممسوحة ضوئيًّا.","https://github.com/OpenITI"],
+ ["شروح الحديث: أربعة كتب","فتح الباري لابن حجر، والمنهاج للنووي، وعون المعبود، وتحفة الأحوذي، من مدوّنة OpenITI الأكاديمية المنشورة، نصوصًا مرقونة لا ممسوحة ضوئيًّا.","https://github.com/OpenITI"],
 ];
 function mountFooter(el){
   el.innerHTML=`<a class="srcbtn" href="#" id="srcOpen">
@@ -435,7 +435,7 @@ function sharhBlock(matn,mount,book){
   }
   mount.innerHTML='<div class="pane pad"><p style="margin:0 0 1rem;color:var(--mut);line-height:1.95">'+
     'لم يُفهرَس لهذا الحديث شرحٌ منسوبٌ إليه بعينه. و<b>'+esc(SHARH_ONAR[slug])+'</b> شرحُ هذا المصنَّف، '+
-    'وهو عندنا كاملًا — ابحث فيه بألفاظ المتن وانظر الموضع بجزئه وصفحته.</p>'+
+    'وهو عندنا كاملًا، فابحث فيه بألفاظ المتن وانظر الموضع بجزئه وصفحته.</p>'+
     '<div class="acts"><a class="act" href="sharh.html#/'+slug+'/q/'+encodeURIComponent(q)+'">'+
     'ابحث عن هذا المتن في '+esc(SHARH_ONAR[slug])+' ←</a>'+
     '<a class="act" href="sharh.html#/'+slug+'">تصفَّح الكتاب</a></div></div>';
@@ -471,7 +471,7 @@ function genAr(s){
     if(c) out="من القرن "+AR(c[1])+" الهجري";
   }
   const g=s.match(/\[?\s*(\d+)(?:st|nd|rd|th)\s*generation\s*\]?/i);
-  if(g){ const t="الطبقة "+(ORD[+g[1]]||AR(g[1])); out=out?out+" — "+t:t; }
+  if(g){ const t="الطبقة "+(ORD[+g[1]]||AR(g[1])); out=out?out+"، "+t:t; }
   return out||s.replace(/[\[\]()]/g," ").trim();
 }
 
@@ -505,7 +505,7 @@ function dateAr(s){
   const pl=placeAr((s.match(/\(([^)]*)\)/g)||[]).join(" "));
   if(!y) return pl?"في "+pl:"";
   const t=pre+"سنة "+AR(y[1])+"هـ";
-  return pl?t+" — "+pl:t;
+  return pl?t+"، "+pl:t;
 }
 const TRIBE={
 /* قبائل */
@@ -590,8 +590,12 @@ function carousel(root,{slides,interval=4200}={}){
     if(sign)return sign;
     const max=track.scrollWidth-track.clientWidth;
     if(max<=1)return (sign=-1);
+    // يُعطَّل الانسياب أثناء الاختبار، وإلا لم يُطبَّق الإسناد فورًا فتُقرأ صفرًا
+    const keepB=track.style.scrollBehavior;
+    track.style.scrollBehavior="auto";
     const keep=track.scrollLeft;
     track.scrollLeft=-max; sign=track.scrollLeft<-1?-1:1; track.scrollLeft=keep;
+    track.style.scrollBehavior=keepB;
     return sign;
   }
   let cur=0,timer=null;

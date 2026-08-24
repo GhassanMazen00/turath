@@ -163,7 +163,7 @@ const main = async () => {
     if (wm.length) parts.push("معاني المفردات:\n" + wm.map((w) => `${w.word}: ${w.meaning}`).join("\n"));
     map[m.id] = {
       t: parts.join("\n\n"),
-      s: "موسوعة الحديث النبوي — hadeethenc.com",
+      s: "موسوعة الحديث النبوي (hadeethenc.com)",
       u: `https://hadeethenc.com/ar/browse/hadith/${h.id}`,
       m: m.score,
     };

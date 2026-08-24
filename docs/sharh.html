@@ -2,8 +2,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="light dark">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap"></noscript>
+<link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap"></noscript>
 <link rel="stylesheet" href="assets/app.css">
 <script>(function(){var t=localStorage.getItem("turath-theme");if(t)document.documentElement.setAttribute("data-theme",t);})();</script>
 <title>شروح الحديث · تُراث</title></head><body>
@@ -112,7 +112,7 @@ async function vRead(b,ci,pi){
     const at=Math.min(Math.max(0,pi),rows.length-1);
     const cur=rows[at];
     document.getElementById('ph').innerHTML='<div class="k">'+esc(b.ar)+'</div>'+
-      '<h1>الجزء '+AR(cur[1])+' — صفحة '+AR(cur[2])+'</h1>'+
+      '<h1>الجزء '+AR(cur[1])+'، صفحة '+AR(cur[2])+'</h1>'+
       '<div class="m">'+esc(b.author)+'</div>';
     const pg=()=>{const pv=at>0?'#/'+b.slug+'/r/'+ci+'/'+(at-1):(ci>0?'#/'+b.slug+'/r/'+(ci-1)+'/999999':null);
       const nx=at<rows.length-1?'#/'+b.slug+'/r/'+ci+'/'+(at+1):(ci<b.chunks-1?'#/'+b.slug+'/r/'+(ci+1)+'/0':null);
@@ -125,7 +125,7 @@ async function vRead(b,ci,pi){
       '<div class="pane pad prose">'+win.map((r,k)=>
         (r[3]?'<h3 class="shh">'+esc(r[0])+'</h3>':
          '<p class="para'+(k===0?' here':'')+'">'+esc(r[0])+'</p>')).join('')+'</div>'+
-      '<div class="note">'+esc(b.full)+' — ج'+AR(cur[1])+' ص'+AR(cur[2])+'. النصّ كما ورد في المصدر.</div>'+pg();
+      '<div class="note">'+esc(b.full)+'، ج'+AR(cur[1])+' ص'+AR(cur[2])+'. النصّ كما ورد في المصدر.</div>'+pg();
     scrollTo(0,0);
   }catch(e){ failed(document.getElementById('body'),e); }
 }

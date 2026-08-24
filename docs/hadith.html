@@ -2,8 +2,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="light dark">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap"></noscript>
+<link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap"></noscript>
 <link rel="stylesheet" href="assets/app.css">
 <script>(function(){var t=localStorage.getItem("turath-theme");if(t)document.documentElement.setAttribute("data-theme",t);})();</script>
 <title>$1</title></head><body>
@@ -124,7 +124,7 @@ async function vHadith(k,num){
     const auth=raw.length&&raw[0][0]==='i';
     const nodes=raw.map(([kind,v])=>{
       if(kind==='i'){const r=RI[v];return r?{href:'rijal.html#/r/'+encodeURIComponent(v),name:r.n,
-        sub:[r.g,genAr(r.gen)].filter(Boolean).join(' — ')}:null;}
+        sub:[r.g,genAr(r.gen)].filter(Boolean).join('، ')}:null;}
       return {href:'rijal.html#/r/'+encodeURIComponent('t:'+v),name:v,sub:''};}).filter(Boolean);
     const tak=TAK[k+':'+num]||[];
     const sharh=SHARH[k+':'+num];
@@ -135,9 +135,9 @@ async function vHadith(k,num){
     const gband=top?
       '<div class="pane gband"><span class="gbig '+cls+'">'+esc(top[1])+'</span>'+
       '<span class="gdef">'+(gdef(top[1])||'حكمٌ منقول عن أهل الحديث.')+
-      '<br><b>'+esc(top[0])+'</b>'+(grades.length>1?' — ووافقه <bdi>'+AR(agree-1)+'</bdi> من <bdi>'+AR(grades.length-1)+'</bdi> من المحدّثين الآخرين المذكورين':'')+'</span></div>'
+      '<br><b>'+esc(top[0])+'</b>'+(grades.length>1?'، ووافقه <bdi>'+AR(agree-1)+'</bdi> من <bdi>'+AR(grades.length-1)+'</bdi> من المحدّثين الآخرين المذكورين':'')+'</span></div>'
       :'<div class="pane gband"><span class="gbig na">بلا حكم مرفق</span><span class="gdef">لم يرد حكم في المصدر لهذا الحديث'+
-       ((k==='bukhari'||k==='muslim')?' — وهو من الصحيحين، وأهل العلم على تلقّي ما فيهما بالقبول.':'.')+'</span></div>';
+       ((k==='bukhari'||k==='muslim')?'؛ وهو من الصحيحين، وأهل العلم على تلقّي ما فيهما بالقبول.':'.')+'</span></div>';
     // ── الرفّ الجانبي ──
     const first=nodes.length?nodes[0]:null, last=nodes.length?nodes[nodes.length-1]:null;
     const rail=
@@ -173,7 +173,7 @@ async function vHadith(k,num){
       '<nav class="crumb"><a href="#/">كتب الحديث</a><span class="sep">›</span><a href="#/'+k+'">'+esc(b.ar)+'</a>'+
       (sec?'<span class="sep">›</span><a href="#/'+k+'/'+sec.n+'/1">'+esc(sec.ar)+'</a>':'')+
       '<span class="sep">›</span><span>حديث '+AR(num)+'</span></nav>'+pg+
-      '<div class="ph"><div class="k">'+esc(b.ar)+(sec?' — '+esc(sec.ar):'')+'</div>'+
+      '<div class="ph"><div class="k">'+esc(b.ar)+(sec?'<span class="sep">•</span>'+esc(sec.ar):'')+'</div>'+
       '<h1>حديث '+AR(num)+'</h1><div class="m">'+esc(b.author)+
       '<span class="sep">•</span>الموضع <bdi>'+AR(h.reference.book)+':'+AR(h.reference.hadith)+'</bdi></div></div>'+
       '<div class="dual"><div class="dcol">'+
@@ -199,7 +199,7 @@ async function vHadith(k,num){
       '<div class="panel" data-p="hukm">'+
         (grades.length?'<div class="pane"><table class="t"><tr><th>المحدِّث</th><th>الحكم</th><th>معناه</th></tr>'+
           grades.map(g=>'<tr><td>'+esc(g[0])+'</td><td><span class="g '+gclass(g[1])+'">'+esc(g[1])+'</span></td>'+
-          '<td style="color:var(--mut);font-size:.9rem">'+esc(gdef(g[1])||'—')+'</td></tr>').join('')+'</table></div>'+
+          '<td style="color:var(--mut);font-size:.9rem">'+esc(gdef(g[1])||'…')+'</td></tr>').join('')+'</table></div>'+
           '<div class="note">الأحكام كما وردت عن قائليها. المنصة تنقل ولا ترجّح بينها.</div>'
          :'<div class="pane msg">لم يرد حكم مرفق في المصدر.</div>')+'</div>'+
       '<div class="panel" data-p="takh">'+
