@@ -1,65 +1,107 @@
 /* ═══ تُراث ═══ */
+/* ═══ تُراث — لغةٌ بصرية: آلةُ قراءةٍ لا كرّاسة ═══
+   الأصل داكن: أرضٌ شبه سوداء، وحوافُّ مضيئة تتدرّج من أعلى، وشبكةٌ تقنية
+   خافتة، ولونٌ حادّ واحد (سماويّ) للفعل، والذهبي للتراث. الزوايا أضيق
+   والخطوط أدقّ — الحدّة تُقرأ قوةً، والاستدارة تُقرأ ليونة. */
 :root{
-  --bg:#f4f2ee;--bg2:#e8e5df;--surf:rgba(255,255,255,.80);--surf2:rgba(255,255,255,.56);
-  --ink:#11151b;--ink2:#333c47;--mut:#5f6a77;--faint:#8d97a3;
-  --hair:rgba(17,21,27,.10);--hair2:rgba(17,21,27,.19);
-  --acc:#17456d;--acc2:#22619a;--accsoft:rgba(23,69,109,.09);--accink:#123a5c;
-  --amber:#8a6d2f;--ambersoft:rgba(138,109,47,.13);
-  --ok:#1c6146;--oksoft:rgba(28,97,70,.11);--warn:#7d5a1c;--warnsoft:rgba(125,90,28,.12);
-  --bad:#8a3030;--badsoft:rgba(138,48,48,.10);
-  --sh:0 1px 1px rgba(20,15,5,.04),0 4px 16px rgba(20,15,5,.05);
-  --sh2:0 2px 4px rgba(20,15,5,.05),0 14px 44px rgba(20,15,5,.09);
-  --glass:linear-gradient(158deg,rgba(255,255,255,.90),rgba(255,255,255,.60));
-  --glass2:linear-gradient(158deg,rgba(255,255,255,.97),rgba(255,255,255,.74));
-  --glassline:rgba(17,21,27,.09);
-  --gloss:inset 0 1px 0 rgba(255,255,255,.95),inset 0 0 0 1px rgba(255,255,255,.30);
-  --wash1:rgba(138,109,47,.15);--wash2:rgba(23,69,109,.12);--wash3:rgba(23,69,109,.06);
-  --r:18px;--side:16.5rem;--rail:20.5rem;--measure:46rem;--max:92rem;color-scheme:light;
+  --bg:#04060a;--bg2:#070b12;
+  --ink:#e9eff7;--ink2:#a7b5c8;--mut:#6d7d93;--faint:#465468;
+  --hair:rgba(125,205,255,.13);--hair2:rgba(125,205,255,.26);
+  --acc:#4dd9ff;--acc2:#8ceaff;--accsoft:rgba(77,217,255,.12);--accink:#9eecff;
+  --acc-glow:rgba(77,217,255,.42);
+  --amber:#e6bd6e;--ambersoft:rgba(230,189,110,.13);
+  --ok:#3ee0a0;--oksoft:rgba(62,224,160,.13);--warn:#ffc061;--warnsoft:rgba(255,192,97,.13);
+  --bad:#ff7a7a;--badsoft:rgba(255,122,122,.13);
+  --surf:rgba(125,205,255,.05);--surf2:rgba(125,205,255,.03);
+  --panel:linear-gradient(180deg,rgba(125,205,255,.055),rgba(125,205,255,.014));
+  --panel2:linear-gradient(180deg,rgba(125,205,255,.10),rgba(125,205,255,.03));
+  --edge:linear-gradient(180deg,rgba(150,225,255,.42),rgba(150,225,255,.07) 34%,rgba(150,225,255,.02));
+  --edgeHot:linear-gradient(180deg,var(--acc),rgba(77,217,255,.22) 50%,rgba(77,217,255,.06));
+  --sh:0 1px 0 rgba(0,0,0,.5),0 8px 26px -12px rgba(0,0,0,.9);
+  --sh2:0 2px 0 rgba(0,0,0,.5),0 28px 70px -20px rgba(0,0,0,.95);
+  --grid:rgba(125,205,255,.045);--gridN:rgba(125,205,255,.10);
+  --halo1:rgba(77,217,255,.16);--halo2:rgba(120,90,255,.12);--halo3:rgba(230,189,110,.07);
+  color-scheme:dark;
+  --r:11px;--r2:8px;--side:16.5rem;--rail:20.5rem;--measure:46rem;--max:92rem;
 }
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#080b12;--bg2:#0e131c;--surf:rgba(150,180,220,.055);--surf2:rgba(150,180,220,.032);
-  --ink:#eef1f5;--ink2:#c7cfda;--mut:#8b96a6;--faint:#5f6b7c;
-  --hair:rgba(170,195,230,.11);--hair2:rgba(170,195,230,.20);
-  --acc:#79b0e6;--acc2:#9ecbf5;--accsoft:rgba(121,176,230,.14);--accink:#a8d0f5;
-  --amber:#d3b473;--ambersoft:rgba(211,180,115,.15);
-  --ok:#43c08c;--oksoft:rgba(67,192,140,.14);--warn:#d29a4e;--warnsoft:rgba(210,154,78,.15);
-  --bad:#dd7570;--badsoft:rgba(221,117,112,.14);
-  --sh:0 1px 1px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.35);
-  --sh2:0 2px 4px rgba(0,0,0,.4),0 16px 46px rgba(0,0,0,.5);
-  --glass:linear-gradient(158deg,rgba(158,196,242,.105),rgba(158,196,242,.035));
-  --glass2:linear-gradient(158deg,rgba(158,196,242,.15),rgba(158,196,242,.055));
-  --glassline:rgba(170,200,240,.13);
-  --gloss:inset 0 1px 0 rgba(210,230,255,.14),inset 0 0 0 1px rgba(170,200,240,.035);
-  --wash1:rgba(211,180,115,.16);--wash2:rgba(90,150,215,.17);--wash3:rgba(60,120,175,.10);
-  color-scheme:dark;}}
+/* النهاري: مخطَّطٌ هندسي بارد لا ورقٌ دافئ */
+@media(prefers-color-scheme:light){:root:not([data-theme="dark"]){
+  --bg:#eef2f7;--bg2:#e2e8f0;
+  --ink:#060a11;--ink2:#2a3543;--mut:#5a6779;--faint:#8b98a9;
+  --hair:rgba(6,14,26,.13);--hair2:rgba(6,14,26,.26);
+  --acc:#0072a8;--acc2:#0090d0;--accsoft:rgba(0,114,168,.10);--accink:#00587f;
+  --acc-glow:rgba(0,114,168,.28);
+  --amber:#8a6212;--ambersoft:rgba(138,98,18,.12);
+  --ok:#0c6b48;--oksoft:rgba(12,107,72,.10);--warn:#8a5b00;--warnsoft:rgba(138,91,0,.11);
+  --bad:#a32020;--badsoft:rgba(163,32,32,.09);
+  --surf:rgba(255,255,255,.72);--surf2:rgba(255,255,255,.48);
+  --panel:linear-gradient(180deg,rgba(255,255,255,.94),rgba(255,255,255,.72));
+  --panel2:linear-gradient(180deg,#fff,rgba(255,255,255,.86));
+  --edge:linear-gradient(180deg,rgba(255,255,255,1),rgba(6,14,26,.10) 34%,rgba(6,14,26,.13));
+  --edgeHot:linear-gradient(180deg,var(--acc),rgba(0,114,168,.25) 50%,rgba(0,114,168,.10));
+  --sh:0 1px 2px rgba(10,20,35,.07),0 8px 22px -14px rgba(10,20,35,.35);
+  --sh2:0 2px 6px rgba(10,20,35,.09),0 26px 60px -22px rgba(10,20,35,.4);
+  --grid:rgba(6,20,40,.05);--gridN:rgba(6,20,40,.09);
+  --halo1:rgba(0,114,168,.10);--halo2:rgba(90,60,200,.07);--halo3:rgba(138,98,18,.06);
+  color-scheme:light;}}
+:root[data-theme="light"]{
+  --bg:#eef2f7;--bg2:#e2e8f0;
+  --ink:#060a11;--ink2:#2a3543;--mut:#5a6779;--faint:#8b98a9;
+  --hair:rgba(6,14,26,.13);--hair2:rgba(6,14,26,.26);
+  --acc:#0072a8;--acc2:#0090d0;--accsoft:rgba(0,114,168,.10);--accink:#00587f;
+  --acc-glow:rgba(0,114,168,.28);
+  --amber:#8a6212;--ambersoft:rgba(138,98,18,.12);
+  --ok:#0c6b48;--oksoft:rgba(12,107,72,.10);--warn:#8a5b00;--warnsoft:rgba(138,91,0,.11);
+  --bad:#a32020;--badsoft:rgba(163,32,32,.09);
+  --surf:rgba(255,255,255,.72);--surf2:rgba(255,255,255,.48);
+  --panel:linear-gradient(180deg,rgba(255,255,255,.94),rgba(255,255,255,.72));
+  --panel2:linear-gradient(180deg,#fff,rgba(255,255,255,.86));
+  --edge:linear-gradient(180deg,rgba(255,255,255,1),rgba(6,14,26,.10) 34%,rgba(6,14,26,.13));
+  --edgeHot:linear-gradient(180deg,var(--acc),rgba(0,114,168,.25) 50%,rgba(0,114,168,.10));
+  --sh:0 1px 2px rgba(10,20,35,.07),0 8px 22px -14px rgba(10,20,35,.35);
+  --sh2:0 2px 6px rgba(10,20,35,.09),0 26px 60px -22px rgba(10,20,35,.4);
+  --grid:rgba(6,20,40,.05);--gridN:rgba(6,20,40,.09);
+  --halo1:rgba(0,114,168,.10);--halo2:rgba(90,60,200,.07);--halo3:rgba(138,98,18,.06);
+  color-scheme:light;}
 :root[data-theme="dark"]{
-  --bg:#080b12;--bg2:#0e131c;--surf:rgba(150,180,220,.055);--surf2:rgba(150,180,220,.032);
-  --ink:#eef1f5;--ink2:#c7cfda;--mut:#8b96a6;--faint:#5f6b7c;
-  --hair:rgba(170,195,230,.11);--hair2:rgba(170,195,230,.20);
-  --acc:#79b0e6;--acc2:#9ecbf5;--accsoft:rgba(121,176,230,.14);--accink:#a8d0f5;
-  --amber:#d3b473;--ambersoft:rgba(211,180,115,.15);
-  --ok:#43c08c;--oksoft:rgba(67,192,140,.14);--warn:#d29a4e;--warnsoft:rgba(210,154,78,.15);
-  --bad:#dd7570;--badsoft:rgba(221,117,112,.14);
-  --sh:0 1px 1px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.35);
-  --sh2:0 2px 4px rgba(0,0,0,.4),0 16px 46px rgba(0,0,0,.5);
-  --glass:linear-gradient(158deg,rgba(158,196,242,.105),rgba(158,196,242,.035));
-  --glass2:linear-gradient(158deg,rgba(158,196,242,.15),rgba(158,196,242,.055));
-  --glassline:rgba(170,200,240,.13);
-  --gloss:inset 0 1px 0 rgba(210,230,255,.14),inset 0 0 0 1px rgba(170,200,240,.035);
-  --wash1:rgba(211,180,115,.16);--wash2:rgba(90,150,215,.17);--wash3:rgba(60,120,175,.10);
-  color-scheme:dark;}
+  --bg:#04060a;--bg2:#070b12;
+  --ink:#e9eff7;--ink2:#a7b5c8;--mut:#6d7d93;--faint:#465468;
+  --hair:rgba(125,205,255,.13);--hair2:rgba(125,205,255,.26);
+  --acc:#4dd9ff;--acc2:#8ceaff;--accsoft:rgba(77,217,255,.12);--accink:#9eecff;
+  --acc-glow:rgba(77,217,255,.42);
+  --amber:#e6bd6e;--ambersoft:rgba(230,189,110,.13);
+  --ok:#3ee0a0;--oksoft:rgba(62,224,160,.13);--warn:#ffc061;--warnsoft:rgba(255,192,97,.13);
+  --bad:#ff7a7a;--badsoft:rgba(255,122,122,.13);
+  --surf:rgba(125,205,255,.05);--surf2:rgba(125,205,255,.03);
+  --panel:linear-gradient(180deg,rgba(125,205,255,.055),rgba(125,205,255,.014));
+  --panel2:linear-gradient(180deg,rgba(125,205,255,.10),rgba(125,205,255,.03));
+  --edge:linear-gradient(180deg,rgba(150,225,255,.42),rgba(150,225,255,.07) 34%,rgba(150,225,255,.02));
+  --edgeHot:linear-gradient(180deg,var(--acc),rgba(77,217,255,.22) 50%,rgba(77,217,255,.06));
+  --sh:0 1px 0 rgba(0,0,0,.5),0 8px 26px -12px rgba(0,0,0,.9);
+  --sh2:0 2px 0 rgba(0,0,0,.5),0 28px 70px -20px rgba(0,0,0,.95);
+  --grid:rgba(125,205,255,.045);--gridN:rgba(125,205,255,.10);
+  --halo1:rgba(77,217,255,.16);--halo2:rgba(120,90,255,.12);--halo3:rgba(230,189,110,.07);
+  color-scheme:dark;
+}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--ink);direction:rtl;font-size:17px;line-height:1.75;
   font-family:"Noto Sans Arabic",system-ui,sans-serif;position:relative;min-height:100vh}
-/* الضوء بدل النقش: بؤرتان كبيرتان ناعمتان تعطيان الصفحة عمقًا،
-   وخلف الزجاج مادةً ينكسر عليها. لا شبكة مكرَّرة — كانت تُقرأ ورقَ حائط. */
+/* هالاتٌ ضوئية كبيرة: تعطي العمق ويقع عليها انكسار الحواف */
 body::after{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
   background:
-    radial-gradient(46rem 34rem at 78% -6%,var(--wash1),transparent 70%),
-    radial-gradient(54rem 40rem at 12% 6%,var(--wash2),transparent 72%),
-    radial-gradient(70rem 46rem at 50% 112%,var(--wash3),transparent 70%),
-    linear-gradient(180deg,var(--bg2),transparent 34rem)}
+    radial-gradient(60rem 34rem at 50% -12%,var(--halo1),transparent 68%),
+    radial-gradient(46rem 32rem at 96% 8%,var(--halo2),transparent 70%),
+    radial-gradient(40rem 28rem at 2% 22%,var(--halo3),transparent 70%),
+    linear-gradient(180deg,var(--bg2),transparent 40rem)}
+/* شبكةٌ دقيقة — تُقرأ أداةً مضبوطة، لا زخرفة */
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background-image:
+    linear-gradient(var(--grid) 1px,transparent 1px),
+    linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:64px 64px;
+  -webkit-mask-image:linear-gradient(180deg,#000,rgba(0,0,0,.35) 42%,transparent 88%);
+  mask-image:linear-gradient(180deg,#000,rgba(0,0,0,.35) 42%,transparent 88%)}
 a{color:var(--acc);text-decoration:none}a:hover{color:var(--acc2)}
 button{font:inherit;color:inherit;cursor:pointer;background:none;border:0}
 :focus-visible{outline:2px solid var(--acc);outline-offset:3px;border-radius:10px}
@@ -70,7 +112,8 @@ h1,h2,h3{margin:0;text-wrap:balance;letter-spacing:-.01em}
 
 /* nav */
 .nav{position:sticky;top:0;z-index:60;background:color-mix(in srgb,var(--bg) 78%,transparent);
-  backdrop-filter:blur(18px) saturate(1.5);border-bottom:1px solid var(--hair)}
+  backdrop-filter:blur(20px) saturate(1.6);border-bottom:1px solid var(--hair);
+  box-shadow:0 1px 0 var(--accsoft)}
 .navin{max-width:var(--max);margin:0 auto;padding:.75rem 1.6rem;display:flex;align-items:center;
   justify-content:space-between;gap:1rem}
 .brand{display:flex;align-items:center;gap:.5rem;font-family:"Reem Kufi",serif;font-size:1.4rem;
@@ -78,7 +121,11 @@ h1,h2,h3{margin:0;text-wrap:balance;letter-spacing:-.01em}
 .brand svg{width:1.5rem;height:1.5rem;color:var(--amber)}
 .navl{display:flex;align-items:center;gap:.15rem}
 .navl a{color:var(--mut);font-size:.92rem;padding:.45rem .85rem;border-radius:9px;transition:.15s}
-.navl a:hover,.navl a.on{background:var(--surf);color:var(--ink)}
+.navl a{position:relative}
+.navl a:hover{color:var(--ink);background:var(--surf)}
+.navl a.on{color:var(--acc);background:var(--accsoft)}
+.navl a.on::after{content:"";position:absolute;inset-inline:.85rem;bottom:-.78rem;height:2px;
+  background:var(--acc);box-shadow:0 0 10px var(--acc-glow);border-radius:2px}
 .tgl,.menu{width:2.3rem;height:2.3rem;display:grid;place-items:center;border:1px solid var(--hair);
   border-radius:9px;background:var(--surf)}
 .tgl svg,.menu svg{width:1.05rem;height:1.05rem;color:var(--amber)}
@@ -88,8 +135,22 @@ h1,h2,h3{margin:0;text-wrap:balance;letter-spacing:-.01em}
   :root:not([data-theme="light"]) .tgl .moon{display:block}}
 .menu{display:none}
 
+
+/* الترويسة على الشاشات الضيّقة: الاسم وأربعة روابط ومفتاحان لا تسع ٤٢٠ بكسل،
+   فيُدفع المفتاح خارج الحافة ويظهر تمريرٌ أفقي. تُضغط المقاسات وتُسمح بالالتفاف. */
+@media(max-width:44rem){
+  .navin{padding:.55rem .85rem;gap:.4rem;flex-wrap:wrap}
+  .brand{font-size:1.15rem;gap:.35rem}
+  .brand svg{width:1.2rem;height:1.2rem}
+  .navl{gap:.08rem;min-width:0;flex-wrap:wrap;justify-content:flex-end}
+  .navl a{padding:.38rem .5rem;font-size:.82rem;white-space:nowrap}
+  .navl a.on::after{inset-inline:.5rem;bottom:-.3rem}
+  .tgl,.menu{width:1.95rem;height:1.95rem;flex:0 0 auto}
+  .tgl svg,.menu svg{width:.95rem;height:.95rem}
+}
+
 /* shell */
-.shell{max-width:var(--max);margin:0 auto;padding:1.5rem 1.6rem 5rem;display:grid;
+.shell{max-width:var(--max);margin:0 auto;padding:1.5rem 1.6rem 5rem;display:grid;overflow-x:clip;
   grid-template-columns:var(--side) minmax(0,1fr);gap:2rem;align-items:start}
 .side{position:sticky;top:4.7rem;max-height:calc(100vh - 6.4rem);overflow:auto;display:flex;
   flex-direction:column;gap:.7rem;padding-inline-end:.3rem}
@@ -98,7 +159,9 @@ h1,h2,h3{margin:0;text-wrap:balance;letter-spacing:-.01em}
 .side .lst a{display:flex;align-items:center;gap:.55rem;padding:.5rem .65rem;border-radius:10px;
   font-size:.9rem;color:var(--ink2);transition:.15s;border:1px solid transparent}
 .side .lst a:hover{background:var(--surf)}
-.side .lst a.on{background:var(--accsoft);border-color:var(--hair);color:var(--accink);font-weight:600}
+.side .lst a.on{background:var(--accsoft);color:var(--accink);font-weight:600;position:relative}
+.side .lst a.on::before{content:"";position:absolute;inset-inline-start:0;top:.35rem;bottom:.35rem;
+  width:2px;background:var(--acc);box-shadow:0 0 9px var(--acc-glow);border-radius:2px}
 .side .lst a .n{min-width:1.6rem;font-size:.7rem;color:var(--faint);font-variant-numeric:tabular-nums}
 .side .lst a b{font-weight:inherit;font-family:"Amiri",serif;font-size:1.05rem}
 .side .lst a .side-n{margin-inline-start:auto;font-size:.7rem;color:var(--faint);font-variant-numeric:tabular-nums}
@@ -125,13 +188,33 @@ h1,h2,h3{margin:0;text-wrap:balance;letter-spacing:-.01em}
 @media(max-width:72rem){.shell{grid-template-columns:1fr;padding:1.1rem 1rem 4rem;gap:1.2rem}
   .side{position:static;max-height:none;display:none}.side.open{display:flex}.menu{display:grid}}
 
-/* surfaces — زجاج: خلفية شفّافة + طمس ما خلفها + حافة مضيئة */
+/* surfaces — لوحٌ داكن بحافّةٍ مضيئة تتدرّج من أعلى.
+   الحافّة رسمٌ مستقلّ (::after مع mask-composite) لأن border عاديًّا لا يقبل تدرّجًا. */
 .glass,.pane,.cell,.scard,.tile,.grp,.hit,.sbox,.srcbtn,.act,.chip,.sect .more,
-.pager a,.pager span:not(.mid),.warn,dialog.srcdlg{
-  background:var(--glass);
-  -webkit-backdrop-filter:blur(16px) saturate(1.8);backdrop-filter:blur(16px) saturate(1.8);
-  border:1px solid var(--glassline);box-shadow:var(--gloss),var(--sh)}
+.pager a,.pager span:not(.mid),.warn,dialog.srcdlg,.rc,.bk,.hn,.nm2{
+  position:relative;background:var(--panel);border:0;border-radius:var(--r2);
+  box-shadow:var(--sh)}
+.glass::after,.pane::after,.cell::after,.scard::after,.tile::after,.grp::after,.hit::after,
+.sbox::after,.srcbtn::after,.act::after,.chip::after,.sect .more::after,.pager a::after,
+.pager span:not(.mid)::after,.warn::after,dialog.srcdlg::after,.rc::after,.bk::after,
+.hn::after,.nm2::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;
+  background:var(--edge);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  mask-composite:exclude}
+/* عند اللمس: تشتعل الحافّة ويظهر وهجٌ خارجي */
+a.cell:hover::after,a.scard:hover::after,.tile:hover::after,.hit:hover::after,
+.act:hover::after,.srcbtn:hover::after,.chip:hover::after,.pager a:hover::after,
+.sect .more:hover::after,.bk:hover::after,.hn:hover::after,a.nm2:hover::after,
+.sbox:focus-within::after{background:var(--edgeHot)}
+a.cell:hover,a.scard:hover,.tile:hover,.hit:hover,.act:hover,.srcbtn:hover,
+.pager a:hover,.sect .more:hover,.bk:hover,.hn:hover,a.nm2:hover{
+  box-shadow:var(--sh),0 0 22px -8px var(--acc-glow)}
+.sbox:focus-within{box-shadow:var(--sh),0 0 0 3px var(--accsoft),0 0 26px -8px var(--acc-glow)}
+.measure{max-width:var(--measure)}
 .pane{border-radius:var(--r)}
+.pane::after{border-radius:var(--r)}
 /* عرض القراءة — السطر الطويل لا يُقرأ */
 .measure{max-width:var(--measure)}
 .pad{padding:1.7rem 1.9rem}
@@ -144,9 +227,11 @@ h1,h2,h3{margin:0;text-wrap:balance;letter-spacing:-.01em}
 .hero .sub{font-family:"Amiri",serif;font-size:clamp(1.25rem,2.6vw,1.7rem);line-height:1.95;
   color:var(--ink2);max-width:46rem;margin:.9rem 0 0}
 .ph{padding:.2rem 0 .1rem}
-.ph .k{font-size:.72rem;letter-spacing:.2em;color:var(--amber);font-weight:700}
-.ph h1{font-family:"Noto Sans Arabic",sans-serif;font-weight:700;font-size:clamp(1.8rem,4vw,2.7rem);
-  margin:.3rem 0 .25rem;color:var(--ink)}
+.ph .k{font-size:.68rem;letter-spacing:.26em;color:var(--acc);font-weight:700;
+  text-transform:uppercase}
+.ph h1{font-family:"Noto Sans Arabic",sans-serif;font-weight:700;font-size:clamp(1.9rem,4.2vw,2.8rem);
+  margin:.35rem 0 .3rem;background:linear-gradient(170deg,var(--ink) 42%,var(--acc));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
 .ph .m{font-size:.92rem;color:var(--mut);font-variant-numeric:tabular-nums}
 .crumb{font-size:.84rem;color:var(--mut);display:flex;gap:.35rem;flex-wrap:wrap}
 .sep{color:var(--hair2);margin:0 .35rem}
@@ -171,7 +256,7 @@ h1,h2,h3{margin:0;text-wrap:balance;letter-spacing:-.01em}
 a.cell:hover{border-color:var(--hair2);background:var(--surf2);transform:translateY(-2px);box-shadow:var(--sh2)}
 .cell h3{font-family:"Noto Sans Arabic",sans-serif;font-weight:700;font-size:1.35rem;margin-bottom:.3rem}
 .cell p{margin:0;color:var(--mut);font-size:.98rem;line-height:1.85}
-.cell .k{font-size:.72rem;letter-spacing:.18em;color:var(--amber);font-weight:700;margin-bottom:.5rem}
+.cell .k{font-size:.68rem;letter-spacing:.22em;color:var(--acc);font-weight:700;margin-bottom:.5rem}
 .cell .big{font-family:"Noto Sans Arabic",sans-serif;font-weight:700;font-size:2.6rem;line-height:1.1;color:var(--acc);
   font-variant-numeric:tabular-nums;}
 .cell .ic{width:1.9rem;height:1.9rem;color:var(--amber);margin-bottom:.6rem}
@@ -193,7 +278,7 @@ a.cell:hover{border-color:var(--hair2);background:var(--surf2);transform:transla
 /* text */
 .ayah{padding:2.8rem 2.2rem;text-align:center;font-family:"Amiri",serif;
   font-size:clamp(1.9rem,3.2vw,2.5rem);line-height:2.3;color:var(--ink);
-  background:var(--glass2)}
+  background:var(--panel2)}
 .ayah>span.tx{display:block;max-width:38rem;margin:0 auto}
 .ayah .an{display:inline-grid;place-items:center;width:2.5rem;height:2.5rem;border:1px solid var(--amber);
   border-radius:50%;color:var(--amber);font-family:"Noto Sans Arabic",sans-serif;font-size:.9rem;
@@ -202,15 +287,21 @@ a.cell:hover{border-color:var(--hair2);background:var(--surf2);transform:transla
   text-align:justify;max-width:var(--measure)}
 .para:last-child{margin-bottom:0}
 .matn{font-family:"Amiri",serif;font-size:1.6rem;line-height:2.4;color:var(--ink);
-  padding:2rem 2.1rem;border-inline-start:3px solid var(--amber)}
+  padding:2rem 2.1rem;background:var(--panel2)}
+.matn::before{content:"";position:absolute;inset-inline-start:0;top:1rem;bottom:1rem;width:2px;
+  background:linear-gradient(180deg,var(--acc),transparent);box-shadow:0 0 12px var(--acc-glow);
+  border-radius:2px;z-index:1}
 .matn>span{display:block;max-width:var(--measure)}
 .full{font-family:"Amiri",serif;font-size:1.42rem;line-height:2.4;color:var(--ink2);padding:1.9rem 2rem}
 .full>span{display:block;max-width:var(--measure)}
 
 /* grade */
 .gband{display:flex;align-items:flex-start;gap:1.2rem;flex-wrap:wrap;padding:1.4rem 1.6rem}
-.gbig{font-family:"Noto Sans Arabic",sans-serif;font-weight:700;font-size:1.7rem;padding:.35rem 1.2rem;
-  border-radius:14px}
+.gbig{font-family:"Noto Sans Arabic",sans-serif;font-weight:700;font-size:1.7rem;padding:.42rem 1.3rem;
+  border-radius:var(--r2);position:relative}
+.gbig.ok{box-shadow:inset 0 0 0 1px rgba(62,224,160,.34),0 0 26px -8px rgba(62,224,160,.6)}
+.gbig.mid{box-shadow:inset 0 0 0 1px rgba(255,192,97,.34),0 0 26px -8px rgba(255,192,97,.55)}
+.gbig.bad{box-shadow:inset 0 0 0 1px rgba(255,122,122,.34),0 0 26px -8px rgba(255,122,122,.5)}
 .gbig.ok{background:var(--oksoft);color:var(--ok)}.gbig.mid{background:var(--warnsoft);color:var(--warn)}
 .gbig.bad{background:var(--badsoft);color:var(--bad)}.gbig.na{background:var(--surf2);color:var(--mut)}
 .gdef{flex:1;min-width:14rem;max-width:34rem;font-size:.95rem;color:var(--mut);line-height:1.95}
@@ -227,8 +318,10 @@ a.cell:hover{border-color:var(--hair2);background:var(--surf2);transform:transla
 .tab{padding:.55rem 1.05rem;border-radius:11px;font-size:.94rem;font-weight:600;color:var(--mut);
   border:1px solid transparent;transition:.15s}
 .tab:hover{color:var(--ink);background:var(--surf)}
-.tab[aria-selected="true"]{background:var(--acc);color:#fff;border-color:var(--acc)}
-:root[data-theme="dark"] .tab[aria-selected="true"]{color:#090b0d}
+.tab[aria-selected="true"]{background:var(--accsoft);color:var(--acc);position:relative;
+  box-shadow:inset 0 0 0 1px var(--hair2)}
+.tab[aria-selected="true"]::after{content:"";position:absolute;inset-inline:.9rem;bottom:-.78rem;
+  height:2px;background:var(--acc);box-shadow:0 0 10px var(--acc-glow);border-radius:2px}
 .tab .c{font-size:.74rem;opacity:.75;margin-inline-start:.3rem;font-variant-numeric:tabular-nums}
 .panel{display:none}.panel.on{display:flex;flex-direction:column;gap:1.2rem}
 
@@ -290,8 +383,8 @@ table.t td:first-child{font-weight:600;white-space:nowrap}
 .ayahit .tx{font-size:1.5rem;line-height:2.25;color:var(--ink)}
 .chip{font-size:.83rem;padding:.4rem .95rem;border-radius:18px;color:var(--mut);transition:.15s}
 .chip:hover{color:var(--ink);border-color:var(--hair2)}
-.chip[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:#fff}
-:root[data-theme="dark"] .chip[aria-pressed="true"]{color:#090b0d}
+.chip[aria-pressed="true"]{background:var(--accsoft);color:var(--acc);font-weight:600}
+.chip[aria-pressed="true"]::after{background:var(--edgeHot)}
 .sres{margin-top:1rem}
 .sstat{font-size:.86rem;color:var(--mut);padding:.4rem .1rem;display:flex;align-items:center;gap:.6rem}
 .bar{height:2px;background:var(--hair);border-radius:2px;overflow:hidden;flex:1}
@@ -316,8 +409,7 @@ table.t td:first-child{font-weight:600;white-space:nowrap}
 .srcbtn:hover{border-color:var(--amber);color:var(--amber)}
 .srcbtn svg{width:1rem;height:1rem;color:var(--amber)}
 dialog.srcdlg{border-radius:var(--r);padding:0;max-width:40rem;
-  width:calc(100% - 2rem);color:var(--ink);box-shadow:var(--gloss),var(--sh2);
-  background:var(--glass2);-webkit-backdrop-filter:blur(30px) saturate(1.8);backdrop-filter:blur(30px) saturate(1.8)}
+  width:calc(100% - 2rem);color:var(--ink);box-shadow:var(--sh2);background:var(--bg2)}
 dialog.srcdlg::backdrop{background:rgba(5,4,2,.6);backdrop-filter:blur(5px)}
 .srcdlg .hd{display:flex;align-items:center;justify-content:space-between;padding:1.2rem 1.5rem;border-bottom:1px solid var(--hair)}
 .srcdlg .hd b{font-family:"Noto Sans Arabic",sans-serif;font-weight:700;font-size:1.25rem}
@@ -363,9 +455,7 @@ a.cell.card:hover .go{color:var(--acc2)}
 /* صناديق كتب الراوي، ثم أرقام أحاديثه في الكتاب المختار */
 .bks{gap:.7rem;margin-bottom:.4rem}
 .bk{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem 1.2rem;
-  border-radius:14px;border:1px solid var(--glassline);background:var(--glass);
-  -webkit-backdrop-filter:blur(16px) saturate(1.8);backdrop-filter:blur(16px) saturate(1.8);
-  box-shadow:var(--gloss),var(--sh);transition:.16s}
+  border-radius:var(--r2);transition:.16s}
 .bk:hover{border-color:var(--acc)}
 .bk.on{border-color:var(--acc);background:var(--accsoft);box-shadow:none}
 .bk .bn{font-family:"Amiri",serif;font-size:1.2rem;color:var(--ink);line-height:1.4}
@@ -392,7 +482,7 @@ a.nm2:hover{border-color:var(--acc);color:var(--acc)}
 .rc .lnk a.on{background:var(--accsoft);color:var(--accink);font-weight:600}
 
 /* ═══ الصفحة الرئيسية ═══ */
-.home{max-width:var(--max);margin:0 auto;padding:0 1.6rem 5rem}
+.home{max-width:var(--max);margin:0 auto;padding:0 1.6rem 5rem;overflow-x:clip}
 .band{padding:4.6rem 0;position:relative}
 /* الفاصل: خطٌّ يتلاشى طرفاه بدل مسطرةٍ مبتورة الطرفين */
 .band::after{content:"";position:absolute;top:0;inset-inline:0;height:1px;background:var(--hair);
@@ -406,10 +496,17 @@ a.nm2:hover{border-color:var(--acc);color:var(--acc)}
   mask-image:linear-gradient(to right,transparent,#000 14%,#000 86%,transparent)}
 .center{text-align:center}
 /* البطل */
-.mast{padding:5rem 0 3rem;text-align:center;position:relative}
+.mast{padding:6rem 0 3.4rem;text-align:center;position:relative}
+/* أفقٌ مضيء يفصل الترويسة عمّا تحتها — يُقرأ حدًّا لا فراغًا */
+.mast::after{content:"";position:absolute;bottom:0;inset-inline:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--hair2) 18%,var(--acc) 50%,var(--hair2) 82%,transparent);
+  box-shadow:0 0 18px -2px var(--acc-glow)}
 .mast .mark{width:4.2rem;height:4.2rem;color:var(--amber);margin:0 auto .9rem;display:block}
-.mast h1{font-family:"Reem Kufi",serif;font-size:clamp(4.2rem,13vw,8.5rem);line-height:.92;
-  letter-spacing:-.05em;color:var(--ink);margin:0}
+.mast h1{font-family:"Reem Kufi",serif;font-size:clamp(4.6rem,14vw,9rem);line-height:.92;
+  letter-spacing:-.05em;margin:0;
+  background:linear-gradient(168deg,var(--ink) 32%,var(--acc));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 34px var(--acc-glow))}
 .mast .lede{font-family:"Amiri",serif;font-size:clamp(1.2rem,2.4vw,1.6rem);color:var(--mut);
   margin:.7rem auto 0;max-width:40rem;line-height:1.9}
 .mast .search{max-width:44rem;margin:2.2rem auto 0}
@@ -419,16 +516,26 @@ a.nm2:hover{border-color:var(--acc);color:var(--acc)}
 @media(max-width:46rem){.figs{grid-template-columns:repeat(2,1fr)}}
 .fig{text-align:center}
 .fig b{display:block;font-family:"Noto Sans Arabic",sans-serif;font-weight:700;font-size:clamp(2.4rem,4.4vw,3.4rem);
-  line-height:1;color:var(--ink);font-variant-numeric:tabular-nums;}
-.fig .lb{display:block;font-size:.92rem;color:var(--ink2);margin-top:.45rem;font-weight:600}
+  line-height:1;font-variant-numeric:tabular-nums;
+  background:linear-gradient(180deg,var(--ink),var(--acc));-webkit-background-clip:text;
+  background-clip:text;color:transparent}
+.fig{position:relative;padding-top:1.1rem}
+.fig::before{content:"";position:absolute;top:0;inset-inline:22%;height:1px;
+  background:linear-gradient(90deg,transparent,var(--hair2),transparent)}
+.fig .lb{display:block;font-size:.9rem;color:var(--ink2);margin-top:.5rem;font-weight:600;
+  letter-spacing:.02em}
 .fig .sub{display:block;font-size:.8rem;color:var(--faint);margin-top:.1rem}
 /* عنوان قسم */
 .sect{display:flex;align-items:flex-end;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;
   margin-bottom:1.6rem}
 .sect .l{max-width:44rem}
-.sect .k{font-size:.72rem;letter-spacing:.24em;color:var(--amber);font-weight:700}
-.sect h2{font-family:"Noto Sans Arabic",sans-serif;font-weight:700;font-size:clamp(1.8rem,3.4vw,2.5rem);
-  color:var(--ink);margin:.35rem 0 0}
+.sect .k{font-size:.68rem;letter-spacing:.28em;color:var(--acc);font-weight:700;
+  display:inline-flex;align-items:center;gap:.55rem}
+.sect .k::before{content:"";width:1.6rem;height:1px;background:var(--acc);
+  box-shadow:0 0 8px var(--acc-glow)}
+.sect h2{font-family:"Noto Sans Arabic",sans-serif;font-weight:700;font-size:clamp(1.9rem,3.6vw,2.6rem);
+  margin:.4rem 0 0;background:linear-gradient(170deg,var(--ink) 42%,var(--acc));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
 .sect p{color:var(--mut);font-size:1.02rem;line-height:1.9;margin:.6rem 0 0}
 .sect .more{font-size:.95rem;font-weight:600;white-space:nowrap;border-radius:11px;padding:.65rem 1.25rem}
 .sect .more:hover{border-color:var(--acc)}
@@ -456,7 +563,8 @@ a.scard:hover{border-color:var(--acc);background:var(--surf2);transform:translat
   font-variant-numeric:tabular-nums;border-top:1px solid var(--hair)}
 .dots{display:flex;gap:.4rem;justify-content:center;margin-top:1.1rem}
 .dots button{width:.45rem;height:.45rem;border-radius:50%;background:var(--hair2);transition:.2s}
-.dots button[aria-current="true"]{background:var(--acc);width:1.5rem;border-radius:4px}
+.dots button[aria-current="true"]{background:var(--acc);width:1.6rem;border-radius:4px;
+  box-shadow:0 0 12px var(--acc-glow)}
 /* قوائم بسيطة */
 .plain{display:grid;gap:1.6rem 3rem;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr))}
 .plain .it h3{font-family:"Noto Sans Arabic",sans-serif;font-weight:700;font-size:1.2rem;color:var(--ink);margin-bottom:.3rem}
