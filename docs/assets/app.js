@@ -31,8 +31,8 @@ function theme(){
   if(s)document.documentElement.setAttribute("data-theme",s);
   document.addEventListener("click",e=>{
     const t=e.target.closest(".tgl"); if(!t)return;
-    const cur=document.documentElement.getAttribute("data-theme")
-      || (matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light");
+    // النهاري هو الأصل، فما لم يُختَر شيءٌ فالحالُ نهاريّ
+    const cur=document.documentElement.getAttribute("data-theme")||"light";
     const nx=cur==="dark"?"light":"dark";
     document.documentElement.setAttribute("data-theme",nx);
     localStorage.setItem("turath-theme",nx);

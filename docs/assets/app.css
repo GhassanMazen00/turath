@@ -4,83 +4,36 @@
    خافتة، ولونٌ حادّ واحد (سماويّ) للفعل، والذهبي للتراث. الزوايا أضيق
    والخطوط أدقّ — الحدّة تُقرأ قوةً، والاستدارة تُقرأ ليونة. */
 :root{
-  --bg:#04060a;--bg2:#070b12;
-  --ink:#e9eff7;--ink2:#a7b5c8;--mut:#6d7d93;--faint:#465468;
-  --hair:rgba(125,205,255,.13);--hair2:rgba(125,205,255,.26);
-  --acc:#4dd9ff;--acc2:#8ceaff;--accsoft:rgba(77,217,255,.12);--accink:#9eecff;
-  --acc-glow:rgba(77,217,255,.42);
-  --amber:#e6bd6e;--ambersoft:rgba(230,189,110,.13);
-  --ok:#3ee0a0;--oksoft:rgba(62,224,160,.13);--warn:#ffc061;--warnsoft:rgba(255,192,97,.13);
-  --bad:#ff7a7a;--badsoft:rgba(255,122,122,.13);
-  --surf:rgba(125,205,255,.05);--surf2:rgba(125,205,255,.03);
-  --panel:linear-gradient(180deg,rgba(125,205,255,.055),rgba(125,205,255,.014));
-  --panel2:linear-gradient(180deg,rgba(125,205,255,.10),rgba(125,205,255,.03));
-  --edge:linear-gradient(180deg,rgba(150,225,255,.42),rgba(150,225,255,.07) 34%,rgba(150,225,255,.02));
-  --edgeHot:linear-gradient(180deg,var(--acc),rgba(77,217,255,.22) 50%,rgba(77,217,255,.06));
-  --sh:0 1px 0 rgba(0,0,0,.5),0 8px 26px -12px rgba(0,0,0,.9);
-  --sh2:0 2px 0 rgba(0,0,0,.5),0 28px 70px -20px rgba(0,0,0,.95);
-  --grid:rgba(125,205,255,.045);--gridN:rgba(125,205,255,.10);
-  --halo1:rgba(77,217,255,.16);--halo2:rgba(120,90,255,.12);--halo3:rgba(230,189,110,.07);
-  color-scheme:dark;
+  --bg:#eef2f7; --bg2:#e2e8f0; --ink:#060a11;
+  --ink2:#2a3543; --mut:#5a6779; --faint:#8b98a9;
+  --hair:rgba(6,14,26,.13); --hair2:rgba(6,14,26,.26); --acc:#0072a8;
+  --acc2:#0090d0; --accsoft:rgba(0,114,168,.10); --accink:#00587f;
+  --acc-glow:rgba(0,114,168,.28); --amber:#8a6212; --ambersoft:rgba(138,98,18,.12);
+  --ok:#0c6b48; --oksoft:rgba(12,107,72,.10); --warn:#8a5b00;
+  --warnsoft:rgba(138,91,0,.11); --bad:#a32020; --badsoft:rgba(163,32,32,.09);
+  --surf:rgba(255,255,255,.72); --surf2:rgba(255,255,255,.48); --panel:linear-gradient(180deg,rgba(255,255,255,.94),rgba(255,255,255,.72));
+  --panel2:linear-gradient(180deg,#fff,rgba(255,255,255,.86)); --edge:linear-gradient(180deg,rgba(255,255,255,1),rgba(6,14,26,.10) 34%,rgba(6,14,26,.13)); --edgeHot:linear-gradient(180deg,var(--acc),rgba(0,114,168,.25) 50%,rgba(0,114,168,.10));
+  --sh:0 1px 2px rgba(10,20,35,.07),0 8px 22px -14px rgba(10,20,35,.35); --sh2:0 2px 6px rgba(10,20,35,.09),0 26px 60px -22px rgba(10,20,35,.4); --grid:rgba(6,20,40,.05);
+  --gridN:rgba(6,20,40,.09); --halo1:rgba(0,114,168,.10); --halo2:rgba(90,60,200,.07);
+  --halo3:rgba(138,98,18,.06);
   --r:11px;--r2:8px;--side:16.5rem;--rail:20.5rem;--measure:46rem;--max:92rem;
+  color-scheme:light;
 }
-/* النهاري: مخطَّطٌ هندسي بارد لا ورقٌ دافئ */
-@media(prefers-color-scheme:light){:root:not([data-theme="dark"]){
-  --bg:#eef2f7;--bg2:#e2e8f0;
-  --ink:#060a11;--ink2:#2a3543;--mut:#5a6779;--faint:#8b98a9;
-  --hair:rgba(6,14,26,.13);--hair2:rgba(6,14,26,.26);
-  --acc:#0072a8;--acc2:#0090d0;--accsoft:rgba(0,114,168,.10);--accink:#00587f;
-  --acc-glow:rgba(0,114,168,.28);
-  --amber:#8a6212;--ambersoft:rgba(138,98,18,.12);
-  --ok:#0c6b48;--oksoft:rgba(12,107,72,.10);--warn:#8a5b00;--warnsoft:rgba(138,91,0,.11);
-  --bad:#a32020;--badsoft:rgba(163,32,32,.09);
-  --surf:rgba(255,255,255,.72);--surf2:rgba(255,255,255,.48);
-  --panel:linear-gradient(180deg,rgba(255,255,255,.94),rgba(255,255,255,.72));
-  --panel2:linear-gradient(180deg,#fff,rgba(255,255,255,.86));
-  --edge:linear-gradient(180deg,rgba(255,255,255,1),rgba(6,14,26,.10) 34%,rgba(6,14,26,.13));
-  --edgeHot:linear-gradient(180deg,var(--acc),rgba(0,114,168,.25) 50%,rgba(0,114,168,.10));
-  --sh:0 1px 2px rgba(10,20,35,.07),0 8px 22px -14px rgba(10,20,35,.35);
-  --sh2:0 2px 6px rgba(10,20,35,.09),0 26px 60px -22px rgba(10,20,35,.4);
-  --grid:rgba(6,20,40,.05);--gridN:rgba(6,20,40,.09);
-  --halo1:rgba(0,114,168,.10);--halo2:rgba(90,60,200,.07);--halo3:rgba(138,98,18,.06);
-  color-scheme:light;}}
-:root[data-theme="light"]{
-  --bg:#eef2f7;--bg2:#e2e8f0;
-  --ink:#060a11;--ink2:#2a3543;--mut:#5a6779;--faint:#8b98a9;
-  --hair:rgba(6,14,26,.13);--hair2:rgba(6,14,26,.26);
-  --acc:#0072a8;--acc2:#0090d0;--accsoft:rgba(0,114,168,.10);--accink:#00587f;
-  --acc-glow:rgba(0,114,168,.28);
-  --amber:#8a6212;--ambersoft:rgba(138,98,18,.12);
-  --ok:#0c6b48;--oksoft:rgba(12,107,72,.10);--warn:#8a5b00;--warnsoft:rgba(138,91,0,.11);
-  --bad:#a32020;--badsoft:rgba(163,32,32,.09);
-  --surf:rgba(255,255,255,.72);--surf2:rgba(255,255,255,.48);
-  --panel:linear-gradient(180deg,rgba(255,255,255,.94),rgba(255,255,255,.72));
-  --panel2:linear-gradient(180deg,#fff,rgba(255,255,255,.86));
-  --edge:linear-gradient(180deg,rgba(255,255,255,1),rgba(6,14,26,.10) 34%,rgba(6,14,26,.13));
-  --edgeHot:linear-gradient(180deg,var(--acc),rgba(0,114,168,.25) 50%,rgba(0,114,168,.10));
-  --sh:0 1px 2px rgba(10,20,35,.07),0 8px 22px -14px rgba(10,20,35,.35);
-  --sh2:0 2px 6px rgba(10,20,35,.09),0 26px 60px -22px rgba(10,20,35,.4);
-  --grid:rgba(6,20,40,.05);--gridN:rgba(6,20,40,.09);
-  --halo1:rgba(0,114,168,.10);--halo2:rgba(90,60,200,.07);--halo3:rgba(138,98,18,.06);
-  color-scheme:light;}
+/* الليلي لا يُفرَض بتفضيل النظام: النهاري هو الأصل عند أوّل فتح،
+   ولا يُنتقل إلى الليلي إلا باختيارٍ صريح يُحفظ في المتصفّح. */
 :root[data-theme="dark"]{
-  --bg:#04060a;--bg2:#070b12;
-  --ink:#e9eff7;--ink2:#a7b5c8;--mut:#6d7d93;--faint:#465468;
-  --hair:rgba(125,205,255,.13);--hair2:rgba(125,205,255,.26);
-  --acc:#4dd9ff;--acc2:#8ceaff;--accsoft:rgba(77,217,255,.12);--accink:#9eecff;
-  --acc-glow:rgba(77,217,255,.42);
-  --amber:#e6bd6e;--ambersoft:rgba(230,189,110,.13);
-  --ok:#3ee0a0;--oksoft:rgba(62,224,160,.13);--warn:#ffc061;--warnsoft:rgba(255,192,97,.13);
-  --bad:#ff7a7a;--badsoft:rgba(255,122,122,.13);
-  --surf:rgba(125,205,255,.05);--surf2:rgba(125,205,255,.03);
-  --panel:linear-gradient(180deg,rgba(125,205,255,.055),rgba(125,205,255,.014));
-  --panel2:linear-gradient(180deg,rgba(125,205,255,.10),rgba(125,205,255,.03));
-  --edge:linear-gradient(180deg,rgba(150,225,255,.42),rgba(150,225,255,.07) 34%,rgba(150,225,255,.02));
-  --edgeHot:linear-gradient(180deg,var(--acc),rgba(77,217,255,.22) 50%,rgba(77,217,255,.06));
-  --sh:0 1px 0 rgba(0,0,0,.5),0 8px 26px -12px rgba(0,0,0,.9);
-  --sh2:0 2px 0 rgba(0,0,0,.5),0 28px 70px -20px rgba(0,0,0,.95);
-  --grid:rgba(125,205,255,.045);--gridN:rgba(125,205,255,.10);
-  --halo1:rgba(77,217,255,.16);--halo2:rgba(120,90,255,.12);--halo3:rgba(230,189,110,.07);
+  --bg:#04060a; --bg2:#070b12; --ink:#e9eff7;
+  --ink2:#a7b5c8; --mut:#6d7d93; --faint:#465468;
+  --hair:rgba(125,205,255,.13); --hair2:rgba(125,205,255,.26); --acc:#4dd9ff;
+  --acc2:#8ceaff; --accsoft:rgba(77,217,255,.12); --accink:#9eecff;
+  --acc-glow:rgba(77,217,255,.42); --amber:#e6bd6e; --ambersoft:rgba(230,189,110,.13);
+  --ok:#3ee0a0; --oksoft:rgba(62,224,160,.13); --warn:#ffc061;
+  --warnsoft:rgba(255,192,97,.13); --bad:#ff7a7a; --badsoft:rgba(255,122,122,.13);
+  --surf:rgba(125,205,255,.05); --surf2:rgba(125,205,255,.03); --panel:linear-gradient(180deg,rgba(125,205,255,.055),rgba(125,205,255,.014));
+  --panel2:linear-gradient(180deg,rgba(125,205,255,.10),rgba(125,205,255,.03)); --edge:linear-gradient(180deg,rgba(150,225,255,.42),rgba(150,225,255,.07) 34%,rgba(150,225,255,.02)); --edgeHot:linear-gradient(180deg,var(--acc),rgba(77,217,255,.22) 50%,rgba(77,217,255,.06));
+  --sh:0 1px 0 rgba(0,0,0,.5),0 8px 26px -12px rgba(0,0,0,.9); --sh2:0 2px 0 rgba(0,0,0,.5),0 28px 70px -20px rgba(0,0,0,.95); --grid:rgba(125,205,255,.045);
+  --gridN:rgba(125,205,255,.10); --halo1:rgba(77,217,255,.16); --halo2:rgba(120,90,255,.12);
+  --halo3:rgba(230,189,110,.07);
   color-scheme:dark;
 }
 *{box-sizing:border-box}
@@ -131,8 +84,6 @@ h1,h2,h3{margin:0;text-wrap:balance;letter-spacing:-.01em}
 .tgl svg,.menu svg{width:1.05rem;height:1.05rem;color:var(--amber)}
 .tgl .moon{display:none}
 :root[data-theme="dark"] .tgl .sun{display:none}:root[data-theme="dark"] .tgl .moon{display:block}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .tgl .sun{display:none}
-  :root:not([data-theme="light"]) .tgl .moon{display:block}}
 .menu{display:none}
 
 
