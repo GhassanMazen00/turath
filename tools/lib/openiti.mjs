@@ -45,8 +45,11 @@ export function parseOpenITI(raw) {
       vol = +last[1];
       page = +last[2];
     }
+    /* «&» في طبعة دلائل النبوة علامةُ انتهاء العنوان، تقع في آخر أسطر
+       «###» وبعد علامات الصفحات. ليست من النصّ، فتُزال كما تُزال أخواتُها.
+       ولا يستعملها غيرُ هذا الكتاب ممّا نشحنه. */
     t = t.replace(RE_PAGE, " ").replace(RE_MS, " ")
-         .replace(/[%$@]+/g, " ")
+         .replace(/[%$@&]+/g, " ")
          .replace(/\s+/g, " ").trim();
     if (!t) continue;
     out.push({

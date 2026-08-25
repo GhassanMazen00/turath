@@ -66,7 +66,7 @@ function vBooks(){
   sideBooks();
   app().innerHTML='<nav class="crumb"><a href="#/">السيرة</a><span class="sep">›</span><span>الكتب</span></nav>'+
    '<section class="ph"><div class="k">أصول السيرة</div><h1>كتب السيرة</h1>'+
-   '<div class="m"><bdi>'+AR(BK.length)+' كتابين</bdi><span class="sep">•</span>'+
+   '<div class="m"><bdi>'+AR(BK.length)+' '+(BK.length===2?'كتابين':BK.length<=10?'كتب':'كتابًا')+'</bdi><span class="sep">•</span>'+
    '<bdi>'+AR(BK.reduce((a,b)=>a+b.paras,0))+' فقرة</bdi></div></section>'+
    '<div class="note" style="margin-bottom:1rem">هذه كتبُ أخبارٍ ومغازٍ لا كتبُ حديثٍ على شرط '+
    'الصحيح: تُساق فيها الرواية مرسلةً وبغير إسنادٍ أحيانًا. تُقرأ وتُبحث كما هي بجزئها وصفحتها.</div>'+
@@ -218,16 +218,24 @@ function secHadith(e){
     'أو في غير كتب المغازي من المصنَّف.</div>';
 }
 
-/* ما ساقه أهل السيرة — أخبارٌ لا أحاديثُ على شرط الصحيح، ويُقال ذلك */
+/* ما ساقه أهل السيرة — مفصولًا: ما جاء بإسنادٍ وما جاء بغيره.
+   وخلطُهما يبخس الأوّل ويرفع الثاني، وكلاهما تضليل. */
 function secSira(e){
-  return SH2('ما ساقه أهل السيرة',e.anchor.length)+
-    '<p class="evlead">هذه كتبُ أخبارٍ ومغازٍ، لا كتبُ حديثٍ على شرط الصحيح: تُساق فيها '+
-    'الرواية مرسلةً وبغير إسنادٍ أحيانًا. تُقرأ على أنّها كذلك.</p>'+
-    '<div class="tiles">'+e.anchor.map(a=>
+  const M=e.anchor.filter(a=>a.musnad), X=e.anchor.filter(a=>!a.musnad);
+  const tiles=(list)=>'<div class="tiles">'+list.map(a=>
       '<a class="tile wrap" href="#/'+e.id+'/r/'+a.b+'/'+a.c+'/'+a.i+'">'+
       '<span class="n">ج'+AR(a.v)+'</span><span class="t"><b>'+esc(a.t)+'</b>'+
       '<span>'+esc(a.ar)+' <span class="sep">•</span> ج'+AR(a.v)+' ص'+AR(a.p)+'</span></span></a>').join('')+
     '</div>';
+  let out='';
+  if(M.length) out+=SH2('ما أُسند من أخباره',M.length)+
+    '<p class="evlead">دلائلُ النبوة للبيهقي يسوق أخبار السيرة <b>بأسانيدها</b> كما تُساق '+
+    'الأحاديث، فهو بين الصحاح وبين كتب الأخبار المرسلة. والإسنادُ معروضٌ في الموضع فانظره.</p>'+
+    tiles(M);
+  if(X.length) out+=SH2('ما ساقه أهل الأخبار',X.length)+
+    '<p class="evlead">هذه كتبُ أخبارٍ ومغازٍ وطبقات، لا كتبُ حديثٍ على شرط الصحيح: تُساق '+
+    'فيها الرواية مرسلةً وبغير إسنادٍ أحيانًا. تُقرأ على أنّها كذلك.</p>'+tiles(X);
+  return out;
 }
 
 /* إبراز موضع الذكر في السياق — على النصّ المطبَّع كما هو مخزَّن */

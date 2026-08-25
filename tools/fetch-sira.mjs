@@ -27,6 +27,14 @@ const BOOKS = [
     author: "محمد بن عمر الواقدي", died: 207,
     note: "أوسع الكتب في تفاصيل الغزوات وتواريخها وأعداد من شهدها.",
     url: `${RAW}/0225AH/master/data/0207Waqidi/0207Waqidi.Maghazi/0207Waqidi.Maghazi.Shamela0023680-ara1.mARkdown` },
+  { slug: "dalail", ar: "دلائل النبوة", full: "دلائل النبوة ومعرفة أحوال صاحب الشريعة",
+    author: "الإمام البيهقي", died: 458, musnad: true,
+    note: "يسوق أخبار السيرة بأسانيدها كما تُساق الأحاديث، فهو بينها وبين كتب الأخبار المرسلة.",
+    url: `${RAW}/0475AH/master/data/0458Bayhaqi/0458Bayhaqi.DalailNubuwwa/0458Bayhaqi.DalailNubuwwa.JK006838-ara1.mARkdown` },
+  { slug: "tabaqat", ar: "طبقات ابن سعد", full: "الطبقات الكبرى لابن سعد",
+    author: "محمد بن سعد", died: 230,
+    note: "تراجمُ من شهد الأحداث، مرتَّبةً على الطبقات — وبها تتّصل السيرة بالرواة.",
+    url: `${RAW}/0250AH/master/data/0230IbnSacd/0230IbnSacd.TabaqatKubra/0230IbnSacd.TabaqatKubra.JK000530-ara2` },
 ];
 
 const CHUNK_CHARS = 600_000;
@@ -100,6 +108,7 @@ async function build(b) {
 
   const info = {
     slug: b.slug, ar: b.ar, full: b.full, author: b.author, died: b.died, note: b.note,
+    musnad: !!b.musnad,
     vols: +(meta.BookVOLS || 0) || Math.max(...blocks.map((x) => x.v)),
     paras: blocks.length, chunks: chunks.length,
     chars: blocks.reduce((a, x) => a + x.t.length, 0),
@@ -118,6 +127,7 @@ const main = async () => {
   const all = [];
   for (const b of BOOKS) all.push(await build(b));
   fs.writeFileSync(path.join(OUT, "books.json"), JSON.stringify(all), "utf8");
-  console.log(`\nالمجموع: ${all.length} كتابين، ${all.reduce((a, x) => a + x.paras, 0).toLocaleString()} فقرة.`);
+  const kutub = all.length === 2 ? "كتابين" : all.length <= 10 ? "كتب" : "كتابًا";
+  console.log(`\nالمجموع: ${all.length} ${kutub}، ${all.reduce((a, x) => a + x.paras, 0).toLocaleString()} فقرة.`);
 };
 main().catch((e) => { console.error("\nفشل:", e.message); process.exit(1); });

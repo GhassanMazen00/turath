@@ -33,7 +33,7 @@ const ayah = (s, v) => quran[off[s] + v - 1];
 const surahAr = Object.fromEntries(surahs.map((s) => [s.n, s.ar]));
 
 const toc = {}, meta = {};
-for (const b of ["ibn-hisham", "waqidi"]) {
+for (const b of ["ibn-hisham", "waqidi", "dalail", "tabaqat"]) {
   toc[b] = rd(path.join(SIRA, b, "toc.json"));
   meta[b] = rd(path.join(SIRA, b, "meta.json"));
 }
@@ -167,9 +167,36 @@ for (const h of spec.events) if (!spine.includes(h)) {
 }
 console.log(`الخطّ: ${spine.length} حدثًا (${spec.events.length} مراجَعًا + ${merged.length} مستخرَجًا)\n`);
 
+/* ── مواضعُ الحدث في دلائل النبوة وطبقات ابن سعد ──
+ * لا تُطابَق بالاسم مطابقةً حرّة، بل بألفاظ الحدث نفسها التي ثبت أنّها
+ * تُميّزه في متون المغازي. فما صحّ مفتاحًا هناك يصحّ هنا.
+ */
+function extraAnchors(ev) {
+  const ok = (ev.ok || []).map(normPat).filter(Boolean);
+  const bad = (ev.bad || []).map(normPat).filter(Boolean);
+  const nm = norm(ev.ar).split(" ").filter((w) => w.length > 2 &&
+    !["غزوه","سريه","بعثه","بعث","حديث","وفاه","هجره","صلح","بيعه","فتح","حجه","عمره","النبي","رسول","الله"].includes(w));
+  const phrases = ok.length ? ok : (nm.length >= 2 ? [nm.slice(0, 2).join(" ")] : []);
+  if (!phrases.length) return [];
+  const out = [];
+  for (const b of ["dalail", "tabaqat"]) {
+    for (const x of toc[b]) {
+      const t = " " + norm(x[0]) + " ";
+      if (bad.some((z) => t.includes(z))) continue;
+      if (!phrases.some((z) => t.includes(z))) continue;
+      out.push({ b, ar: meta[b].ar, t: x[0], c: x[1], i: x[2], v: x[3], p: x[4],
+                 musnad: !!meta[b].musnad });
+      if (out.filter((y) => y.b === b).length >= 4) break;
+    }
+  }
+  return out;
+}
+
 const events = [];
 for (const ev of spine) {
   const an = (ev.anchor || []).map((a) => anchor(a, ev.id)).filter(Boolean);
+  const ax = extraAnchors(ev);
+  for (const a of ax) if (!an.some((y) => y.b === a.b && y.t === a.t)) an.push(a);
   const qs = (ev.quran || []).map((q) => {
     const vs = verses(q.k);
     const src = q.src ? anchor(q.src, ev.id) : null;
@@ -177,12 +204,16 @@ for (const ev of spine) {
   }).filter(Boolean);
   const hs = hadiths(ev);
   /* شريط التوثيق: ما قام عليه الحدث من طبقات المصادر */
-  const tier = { q: qs.length > 0, h: hs.length > 0, s: an.length > 0 };
+  /* أربعُ طبقاتٍ لا ثلاث: ودلائلُ النبوة تُساق فيها أخبارُ السيرة
+     بأسانيدها كما تُساق الأحاديث، فهي بين الصحيح وبين الأخبار المرسلة —
+     وإدراجُها في «كتب الأخبار» يبخسها، وفي «كتب الحديث» يزيدها. */
+  const tier = { q: qs.length > 0, h: hs.length > 0,
+                 m: an.some((a) => a.musnad), s: an.some((a) => !a.musnad) };
   events.push({ id: ev.id, ar: ev.ar, y: ev.y, when: ev.when || "", place: ev.place || "",
     whenFrom: ev.whenFrom || null, ybound: ev.ybound || null,
     tier, quran: qs, hadith: hs, anchor: an, nh: hs.length });
   const mark = (b) => (b ? "●" : "○");
-  console.log(`${mark(tier.q)}${mark(tier.h)}${mark(tier.s)}  ${ev.ar.padEnd(24)} ` +
+  console.log(`${mark(tier.q)}${mark(tier.h)}${mark(tier.m)}${mark(tier.s)}  ${ev.ar.padEnd(24)} ` +
     `آيات:${String(qs.reduce((a, x) => a + x.vs.length, 0)).padStart(3)}  ` +
     `أحاديث:${String(hs.length).padStart(4)}  مواضع:${an.length}`);
 }
