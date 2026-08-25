@@ -281,21 +281,37 @@ function mountSearch(root,{autofocus=false}={}){
 /* ── شروح الحديث: كتبٌ تُقرأ وتُبحث، لا شرحٌ يُنسَب إلى حديثٍ بعينه ──
    المصدر نصٌّ متّصل، ونسبة فقرةٍ منه إلى حديثٍ بذاته تُخطئ بصمت. فالبحث
    هو الواسطة: القارئ يرى الموضع بجزئه وصفحته ويحكم بنفسه. */
-const SH={books:null,idx:{},chunk:{}};
-async function sharhBooks(){ if(!SH.books) SH.books=await api.local("sharh/books.json"); return SH.books; }
-async function sharhMeta(slug){ const bs=await sharhBooks(); return bs.find(b=>b.slug===slug); }
+/* الشروح وكتب السيرة تُشحن بالشكل نفسه (meta/toc/idx/c{N})، فآلةُ القراءة
+   والبحث واحدة. ويُسجَّل لكلّ كتابٍ مجموعتُه عند تحميل فهرسها، فتعرف
+   الدوالُّ من أين تجلب بلا أن يُمرَّر المسار في كل نداء. */
+const SH={books:null,idx:{},chunk:{},meta:{},dir:{}};
+async function bookSet(col){
+  if(!SH[col+"Books"]){
+    const bs=await api.local(col+"/books.json");
+    for(const b of bs){ SH.dir[b.slug]=col; SH.meta[b.slug]=b; }
+    SH[col+"Books"]=bs;
+  }
+  return SH[col+"Books"];
+}
+const bookDir=(slug)=>SH.dir[slug]||"sharh";
+async function sharhBooks(){ SH.books=await bookSet("sharh"); return SH.books; }
+async function siraBooks(){ return bookSet("sira"); }
+async function sharhMeta(slug){
+  if(SH.meta[slug]) return SH.meta[slug];
+  const bs=await sharhBooks(); return bs.find(b=>b.slug===slug);
+}
 async function sharhIdx(slug){
-  if(!SH.idx[slug]) SH.idx[slug]=await api.local(`sharh/${slug}/idx.json`);
+  if(!SH.idx[slug]) SH.idx[slug]=await api.local(`${bookDir(slug)}/${slug}/idx.json`);
   return SH.idx[slug];
 }
 async function sharhToc(slug){
   const k="toc:"+slug;
-  if(!SH.idx[k]) SH.idx[k]=await api.local(`sharh/${slug}/toc.json`);
+  if(!SH.idx[k]) SH.idx[k]=await api.local(`${bookDir(slug)}/${slug}/toc.json`);
   return SH.idx[k];
 }
 async function sharhChunk(slug,n){
   const k=slug+":"+n;
-  if(!SH.chunk[k]) SH.chunk[k]=await api.local(`sharh/${slug}/c${n}.json`);
+  if(!SH.chunk[k]) SH.chunk[k]=await api.local(`${bookDir(slug)}/${slug}/c${n}.json`);
   return SH.chunk[k];
 }
 /* ألفاظٌ لا تدلّ على موضع: أدوات وألفاظ إسنادٍ ورفع، تَرِد في كل صفحة */
@@ -580,7 +596,11 @@ function isnadWords(names){
   for(const n of names||[]) for(const w of norm(n).split(" ")) if(w.length>2) s.add(w);
   return s.size?s:null;
 }
-function sharhEvid(h,matn,isnad){
+function sharhEvid(h,matn,isnad,term){
+  /* البطاقةُ تُعرض في موضعين: شرحُ حديثٍ بعينه — فالمقابَل متنُه — وبحثٌ
+     حرٌّ يكتبه القارئ. فيُسمّى المقابَل باسمه في الحالين ولا يُقال «المتن»
+     لمن بحث عن «حفر زمزم». */
+  const T=term||"المطلوب";
   /* طولُ الاقتباس وحده لا يزن: ثمانُ كلماتٍ من ألفاظ الإسناد لا تدلّ على
      حديثٍ بعينه، وثلاثٌ من لفظ المتن تدلّ. فالعبرة بالمميِّز منها. */
   /* لا يُعدّ الاقتباس حجّةً إلا بلفظين من صُلب المتن: أسماءُ رجال السند
@@ -594,19 +614,19 @@ function sharhEvid(h,matn,isnad){
   const why=[];
   if(h.quote){
     why.push([quoted?"ok":"mid",
-      (quoted?"يقتبس من متن الحديث لفظًا بلفظ":"فيه من ألفاظ المتن")+
+      (quoted?"يقتبس "+T+" لفظًا بلفظ":"فيه من ألفاظ "+T)+
       ": «"+esc(h.quote)+"»"+(w?' <bdi class="wc">'+AR(w)+" "+(w<=10?"كلمات":"كلمة")+'</bdi>':"")]);
-    if(!quoted) why.push(["no","وأكثرُه أسماءُ رجال السند أو ألفاظُ رواية، تَرِد في كل بابٍ فلا تخصّ هذا الحديث"]);
-  }else why.push(["no","لم يرد لفظٌ متّصل من المتن في هذا الموضع"]);
+    if(!quoted) why.push(["no","وأكثرُه أسماءُ رجالٍ أو ألفاظُ رواية، تَرِد في كل بابٍ فلا تخصّ موضعًا بعينه"]);
+  }else why.push(["no","لم يرد لفظٌ متّصل من "+T+" في هذا الموضع، وإنما تفرّقت كلماته"]);
   if(bab) why.push([same?"ok":"mid","تحت باب «"+esc(bab)+"»"+
-    (same?" — وعنوانه من ألفاظ هذا الحديث":"")]);
+    (same?" — وعنوانه من ألفاظ "+T:"")]);
   const lvl=quoted&&same?"sure":quoted?"strong":same?"bab":"weak";
   return {lvl,why,quoted,same,bab,
     label:{sure:"مطابقة مؤكَّدة",strong:"اقتباس حرفي",bab:"الباب موافق",weak:"موضع محتمل"}[lvl]};
 }
 /* بطاقة موضع: الدليل أوّلًا ثم النصّ، لا العكس */
-function sharhCard(slug,h,matn,isnad,{open=true}={}){
-  const e=sharhEvid(h,matn,isnad);
+function sharhCard(slug,h,matn,isnad,{open=true,term}={}){
+  const e=sharhEvid(h,matn,isnad,term);
   const t=h.t.length>700?h.t.slice(0,700)+"…":h.t;
   return '<div class="ev ev-'+e.lvl+'">'+
     '<div class="evh"><span class="evb">'+e.label+'</span>'+
@@ -650,7 +670,7 @@ async function sharhBlock(matn,mount,book,names){
       (babAt?'<a class="act" href="sharh.html#/'+slug+'/r/'+babAt.c+'/'+babAt.i+'">افتح الباب في الشرح</a>':"")+
       '<a class="act" href="sharh.html#/'+slug+'">تصفَّح الكتاب</a></div>';
     if(top.length){
-      mount.innerHTML=head+top.map(h=>sharhCard(slug,h,matn,isnad)).join("")+acts+
+      mount.innerHTML=head+top.map(h=>sharhCard(slug,h,matn,isnad,{term:"متن الحديث"})).join("")+acts+
         '<div class="note">النصّ كما ورد في '+bar+'، بجزئه وصفحته. '+
         'الشروح كلامٌ متّصل، فقد يقع شرح الحديث في مواضع أخرى منها.</div>';
     }else if(babAt){
@@ -881,7 +901,6 @@ function carousel(root,{slides,interval=4200}={}){
  */
 const SR={ev:null};
 async function siraEvents(){ if(!SR.ev) SR.ev=await api.local("sira/events.json"); return SR.ev; }
-async function siraBooks(){ if(!SR.bk) SR.bk=await api.local("sira/books.json"); return SR.bk; }
 
 /* عمر النبي ﷺ عند الحدث — حسابٌ على المشهور: بُعث على رأس الأربعين،
    وهاجر بعد ثلاث عشرة من مبعثه. يُعرض تقريبًا ويُبيَّن أنّه حساب. */

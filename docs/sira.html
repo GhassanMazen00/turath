@@ -29,6 +29,14 @@ function route(){
   const h=decodeURIComponent(location.hash.replace(/^#\/?/,''));
   if(!h) return vLine();
   const p=h.split('/');
+  if(p[0]==='b'){                              // كتب السيرة: تصفُّحًا وبحثًا
+    const b=BK.find(x=>x.slug===p[1]);
+    if(!b) return vBooks();
+    if(p[2]==='q') return vSearch(b,p.slice(3).join('/'));
+    if(p[2]==='r') return vRead(null,b,+p[3]||0,+p[4]||0);
+    return vBook(b);
+  }
+  if(p[0]==='كتب') return vBooks();
   const e=EV.find(x=>x.id===p[0]);
   if(!e) return vLine();
   if(p[1]==='r'){ const b=BK.find(x=>x.slug===p[2]); if(b) return vRead(e,b,+p[3]||0,+p[4]||0); }
@@ -36,7 +44,81 @@ function route(){
 }
 function sideLine(active){
   sidebar(side(),{title:'خطّ الأحداث',active,
-    items:EV.map(e=>({key:e.id,href:'#/'+e.id,label:e.ar,side:siraYear(e.y)}))});
+    items:EV.map(e=>({key:e.id,href:'#/'+e.id,label:e.ar,side:siraYear(e.y)}))
+      .concat(BK.map(b=>({key:'b:'+b.slug,href:'#/b/'+b.slug,label:b.ar,side:'كتاب'})))});
+}
+function sideBooks(active){
+  sidebar(side(),{title:'كتب السيرة',active,
+    items:BK.map(b=>({key:b.slug,href:'#/b/'+b.slug,label:b.ar,side:AR(b.vols)+' ج'}))
+      .concat([{key:'line',href:'#/',label:'خطّ الأحداث',side:AR(EV.length)}])});
+}
+function box(b,q){
+  return '<div class="sbox"><svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.7"/><path d="M16.5 16.5L21 21" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>'+
+   '<input id="q" type="search" placeholder="ابحث في '+esc(b.ar)+'…" value="'+esc(q||'')+'" autocomplete="off"><kbd>↵</kbd></div>';
+}
+function wire(b){
+  const i=document.getElementById('q'); if(!i)return;
+  i.onkeydown=e=>{ if(e.key==='Enter'&&i.value.trim()) location.hash='#/b/'+b.slug+'/q/'+encodeURIComponent(i.value.trim()); };
+}
+
+/* ── كتب السيرة: تُقرأ وتُبحث كتبًا، لا مواضعَ معلَّقةً بالأحداث وحدها ── */
+function vBooks(){
+  sideBooks();
+  app().innerHTML='<nav class="crumb"><a href="#/">السيرة</a><span class="sep">›</span><span>الكتب</span></nav>'+
+   '<section class="ph"><div class="k">أصول السيرة</div><h1>كتب السيرة</h1>'+
+   '<div class="m"><bdi>'+AR(BK.length)+' كتابين</bdi><span class="sep">•</span>'+
+   '<bdi>'+AR(BK.reduce((a,b)=>a+b.paras,0))+' فقرة</bdi></div></section>'+
+   '<div class="note" style="margin-bottom:1rem">هذه كتبُ أخبارٍ ومغازٍ لا كتبُ حديثٍ على شرط '+
+   'الصحيح: تُساق فيها الرواية مرسلةً وبغير إسنادٍ أحيانًا. تُقرأ وتُبحث كما هي بجزئها وصفحتها.</div>'+
+   '<div class="bento">'+BK.map(b=>
+     '<a class="cell b3 card" href="#/b/'+b.slug+'"><div class="ch"><h3>'+esc(b.ar)+'</h3>'+
+     '<span class="cn"><bdi>'+AR(b.vols)+'</bdi><small>مجلّدًا</small></span></div>'+
+     '<p class="au">'+esc(b.author)+'<span class="sep">•</span>ت'+AR(b.died)+'هـ</p>'+
+     '<p>'+esc(b.note||b.full)+'</p>'+
+     '<div class="meta"><bdi>'+AR(b.paras)+' فقرة</bdi><span class="go">افتح ←</span></div></a>').join('')+
+   '</div>'+FOOT;
+  foot(); scrollTo(0,0);
+}
+async function vBook(b){
+  sideBooks(b.slug);
+  app().innerHTML='<nav class="crumb"><a href="#/">السيرة</a><span class="sep">›</span>'+
+   '<a href="#/b/'+b.slug+'">الكتب</a><span class="sep">›</span><span>'+esc(b.ar)+'</span></nav>'+
+   '<section class="ph"><div class="k">'+esc(b.author)+'<span class="sep">•</span>ت'+AR(b.died)+'هـ</div>'+
+   '<h1>'+esc(b.ar)+'</h1><div class="m">'+esc(b.full)+'</div></section>'+
+   box(b)+
+   '<div class="acts"><a class="act" href="#/b/'+b.slug+'/r/0/0">اقرأ من أوّله</a>'+
+   '<a class="act" href="#/">خطّ الأحداث ←</a></div>'+
+   '<div class="sh"><h2>الأبواب</h2><span class="cnt" id="tn"></span><span class="ln"></span></div>'+
+   '<div id="toc"></div>'+FOOT;
+  wire(b); foot(); scrollTo(0,0);
+  const toc=await sharhToc(b.slug);
+  document.getElementById('tn').innerHTML='<bdi>'+AR(toc.length)+'</bdi>';
+  document.getElementById('toc').innerHTML='<div class="tiles">'+toc.map(t=>
+    '<a class="tile wrap" href="#/b/'+b.slug+'/r/'+t[1]+'/'+t[2]+'"><span class="n">ج'+AR(t[3])+'</span>'+
+    '<span class="t"><b>'+esc(t[0])+'</b><span>ج'+AR(t[3])+' ص'+AR(t[4])+'</span></span></a>').join('')+'</div>';
+}
+async function vSearch(b,q){
+  sideBooks(b.slug);
+  app().innerHTML='<nav class="crumb"><a href="#/">السيرة</a><span class="sep">›</span>'+
+   '<a href="#/b/'+b.slug+'">'+esc(b.ar)+'</a><span class="sep">›</span><span>بحث</span></nav>'+
+   '<section class="ph"><div class="k">بحث في '+esc(b.ar)+'</div><h1>«'+esc(q)+'»</h1></section>'+
+   box(b,q)+'<div id="res"></div>'+FOOT;
+  wire(b); foot(); scrollTo(0,0);
+  const res=document.getElementById('res');
+  res.innerHTML='<div class="sstat"><span class="spin"></span><span>يبحث…</span><span class="bar"><i style="width:8%"></i></span></div>';
+  try{
+    const hits=await sharhFind(b.slug,q,{limit:40,onprog:(d,t)=>{
+      const bar=res.querySelector('.bar i'); if(bar)bar.style.width=Math.round(8+d/t*92)+'%';}});
+    if(!hits.length){ res.innerHTML='<div class="pane msg">لا مواضع لـ«'+esc(q)+'» في '+esc(b.ar)+'.</div>'; return; }
+    res.innerHTML='<div class="sstat"><bdi>'+AR(hits.length)+' موضعًا</bdi>'+(hits.length>=40?' (أول ٤٠)':'')+
+      '<span class="sep">•</span><span>مع دليل كل موضع</span></div>'+
+      sharhRank(hits,q,null).map(h=>siraCard(b.slug,h,q)).join('');
+  }catch(e){ failed(res,e); }
+}
+/* بطاقة الموضع نفسها المستعملة في الشروح، ورابطُها إلى قارئ السيرة */
+function siraCard(slug,h,q){
+  return sharhCard(slug,h,q,null,{open:false})
+    .replace(/<\/div>$/,'<a class="evgo" href="#/b/'+slug+'/r/'+h.c+'/'+h.i+'">اقرأ الموضع في الكتاب وما حوله ←</a></div>');
 }
 
 /* ── الخطّ: تُقرأ السيرة كلُّها في دقائق، ولكلّ حدثٍ ما قام عليه ── */
@@ -50,6 +132,9 @@ function vLine(){
    '<div class="note" style="margin-bottom:1.4rem">لسنا نروي السيرة، بل نعرض ما قام عليه كلُّ حدثٍ '+
    'من المصادر. مع كلّ حدثٍ شريطٌ يبيّن أفي القرآن هو، أم في كتب الحديث، أم في كتب السيرة وحدها '+
    '— ولكلّ نصٍّ موضعُه ليُراجَع. المنصة تنقل ولا ترجّح.</div>'+
+   '<div class="acts" style="margin-bottom:1.4rem">'+BK.map(b=>
+     '<a class="act" href="#/b/'+b.slug+'">ابحث في '+esc(b.ar)+' ←</a>').join('')+
+   '<a class="act" href="#/كتب">كل كتب السيرة</a></div>'+
    '<ol class="line">'+EV.map(e=>
      '<li class="lev"><a href="#/'+e.id+'">'+
        '<span class="ldot"></span>'+
@@ -155,19 +240,23 @@ function wireMore(root){
 }
 
 /* ── قراءة الموضع من كتاب السيرة، وما يليه ليقرأ متّصلًا ── */
+/* القارئ واحد، يُدخَل إليه من حدثٍ أو من الكتاب مباشرةً */
 async function vRead(e,b,ci,pi){
-  sideLine(e.id);
+  const home=e?'#/'+e.id:'#/b/'+b.slug;
+  e?sideLine(e.id):sideBooks(b.slug);
   app().innerHTML='<nav class="crumb"><a href="#/">السيرة</a><span class="sep">›</span>'+
-   '<a href="#/'+e.id+'">'+esc(e.ar)+'</a><span class="sep">›</span><span>'+esc(b.ar)+'</span></nav>'+
-   '<section class="ph" id="ph"></section><div id="body"></div>'+FOOT;
+   '<a href="'+home+'">'+esc(e?e.ar:b.ar)+'</a><span class="sep">›</span><span>قراءة</span></nav>'+
+   '<section class="ph" id="ph"></section>'+(e?'':box(b))+'<div id="body"></div>'+FOOT;
+  if(!e)wire(b);
   foot(); loading(document.getElementById('body'),'جارٍ فتح الموضع…');
   try{
     const rows=await api.local('sira/'+b.slug+'/c'+ci+'.json');
     const at=Math.min(Math.max(0,pi),rows.length-1), cur=rows[at];
     document.getElementById('ph').innerHTML='<div class="k">'+esc(b.ar)+'<span class="sep">•</span>'+esc(b.author)+'</div>'+
-      '<h1>الجزء '+AR(cur[1])+'، صفحة '+AR(cur[2])+'</h1><div class="m">'+esc(e.ar)+'</div>';
-    const nav=()=>{const pv=at>0?'#/'+e.id+'/r/'+b.slug+'/'+ci+'/'+(at-1):(ci>0?'#/'+e.id+'/r/'+b.slug+'/'+(ci-1)+'/999999':null);
-      const nx=at<rows.length-1?'#/'+e.id+'/r/'+b.slug+'/'+ci+'/'+(at+1):(ci<b.chunks-1?'#/'+e.id+'/r/'+b.slug+'/'+(ci+1)+'/0':null);
+      '<h1>الجزء '+AR(cur[1])+'، صفحة '+AR(cur[2])+'</h1><div class="m">'+esc(e?e.ar:b.full)+'</div>';
+    const base=e?'#/'+e.id+'/r/'+b.slug:'#/b/'+b.slug+'/r';
+    const nav=()=>{const pv=at>0?base+'/'+ci+'/'+(at-1):(ci>0?base+'/'+(ci-1)+'/999999':null);
+      const nx=at<rows.length-1?base+'/'+ci+'/'+(at+1):(ci<b.chunks-1?base+'/'+(ci+1)+'/0':null);
       return '<div class="pager">'+(pv?'<a href="'+pv+'">‹ السابق</a>':'<span class="off">‹ السابق</span>')+
       '<span class="mid"><bdi>ج'+AR(cur[1])+' ص'+AR(cur[2])+'</bdi></span>'+
       (nx?'<a href="'+nx+'">التالي ›</a>':'<span class="off">التالي ›</span>')+'</div>';};
@@ -178,7 +267,8 @@ async function vRead(e,b,ci,pi){
          '<p class="para'+(k===0?' here':'')+'">'+esc(r[0])+'</p>')).join('')+'</div>'+
       '<div class="note">'+esc(b.full)+'، ج'+AR(cur[1])+' ص'+AR(cur[2])+'. النصّ كما ورد في المصدر، '+
       'وهو كتاب أخبارٍ لا كتابُ حديثٍ على شرط الصحيح.</div>'+nav()+
-      '<div class="acts"><a class="act" href="#/'+e.id+'">عُد إلى '+esc(e.ar)+' ←</a></div>';
+      '<div class="acts"><a class="act" href="'+home+'">عُد إلى '+esc(e?e.ar:b.ar)+' ←</a>'+
+      (e?'<a class="act" href="#/b/'+b.slug+'">تصفَّح '+esc(b.ar)+'</a>':'')+'</div>';
     scrollTo(0,0);
   }catch(err){ failed(document.getElementById('body'),err); }
 }
