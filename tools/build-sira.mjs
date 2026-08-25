@@ -45,7 +45,7 @@ function anchor(a, ev) {
   const t = toc[a.b];
   if (!t) { problems.push(`${ev}: كتاب مجهول «${a.b}»`); return null; }
   const q = norm(a.q);
-  const hit = t.find((x) => norm(x[0]).includes(q));
+  const hit = t.find((x) => norm(x[0]) === q) || t.find((x) => norm(x[0]).includes(q));
   if (!hit) { problems.push(`${ev}: لم يوجد بابٌ عنوانه «${a.q}» في ${meta[a.b].ar}`); return null; }
   return { b: a.b, ar: meta[a.b].ar, t: hit[0], c: hit[1], i: hit[2], v: hit[3], p: hit[4] };
 }
@@ -105,8 +105,70 @@ function hadiths(ev) {
   return out;
 }
 
+/* ── دمجُ المستخرَج بالمراجَع ──
+ * المطابقة بالاسم فشلت: «صلح الحديبية» لا يطابق «غزوة الحديبية»، وتوسيعُها
+ * يخلط «بدر الكبرى» بـ«بدر الأولى». فالمطابقة بالموضع: إن اشترك الصفّان في
+ * عنوان بابٍ واحدٍ من الكتاب فهما حدثٌ واحد — وهذا يقينٌ لا ظنّ.
+ */
+const derived = fs.existsSync(path.join(ROOT, "tools", "sira-derived.json"))
+  ? rd(path.join(ROOT, "tools", "sira-derived.json")) : [];
+
+const headOf = (a) => { const t = toc[a.b]; if (!t) return null;
+  const q = norm(a.q); const h = t.find((x) => norm(x[0]).includes(q));
+  return h ? a.b + "|" + h[0] : null; };
+
+const handHeads = new Map();                 // عنوان → معرّف الحدث المراجَع
+for (const h of spec.events)
+  for (const a of h.anchor || []) { const k = headOf(a); if (k) handHeads.set(k, h.id); }
+
+const merged = [];
+for (const d of derived) {
+  let hit = null;
+  for (const a of d.anchor) { const k = a.b + "|" + a.q; if (handHeads.has(k)) { hit = handHeads.get(k); break; } }
+  if (hit) { d.handId = hit; continue; }     // المراجَع أولى، وأغنى تهيئةً
+  /* لفظُ الوصل لا يُقبل إلا بكلمتين مميِّزتين متّصلتين أو كلمةٍ طويلة نادرة،
+     وإلا تُرك الحدث بلا وصلٍ وظهر بطبقة السيرة وحدها. الظنُّ لا يُوصَل به. */
+  const k = d.keys || [];
+  let ok = k.length >= 2 ? [k.slice(0, 3).join(" ")] : [];
+  let bad = [];
+  /* رقعةٌ مفحوصةٌ بيدٍ لحدثٍ لم يصلح له لفظٌ آليّ */
+  for (const key of Object.keys(spec._رقع || {})) {
+    if (key.startsWith("_")) continue;
+    if (d.ar.includes(key)) { const r = spec._رقع[key]; ok = r.ok; bad = r.bad || []; break; }
+  }
+  merged.push({ id: "d" + d.ord, ar: d.ar, y: d.y, ybound: d.ybound,
+    when: d.y != null ? (d.month ? d.month + " " + AR_Y(d.y) : AR_Y(d.y))
+        : (d.ybound ? "بين " + AR_Y(d.ybound[0]) + " و" + AR_Y(d.ybound[1]) : ""),
+    whenFrom: d.y != null ? d.yfrom : (d.ybound ? "ترتيب" : null),
+    place: "", anchor: d.anchor.map((a) => ({ b: a.b, q: a.q })),
+    quran: [], ok, bad, secs: ok.length ? "مغازي" : "" });
+}
+function AR_Y(y) { return y > 0 ? "سنة " + y + "هـ" : "قبل الهجرة"; }
+
+/* الترتيب: المراجَع في موضعه من ترتيب المصدر إن طابق، وإلا بسنته */
+const spine = [];
+for (const h of spec.events) if (h.y < 1) spine.push(h);
+const byOrd = derived.slice().sort((a, b) => a.ord - b.ord);
+for (const d of byOrd) {
+  if (d.handId) { const h = spec.events.find((x) => x.id === d.handId);
+    if (h && !spine.includes(h)) spine.push(h);
+    continue; }
+  const m = merged.find((x) => x.id === "d" + d.ord);
+  if (m) spine.push(m);
+}
+for (const h of spec.events) if (!spine.includes(h)) {
+  /* مراجَعٌ لم يطابق موضعًا: يوضع بسنته بين ما حولها */
+  let at = spine.length;
+  for (let i = 0; i < spine.length; i++) {
+    const y = spine[i].y != null ? spine[i].y : (spine[i].ybound ? spine[i].ybound[0] : null);
+    if (y != null && y > h.y) { at = i; break; }
+  }
+  spine.splice(at, 0, h);
+}
+console.log(`الخطّ: ${spine.length} حدثًا (${spec.events.length} مراجَعًا + ${merged.length} مستخرَجًا)\n`);
+
 const events = [];
-for (const ev of spec.events) {
+for (const ev of spine) {
   const an = (ev.anchor || []).map((a) => anchor(a, ev.id)).filter(Boolean);
   const qs = (ev.quran || []).map((q) => {
     const vs = verses(q.k);
@@ -116,7 +178,8 @@ for (const ev of spec.events) {
   const hs = hadiths(ev);
   /* شريط التوثيق: ما قام عليه الحدث من طبقات المصادر */
   const tier = { q: qs.length > 0, h: hs.length > 0, s: an.length > 0 };
-  events.push({ id: ev.id, ar: ev.ar, y: ev.y, when: ev.when, place: ev.place,
+  events.push({ id: ev.id, ar: ev.ar, y: ev.y, when: ev.when || "", place: ev.place || "",
+    whenFrom: ev.whenFrom || null, ybound: ev.ybound || null,
     tier, quran: qs, hadith: hs, anchor: an, nh: hs.length });
   const mark = (b) => (b ? "●" : "○");
   console.log(`${mark(tier.q)}${mark(tier.h)}${mark(tier.s)}  ${ev.ar.padEnd(24)} ` +

@@ -660,3 +660,5 @@ a.scard:hover{border-color:var(--acc);background:var(--surf2);transform:translat
   .tw{font-size:.7rem}
   .aya{font-size:1.2rem;line-height:2.05}
 }
+/* تاريخٌ محصورٌ بالترتيب لا منصوصٌ في المصدر — يُميَّز فلا يُساوى بالمنصوص */
+.lwhen.soft{color:var(--faint);font-weight:500}

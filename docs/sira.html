@@ -44,7 +44,7 @@ function route(){
 }
 function sideLine(active){
   sidebar(side(),{title:'خطّ الأحداث',active,
-    items:EV.map(e=>({key:e.id,href:'#/'+e.id,label:e.ar,side:siraYear(e.y)}))
+    items:EV.map(e=>({key:e.id,href:'#/'+e.id,label:e.ar,side:siraYear(e.y)||'—'}))
       .concat(BK.map(b=>({key:'b:'+b.slug,href:'#/b/'+b.slug,label:b.ar,side:'كتاب'})))});
 }
 function sideBooks(active){
@@ -140,9 +140,8 @@ function vLine(){
        '<span class="ldot"></span>'+
        '<span class="lbod">'+
          '<span class="lhd"><b>'+esc(e.ar)+'</b>'+
-         '<span class="lwhen"><bdi>'+esc(e.when)+'</bdi></span></span>'+
-         '<span class="lmeta">'+esc(e.place)+
-           (siraAgeAr(e.y)?'<span class="sep">•</span>'+siraAgeAr(e.y):'')+'</span>'+
+         (e.when?'<span class="lwhen'+(e.whenFrom==='ترتيب'?' soft':'')+'"><bdi>'+esc(e.when)+'</bdi></span>':'')+'</span>'+
+         '<span class="lmeta">'+[esc(e.place),siraAgeAr(e.y)].filter(Boolean).join('<span class="sep">•</span>')+'</span>'+
          siraTier(e.tier)+
        '</span></a></li>').join('')+'</ol>'+
    '<div class="note">«ابن نحو كذا» حسابٌ على المشهور: بُعث على رأس الأربعين، وهاجر بعد ثلاث '+
@@ -156,13 +155,16 @@ function vEvent(e){
   const i=EV.indexOf(e), pv=EV[i-1], nx=EV[i+1];
   const pg='<div class="pager">'+
     (pv?'<a href="#/'+pv.id+'">‹ '+esc(pv.ar)+'</a>':'<span class="off">‹ السابق</span>')+
-    '<span class="mid"><bdi>'+esc(e.when)+'</bdi></span>'+
+    '<span class="mid"><bdi>'+esc(e.when||e.ar)+'</bdi></span>'+
     (nx?'<a href="#/'+nx.id+'">'+esc(nx.ar)+' ›</a>':'<span class="off">التالي ›</span>')+'</div>';
   app().innerHTML=
    '<nav class="crumb"><a href="#/">السيرة</a><span class="sep">›</span><span>'+esc(e.ar)+'</span></nav>'+pg+
-   '<section class="ph"><div class="k">'+esc(e.place)+'<span class="sep">•</span>'+esc(e.when)+'</div>'+
+   '<section class="ph"><div class="k">'+
+     ([esc(e.place),esc(e.when)].filter(Boolean).join('<span class="sep">•</span>')||'من خطّ الأحداث')+'</div>'+
    '<h1>'+esc(e.ar)+'</h1>'+
    (siraAgeAr(e.y)?'<div class="m">'+siraAgeAr(e.y)+'</div>':'')+'</section>'+
+   (e.whenFrom==='ترتيب'?'<div class="note" style="margin-bottom:1rem">لم يُنصّ تاريخُ هذا الحدث في '+
+     'عنوانه، وإنما حُصر بما قبله وما بعده من ترتيب الواقدي — وترتيبُه على التاريخ.</div>':'')+
    siraTier(e.tier,{full:true})+
    '<div id="body"></div>'+pg+FOOT;
   foot(); scrollTo(0,0);
