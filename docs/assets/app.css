@@ -602,3 +602,61 @@ a.scard:hover{border-color:var(--acc);background:var(--surf2);transform:translat
 .rule.no .mk{background:var(--badsoft);color:var(--bad)}
 .rule b{display:block;color:var(--ink);font-size:1.02rem}
 .rule span{color:var(--mut);font-size:.93rem;line-height:1.85}
+
+/* ═══ السيرة ═══
+   الخطّ يُقرأ بالمسح لا بالتوقّف: عمودٌ واحد، ولكلّ حدثٍ سطرٌ واسمٌ ووقتٌ
+   وشريطُ توثيقٍ يُقرأ بلمحة. والشريط هو الفكرة كلَّها: أنّ ما تعرفه من
+   السيرة لا يقوم كلُّه على أرضٍ واحدة. */
+.line{list-style:none;margin:0 0 1.6rem;padding:0;position:relative}
+.line::before{content:"";position:absolute;inset-block:1.1rem;inset-inline-start:.52rem;
+  width:1px;background:linear-gradient(180deg,transparent,var(--hair) 8%,var(--hair) 92%,transparent)}
+.lev{position:relative}
+.lev>a{display:flex;gap:1rem;align-items:flex-start;padding:.95rem 0 .95rem .4rem;
+  border-bottom:1px solid var(--hair)}
+.lev:last-child>a{border-bottom:0}
+.lev>a:hover .lhd b{color:var(--acc)}
+.ldot{flex:0 0 auto;width:1.05rem;height:1.05rem;margin-top:.42rem;border-radius:50%;
+  background:var(--bg);box-shadow:inset 0 0 0 2px var(--hair2);transition:.16s;z-index:1}
+.lev>a:hover .ldot{box-shadow:inset 0 0 0 2px var(--acc),0 0 12px var(--acc-glow)}
+.lbod{min-width:0;flex:1}
+.lhd{display:flex;gap:.7rem;align-items:baseline;flex-wrap:wrap}
+.lhd b{font-size:1.12rem;font-weight:700;color:var(--ink);transition:.16s}
+.lwhen{font-size:.8rem;color:var(--acc);font-weight:600}
+.lmeta{display:block;font-size:.82rem;color:var(--faint);margin:.22rem 0 .5rem}
+
+/* شريط التوثيق */
+.tier{display:flex;gap:.5rem;flex-wrap:wrap}
+.tw{display:inline-flex;align-items:center;gap:.34rem;font-size:.75rem;color:var(--faint)}
+.tw i{width:.5rem;height:.5rem;border-radius:50%;background:transparent;
+  box-shadow:inset 0 0 0 1px var(--hair2)}
+.tw.on{color:var(--mut)}
+.tw.on i{background:var(--acc);box-shadow:0 0 8px var(--acc-glow)}
+.tier-full{gap:.6rem;margin:0 0 1.6rem;padding:.85rem 1.1rem;border:1px solid var(--hair);
+  border-radius:var(--r);background:var(--panel)}
+.tier-full .tw{font-size:.85rem}
+.tier-full .tw i{width:.62rem;height:.62rem}
+
+/* الآيات داخل بطاقة الدليل */
+.qv{display:grid;gap:.5rem}
+.aya{margin:0;font-size:1.34rem;line-height:2.15}
+.aya .an{display:inline-grid;place-items:center;min-width:1.5rem;height:1.5rem;margin-inline-end:.5rem;
+  border-radius:50%;background:var(--accsoft);color:var(--accink);font-family:"Noto Naskh Arabic",serif;
+  font-size:.7rem;font-weight:700;vertical-align:.15em}
+
+/* عدد ما وُصل من كل كتاب */
+.hbooks{display:flex;gap:.45rem;flex-wrap:wrap;margin:0 0 .9rem}
+.hb{display:inline-flex;align-items:center;gap:.35rem;font-size:.78rem;color:var(--mut);
+  padding:.28rem .7rem;border:1px solid var(--hair);border-radius:999px;background:var(--panel)}
+.hb b{color:var(--acc);font-variant-numeric:tabular-nums}
+.hcard .cx{display:block;font-size:.82rem;line-height:1.85;color:var(--faint);margin-top:.3rem}
+.hcard mark{background:color-mix(in srgb,var(--acc) 22%,transparent);color:var(--ink2);
+  border-radius:3px;padding:0 .15em}
+.hcard.hid{display:none}
+.moreb{margin:.2rem 0 1rem}
+
+@media(max-width:52rem){
+  .lhd b{font-size:1.02rem}
+  .tier{gap:.4rem}
+  .tw{font-size:.7rem}
+  .aya{font-size:1.2rem;line-height:2.05}
+}

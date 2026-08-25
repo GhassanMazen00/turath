@@ -1,0 +1,185 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap"></noscript>
+<link rel="stylesheet" href="assets/app.css">
+<script>(function(){var t=localStorage.getItem("turath-theme");if(t)document.documentElement.setAttribute("data-theme",t);})();</script>
+<title>السيرة · تُراث</title></head><body>
+<header class="nav"><div class="navin">
+  <a class="brand" href="index.html"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2.2l2.3 1.9 3-.3.8 2.9 2.6 1.6-1.2 2.8 1.2 2.8-2.6 1.6-.8 2.9-3-.3L12 21.8l-2.3-1.9-3 .3-.8-2.9L3.3 15.7l1.2-2.8-1.2-2.8 2.6-1.6.8-2.9 3 .3z" stroke="currentColor" stroke-width="1.2"/><circle cx="12" cy="12" r="3.6" stroke="currentColor" stroke-width="1.2"/></svg>تُراث</a>
+  <nav class="navl"><a href="tafsir.html">التفسير</a><a href="hadith.html">الحديث</a><a href="rijal.html">الرواة</a><a href="sharh.html">الشروح</a><a href="sira.html" class="on">السيرة</a>
+  <span id="mnw"></span><span id="tg"></span></nav>
+</div></header>
+<div class="shell"><aside class="side" id="side"></aside><main class="main" id="app"></main></div>
+<script src="assets/app.js"></script>
+<script>
+theme(); document.getElementById('tg').innerHTML=TGL; document.getElementById('mnw').innerHTML=MENU;
+mountMenu(document.getElementById('mn'),document.getElementById('side'));
+const app=()=>document.getElementById('app'), side=()=>document.getElementById('side');
+const FOOT='<footer class="foot" id="foot"></footer>';
+function foot(){const f=document.getElementById('foot'); if(f)mountFooter(f);}
+let EV=[],BK=[];
+(async()=>{ try{ await searchInit(); EV=await siraEvents(); BK=await siraBooks(); }
+  catch(e){ return failed(app(),e); }
+  addEventListener('hashchange',route); route(); })();
+
+function route(){
+  const h=decodeURIComponent(location.hash.replace(/^#\/?/,''));
+  if(!h) return vLine();
+  const p=h.split('/');
+  const e=EV.find(x=>x.id===p[0]);
+  if(!e) return vLine();
+  if(p[1]==='r'){ const b=BK.find(x=>x.slug===p[2]); if(b) return vRead(e,b,+p[3]||0,+p[4]||0); }
+  return vEvent(e);
+}
+function sideLine(active){
+  sidebar(side(),{title:'خطّ الأحداث',active,
+    items:EV.map(e=>({key:e.id,href:'#/'+e.id,label:e.ar,side:siraYear(e.y)}))});
+}
+
+/* ── الخطّ: تُقرأ السيرة كلُّها في دقائق، ولكلّ حدثٍ ما قام عليه ── */
+function vLine(){
+  sideLine();
+  const n=EV.reduce((a,e)=>a+e.nh,0);
+  app().innerHTML='<nav class="crumb"><span>السيرة</span></nav>'+
+   '<section class="ph"><div class="k">خطّ الأحداث</div><h1>السيرة النبوية</h1>'+
+   '<div class="m"><bdi>'+AR(EV.length)+' حدثًا</bdi><span class="sep">•</span>'+
+   '<bdi>'+AR(n)+' حديثًا موصولًا</bdi><span class="sep">•</span>كتابا سيرة</div></section>'+
+   '<div class="note" style="margin-bottom:1.4rem">لسنا نروي السيرة، بل نعرض ما قام عليه كلُّ حدثٍ '+
+   'من المصادر. مع كلّ حدثٍ شريطٌ يبيّن أفي القرآن هو، أم في كتب الحديث، أم في كتب السيرة وحدها '+
+   '— ولكلّ نصٍّ موضعُه ليُراجَع. المنصة تنقل ولا ترجّح.</div>'+
+   '<ol class="line">'+EV.map(e=>
+     '<li class="lev"><a href="#/'+e.id+'">'+
+       '<span class="ldot"></span>'+
+       '<span class="lbod">'+
+         '<span class="lhd"><b>'+esc(e.ar)+'</b>'+
+         '<span class="lwhen"><bdi>'+esc(e.when)+'</bdi></span></span>'+
+         '<span class="lmeta">'+esc(e.place)+
+           (siraAgeAr(e.y)?'<span class="sep">•</span>'+siraAgeAr(e.y):'')+'</span>'+
+         siraTier(e.tier)+
+       '</span></a></li>').join('')+'</ol>'+
+   '<div class="note">«ابن نحو كذا» حسابٌ على المشهور: بُعث على رأس الأربعين، وهاجر بعد ثلاث '+
+   'عشرة من مبعثه. وهو تقريبٌ يُراجَع في مواضعه من الكتب.</div>'+FOOT;
+  foot(); scrollTo(0,0);
+}
+
+/* ── الحدث: الطبقات مرتَّبةً بقوّتها ── */
+function vEvent(e){
+  sideLine(e.id);
+  const i=EV.indexOf(e), pv=EV[i-1], nx=EV[i+1];
+  const pg='<div class="pager">'+
+    (pv?'<a href="#/'+pv.id+'">‹ '+esc(pv.ar)+'</a>':'<span class="off">‹ السابق</span>')+
+    '<span class="mid"><bdi>'+esc(e.when)+'</bdi></span>'+
+    (nx?'<a href="#/'+nx.id+'">'+esc(nx.ar)+' ›</a>':'<span class="off">التالي ›</span>')+'</div>';
+  app().innerHTML=
+   '<nav class="crumb"><a href="#/">السيرة</a><span class="sep">›</span><span>'+esc(e.ar)+'</span></nav>'+pg+
+   '<section class="ph"><div class="k">'+esc(e.place)+'<span class="sep">•</span>'+esc(e.when)+'</div>'+
+   '<h1>'+esc(e.ar)+'</h1>'+
+   (siraAgeAr(e.y)?'<div class="m">'+siraAgeAr(e.y)+'</div>':'')+'</section>'+
+   siraTier(e.tier,{full:true})+
+   '<div id="body"></div>'+pg+FOOT;
+  foot(); scrollTo(0,0);
+  const b=document.getElementById('body');
+  b.innerHTML=secQuran(e)+secHadith(e)+secSira(e);
+  wireMore(b);
+}
+
+const SH2=(t,n)=>'<div class="sh"><h2>'+esc(t)+'</h2>'+(n!=null?'<span class="cnt"><bdi>'+AR(n)+'</bdi></span>':'')+'<span class="ln"></span></div>';
+
+/* ما نزل في الحدث من القرآن — أعلى الطبقات ثبوتًا */
+function secQuran(e){
+  if(!e.quran.length) return SH2('ما نزل فيه من القرآن',0)+
+    '<div class="pane msg">لم نصِل بهذا الحدث آيةً بنصٍّ من مصادرنا. '+
+    'وليس هذا نفيًا — إنّما لم يقم عندنا دليلٌ نعرضه.</div>';
+  const n=e.quran.reduce((a,g)=>a+g.vs.length,0);
+  return SH2('ما نزل فيه من القرآن',n)+e.quran.map(g=>{
+    const s=g.vs[0].s, v1=g.vs[0].v, v2=g.vs[g.vs.length-1].v;
+    return '<div class="ev ev-sure">'+
+      '<div class="evh"><span class="evb">القرآن</span>'+
+      '<span class="evp">'+esc(g.vs[0].sar)+' <bdi>'+AR(v1)+(v2>v1?'–'+AR(v2):'')+'</bdi></span></div>'+
+      '<ul class="evw"><li class="ok">'+esc(g.why)+
+        (g.src?' <span class="sep">•</span> '+esc(g.src.ar)+' <bdi>ج'+AR(g.src.v)+' ص'+AR(g.src.p)+'</bdi>':'')+'</li></ul>'+
+      '<div class="evt amiri qv">'+g.vs.map(x=>
+        '<p class="aya"><span class="an"><bdi>'+AR(x.v)+'</bdi></span>'+esc(x.t)+'</p>').join('')+'</div>'+
+      '<a class="evgo" href="tafsir.html#/'+s+'/ar-tafsir-ibn-kathir/'+v1+'">اقرأ تفسيرها ←</a>'+
+    '</div>';}).join('');
+}
+
+/* ما رُوي فيه من كتب الحديث — بموضع الذكر مُبرَزًا ودرجته من صفحته */
+function secHadith(e){
+  if(!e.nh) return SH2('ما رُوي فيه من كتب الحديث',0)+
+    '<div class="pane msg">لم يثبت عندنا وصلُ حديثٍ بهذا الحدث بالمفتاحين معًا.</div>';
+  const B=SEARCH.books||{};
+  const per={}; e.hadith.forEach(h=>(per[h.b]=per[h.b]||[]).push(h));
+  const first=12;
+  return SH2('ما رُوي فيه من كتب الحديث',e.nh)+
+    '<p class="evlead">وُصل كلُّ حديثٍ هنا بمفتاحين يقدّمهما المصنِّف نفسه: أن يكون في '+
+    '<b>كتاب المغازي والسير</b> من كتابه، وأن يَرِد فيه اسمُ الحدث. وموضعُ الذكر مُبرَزٌ '+
+    'لتراه، ودرجتُه على صفحة الحديث.</p>'+
+    '<div class="hbooks">'+Object.keys(per).map(k=>
+      '<span class="hb">'+esc((B[k]||{}).ar||k)+'<b><bdi>'+AR(per[k].length)+'</bdi></b></span>').join('')+'</div>'+
+    '<div class="tiles more" data-first="'+first+'">'+e.hadith.map((h,j)=>{
+      const bk=(B[h.b]||{}).ar||h.b;
+      return '<a class="tile wrap hcard'+(j>=first?' hid':'')+'" href="hadith.html#/'+h.b+'/h/'+h.n+'">'+
+        '<span class="n">'+AR(h.n)+'</span><span class="t"><b>'+esc(bk)+'</b>'+
+        '<span class="cx">'+markWord(h.cx,h.q)+'</span></span></a>';}).join('')+'</div>'+
+    (e.nh>first?'<button class="act moreb">اعرض بقيّة المواضع (<bdi>'+AR(e.nh-first)+'</bdi>)</button>':'')+
+    '<div class="note">ما تراه في البطاقة موضعُ الذكر من فهرس البحث، مُجرَّدًا من الشكل للمطابقة؛ '+
+    'والنصّ كما رُوي ودرجتُه على صفحة الحديث. وقد يفوت هذا الوصلَ ما رُوي في الحدث بغير اسمه، '+
+    'أو في غير كتب المغازي من المصنَّف.</div>';
+}
+
+/* ما ساقه أهل السيرة — أخبارٌ لا أحاديثُ على شرط الصحيح، ويُقال ذلك */
+function secSira(e){
+  return SH2('ما ساقه أهل السيرة',e.anchor.length)+
+    '<p class="evlead">هذه كتبُ أخبارٍ ومغازٍ، لا كتبُ حديثٍ على شرط الصحيح: تُساق فيها '+
+    'الرواية مرسلةً وبغير إسنادٍ أحيانًا. تُقرأ على أنّها كذلك.</p>'+
+    '<div class="tiles">'+e.anchor.map(a=>
+      '<a class="tile wrap" href="#/'+e.id+'/r/'+a.b+'/'+a.c+'/'+a.i+'">'+
+      '<span class="n">ج'+AR(a.v)+'</span><span class="t"><b>'+esc(a.t)+'</b>'+
+      '<span>'+esc(a.ar)+' <span class="sep">•</span> ج'+AR(a.v)+' ص'+AR(a.p)+'</span></span></a>').join('')+
+    '</div>';
+}
+
+/* إبراز موضع الذكر في السياق — على النصّ المطبَّع كما هو مخزَّن */
+function markWord(cx,q){
+  const at=cx.indexOf(q);
+  if(at<0) return esc(cx);
+  return '…'+esc(cx.slice(0,at))+'<mark>'+esc(q)+'</mark>'+esc(cx.slice(at+q.length))+'…';
+}
+function wireMore(root){
+  const b=root.querySelector('.moreb'); if(!b)return;
+  b.onclick=()=>{ root.querySelectorAll('.hcard.hid').forEach(x=>x.classList.remove('hid')); b.remove(); };
+}
+
+/* ── قراءة الموضع من كتاب السيرة، وما يليه ليقرأ متّصلًا ── */
+async function vRead(e,b,ci,pi){
+  sideLine(e.id);
+  app().innerHTML='<nav class="crumb"><a href="#/">السيرة</a><span class="sep">›</span>'+
+   '<a href="#/'+e.id+'">'+esc(e.ar)+'</a><span class="sep">›</span><span>'+esc(b.ar)+'</span></nav>'+
+   '<section class="ph" id="ph"></section><div id="body"></div>'+FOOT;
+  foot(); loading(document.getElementById('body'),'جارٍ فتح الموضع…');
+  try{
+    const rows=await api.local('sira/'+b.slug+'/c'+ci+'.json');
+    const at=Math.min(Math.max(0,pi),rows.length-1), cur=rows[at];
+    document.getElementById('ph').innerHTML='<div class="k">'+esc(b.ar)+'<span class="sep">•</span>'+esc(b.author)+'</div>'+
+      '<h1>الجزء '+AR(cur[1])+'، صفحة '+AR(cur[2])+'</h1><div class="m">'+esc(e.ar)+'</div>';
+    const nav=()=>{const pv=at>0?'#/'+e.id+'/r/'+b.slug+'/'+ci+'/'+(at-1):(ci>0?'#/'+e.id+'/r/'+b.slug+'/'+(ci-1)+'/999999':null);
+      const nx=at<rows.length-1?'#/'+e.id+'/r/'+b.slug+'/'+ci+'/'+(at+1):(ci<b.chunks-1?'#/'+e.id+'/r/'+b.slug+'/'+(ci+1)+'/0':null);
+      return '<div class="pager">'+(pv?'<a href="'+pv+'">‹ السابق</a>':'<span class="off">‹ السابق</span>')+
+      '<span class="mid"><bdi>ج'+AR(cur[1])+' ص'+AR(cur[2])+'</bdi></span>'+
+      (nx?'<a href="'+nx+'">التالي ›</a>':'<span class="off">التالي ›</span>')+'</div>';};
+    const win=rows.slice(at,Math.min(rows.length,at+14));
+    document.getElementById('body').innerHTML=nav()+
+      '<div class="pane pad prose">'+win.map((r,k)=>
+        (r[3]?'<h3 class="shh">'+esc(r[0])+'</h3>':
+         '<p class="para'+(k===0?' here':'')+'">'+esc(r[0])+'</p>')).join('')+'</div>'+
+      '<div class="note">'+esc(b.full)+'، ج'+AR(cur[1])+' ص'+AR(cur[2])+'. النصّ كما ورد في المصدر، '+
+      'وهو كتاب أخبارٍ لا كتابُ حديثٍ على شرط الصحيح.</div>'+nav()+
+      '<div class="acts"><a class="act" href="#/'+e.id+'">عُد إلى '+esc(e.ar)+' ←</a></div>';
+    scrollTo(0,0);
+  }catch(err){ failed(document.getElementById('body'),err); }
+}
+</script></body></html>

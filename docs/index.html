@@ -9,7 +9,7 @@
 <title>$1</title></head><body>
 <header class="nav"><div class="navin">
   <a class="brand" href="index.html"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2.2l2.3 1.9 3-.3.8 2.9 2.6 1.6-1.2 2.8 1.2 2.8-2.6 1.6-.8 2.9-3-.3L12 21.8l-2.3-1.9-3 .3-.8-2.9L3.3 15.7l1.2-2.8-1.2-2.8 2.6-1.6.8-2.9 3 .3z" stroke="currentColor" stroke-width="1.2"/><circle cx="12" cy="12" r="3.6" stroke="currentColor" stroke-width="1.2"/></svg>تُراث</a>
-  <nav class="navl"><a href="tafsir.html">التفسير</a><a href="hadith.html">الحديث</a><a href="rijal.html">الرواة</a><a href="sharh.html">الشروح</a>
+  <nav class="navl"><a href="tafsir.html">التفسير</a><a href="hadith.html">الحديث</a><a href="rijal.html">الرواة</a><a href="sharh.html">الشروح</a><a href="sira.html">السيرة</a>
   <span id="mnw"></span><span id="tg"></span></nav>
 </div></header>
 <div class="home">
@@ -53,6 +53,14 @@
       <p>أربعة شروحٍ كاملة: فتح الباري لابن حجر، والمنهاج للنووي، وعون المعبود، وتحفة الأحوذي. تُقرأ كتبًا وتُبحث بألفاظها، ويُعرض كل موضعٍ بجزئه وصفحته المطبوعين.</p></div>
       <a class="more" href="sharh.html">كل الشروح ←</a></div>
     <div class="car" id="carSh"></div>
+  </section>
+
+  <section class="band band-tint" id="s-sira">
+    <div class="sect"><div class="l"><div class="k">خطّ الأحداث</div>
+      <h2>السيرة النبوية</h2>
+      <p>لسنا نروي السيرة، بل نعرض ما قام عليه كلُّ حدثٍ من المصادر: ما نزل فيه من القرآن، وما رُوي فيه من كتب الحديث بدرجاته، وما ساقه ابن هشام والواقدي بجزئه وصفحته. ومع كلّ حدثٍ شريطٌ يبيّن على أيّ الطبقات قام.</p></div>
+      <a class="more" href="sira.html">خطّ الأحداث ←</a></div>
+    <div class="car" id="carSr"></div>
   </section>
 
   <section class="band">
@@ -105,6 +113,7 @@ theme(); document.getElementById('tg').innerHTML=TGL; mountFooter(document.getEl
  mountSearch(document.getElementById('search'),{});
  const B=SEARCH.books,T=SEARCH.tafsirs,S=SEARCH.surahs;
  const SHB=await sharhBooks().catch(()=>[]);
+ const SRE=await siraEvents().catch(()=>[]);
  // اختصارات تنزل إلى الأقسام، وتحت كلٍّ منها ما فيه من عدد
  const th=Object.values(B).reduce((a,b)=>a+b.total,0);
  let rn=0; try{ rn=Object.keys(await rijalIndex()).length; }catch(e){}
@@ -114,6 +123,7 @@ theme(); document.getElementById('tg').innerHTML=TGL; mountFooter(document.getEl
    ['s-hadith','حديث',AR(th)+' حديثًا'],
    ['s-rijal','رواة',AR(rn)+' راويًا'],
    ['s-sharh','شرح الحديث',AR(SHB.length)+' شروح'],
+   ['s-sira','السيرة',AR(SRE.length)+' حدثًا'],
  ].map(([id,t,n])=>`<a class="jmp" href="#${id}"><b>${t}</b><span>${n}</span></a>`).join('');
  // النزول سلسًا مع ترك مسافةٍ للترويسة اللاصقة
  document.getElementById('jump').addEventListener('click',e=>{
@@ -124,6 +134,13 @@ theme(); document.getElementById('tg').innerHTML=TGL; mountFooter(document.getEl
    scrollTo({top:y,behavior:'smooth'});
    history.replaceState(null,'',a.getAttribute('href'));
  });
+ // شريط السيرة — أوّل ما يُعرض من كل حدثٍ شريطُ توثيقه
+ carousel(document.getElementById('carSr'),{slides:SRE.map(e=>
+   `<a class="scard" href="sira.html#/${e.id}"><div class="top"><span class="idx">${esc(e.when)}</span></div>
+     <h3>${esc(e.ar)}</h3><div class="by">${esc(e.place)}</div>
+     <p>${siraTier(e.tier)}</p>
+     <div class="go">افتح ←</div></a>`)});
+
  // شريط الحديث
  carousel(document.getElementById('carH'),{slides:Object.keys(B).map(k=>{const b=B[k];
    return `<a class="scard" href="hadith.html#/${k}"><div class="top"><span class="idx">كتاب</span></div>
