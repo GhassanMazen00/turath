@@ -899,6 +899,26 @@ function carousel(root,{slides,interval=4200}={}){
  * يقدّمهما المصدر نفسه — تصنيفُ المصنِّف (كتاب المغازي والسير) وورودُ
  * اسم الحدث في المتن — ويُعرض موضعُ الذكر مُبرَزًا مع كل حديث.
  */
+/* أسباب النزول: مفاتيحُها سورةٌ وآية، فتُقرأ بالمفتاح لا بالمطابقة */
+const AS={m:null};
+async function asbab(sura,aya){
+  if(!AS.m) AS.m=await api.local("asbab.json").catch(()=>({}));
+  return AS.m[sura+":"+aya]||[];
+}
+/* عرضُ سبب النزول — نصًّا كما ورد بجزئه وصفحته، ولا يُلخَّص */
+function asbabBlock(list){
+  if(!list||!list.length) return "";
+  return '<div class="sh"><h2>سبب نزولها</h2><span class="cnt"><bdi>'+AR(list.length)+
+    '</bdi></span><span class="ln"></span></div>'+
+    '<p class="evlead">من <b>أسباب النزول</b> للواحدي (ت٤٦٨هـ)، وُصل بالآية بمطابقة اللفظ '+
+    'الذي اقتبسه بنصّ المصحف. والنصّ كما ورد بجزئه وصفحته.</p>'+
+    list.map(x=>'<div class="ev ev-bab"><div class="evh"><span class="evb">أسباب النزول</span>'+
+      '<span class="evp"><bdi>ج'+AR(x.v)+' ص'+AR(x.p)+'</bdi></span></div>'+
+      '<div class="evt amiri" style="border-top:0;padding-top:0">'+paras(x.t)+'</div></div>').join("")+
+    '<div class="note">كتابُ أسبابِ نزولٍ يسوق الرواية بإسنادها، وفيه المرسلُ والضعيف. '+
+    'يُقرأ على أنّه كذلك، والمنصة تنقل ولا ترجّح.</div>';
+}
+
 const SR={ev:null};
 async function siraEvents(){ if(!SR.ev) SR.ev=await api.local("sira/events.json"); return SR.ev; }
 

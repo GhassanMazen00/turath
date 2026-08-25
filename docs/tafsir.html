@@ -103,9 +103,10 @@ async function vAyah(n,slug,a){
    '<div id="botpg"></div>'+FOOT;
   loading(document.getElementById('body'),'جارٍ الجلب…'); foot(); scrollTo(0,0);
   try{
-    const [av,tf]=await Promise.all([api.ayah(n,a),api.tafsir(slug,n,a)]);
+    const [av,tf,sb]=await Promise.all([api.ayah(n,a),api.tafsir(slug,n,a),asbab(n,a)]);
     document.getElementById('body').innerHTML=
       '<div class="pane ayah"><span class="tx">'+esc(av.text)+'<span class="an">'+AR(a)+'</span></span></div>'+
+      asbabBlock(sb)+
       '<div class="sh"><h2>'+esc(t.ar)+'</h2><span class="ln"></span></div>'+
       '<div class="pane pad prose">'+paras(tf.text)+'</div>';
     document.getElementById('botpg').innerHTML=pg();

@@ -171,6 +171,19 @@ function vEvent(e){
   const b=document.getElementById('body');
   b.innerHTML=secQuran(e)+secHadith(e)+secSira(e);
   wireMore(b);
+  /* سببُ نزول ما نزل في الحدث — يُلحق بآياته بعد رسمها */
+  (async()=>{
+    const keys=[];
+    for(const g of e.quran) for(const x of g.vs) keys.push([x.s,x.v]);
+    if(!keys.length)return;
+    const found=[];
+    for(const [s,v] of keys.slice(0,40)){
+      const r=await asbab(s,v);
+      for(const it of r) if(!found.some(f=>f.t===it.t)) found.push(it);
+    }
+    const host=b.querySelector('#asbab');
+    if(host&&found.length) host.innerHTML=asbabBlock(found);
+  })();
 }
 
 const SH2=(t,n)=>'<div class="sh"><h2>'+esc(t)+'</h2>'+(n!=null?'<span class="cnt"><bdi>'+AR(n)+'</bdi></span>':'')+'<span class="ln"></span></div>';
@@ -191,7 +204,7 @@ function secQuran(e){
       '<div class="evt amiri qv">'+g.vs.map(x=>
         '<p class="aya"><span class="an"><bdi>'+AR(x.v)+'</bdi></span>'+esc(x.t)+'</p>').join('')+'</div>'+
       '<a class="evgo" href="tafsir.html#/'+s+'/ar-tafsir-ibn-kathir/'+v1+'">اقرأ تفسيرها ←</a>'+
-    '</div>';}).join('');
+    '</div>';}).join('')+'<div id="asbab"></div>';
 }
 
 /* ما رُوي فيه من كتب الحديث — بموضع الذكر مُبرَزًا ودرجته من صفحته */
