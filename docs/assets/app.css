@@ -516,9 +516,25 @@ a.nm2:hover{border-color:var(--acc);color:var(--acc)}
 .mast .search{max-width:44rem;margin:2.2rem auto 0}
 .mast .chips{justify-content:center}
 /* اختصارات الأقسام تحت شريط البحث */
-.jump{display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem;margin:1.6rem auto 0;max-width:46rem}
-@media(max-width:40rem){.jump{grid-template-columns:repeat(2,1fr)}}
-.jmp{display:flex;flex-direction:column;align-items:center;gap:.2rem;padding:.95rem .6rem;
+/* اختصاراتُ الأقسام: الاسمُ والعددُ وحدهما لا يدلّان على ما في القسم،
+   فيُقال مع كلٍّ ما يجده القارئ فيه. وثلاثةُ أعمدةٍ لا أربعة ليتّسع السطر. */
+/* خمسُ بطاقاتٍ في ثلاثة أعمدة تُخلّف فراغًا في آخر السطر. فالشبكةُ ستّةُ
+   أعمدة: الثلاثُ الأُوَل يأخذ كلٌّ منها عمودين، والأخيرتان ثلاثةً ثلاثة —
+   فيمتلئ السطران. */
+.jump{display:grid;grid-template-columns:repeat(6,1fr);gap:.7rem;margin:1.7rem auto 0;max-width:62rem;text-align:start}
+.jmp{grid-column:span 2}
+.jmp:nth-child(4),.jmp:nth-child(5){grid-column:span 3}
+@media(max-width:64rem){
+  .jump{grid-template-columns:repeat(2,1fr)}
+  .jmp,.jmp:nth-child(4),.jmp:nth-child(5){grid-column:span 1}
+  .jmp:nth-child(5){grid-column:span 2}
+}
+@media(max-width:34rem){
+  .jump{grid-template-columns:1fr}
+  .jmp,.jmp:nth-child(4),.jmp:nth-child(5){grid-column:span 1}
+}
+.jmp{display:grid;grid-template-columns:auto 1fr;grid-template-areas:"i t" ". d";
+  gap:.15rem .7rem;padding:1rem 1.1rem;
   border-radius:var(--r2);position:relative;background:var(--panel);box-shadow:var(--sh);
   color:var(--ink);transition:.16s}
 .jmp::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;
@@ -528,8 +544,13 @@ a.nm2:hover{border-color:var(--acc);color:var(--acc)}
   mask-composite:exclude}
 .jmp:hover::after{background:var(--edgeHot)}
 .jmp:hover{box-shadow:var(--sh),0 0 22px -8px var(--acc-glow)}
-.jmp b{font-size:1.05rem;font-weight:700}
-.jmp span{font-size:.76rem;color:var(--faint);font-variant-numeric:tabular-nums}
+.jmp:hover .ji{color:var(--acc)}
+.ji{grid-area:i;width:1.45rem;height:1.45rem;color:var(--faint);transition:.16s;margin-top:.12rem}
+.jt{grid-area:t;display:flex;align-items:baseline;gap:.5rem;flex-wrap:wrap;min-width:0}
+.jmp b{font-size:1.02rem;font-weight:700;line-height:1.5}
+.jn{font-size:.74rem;color:var(--acc);font-weight:600;font-variant-numeric:tabular-nums;
+  padding:.1rem .5rem;border-radius:999px;background:var(--accsoft);white-space:nowrap}
+.jd{grid-area:d;font-size:.8rem;line-height:1.8;color:var(--faint)}
 
 /* أرقام بلا صناديق */
 .figs{display:grid;grid-template-columns:repeat(3,1fr);gap:2.4rem 2rem;margin:3.4rem auto 0;max-width:58rem}

@@ -662,7 +662,7 @@ async function sharhBlock(matn,mount,book,names){
       sharhBabFind(slug,matn).catch(()=>null)]);
     const isnad=isnadWords(names);
     const top=sharhRank(hits,matn,isnad).slice(0,3);
-    const head='<p class="evlead">هذه مواضعُ من <b>'+bar+'</b> — شرحِ هذا المصنَّف — عُثر عليها '+
+    const head='<p class="evlead">هذه مواضعُ من <b>'+bar+'</b>، وهو شرحُ هذا المصنَّف، عُثر عليها '+
       'بألفاظ متن الحديث. مع كلّ موضعٍ دليلُ اختياره لتحكم بنفسك؛ '+
       'والمنصة لا تنسب شرحًا إلى حديثٍ بغير دليلٍ ظاهر.</p>';
     const acts='<div class="acts"><a class="act" href="sharh.html#/'+slug+'/q/'+encodeURIComponent(q)+'">'+
@@ -941,6 +941,6 @@ const TIERS=[["q","القرآن","ما نزل فيه من المصحف"],
              ["s","كتب الأخبار","ما ساقه ابن هشام والواقدي وابن سعد"]];
 function siraTier(t,{full=false}={}){
   return '<div class="tier'+(full?" tier-full":"")+'">'+TIERS.map(([k,ar,note])=>
-    '<span class="tw '+(t[k]?"on":"off")+'"'+(full?'':' title="'+esc(ar+" — "+note)+'"')+'>'+
+    '<span class="tw '+(t[k]?"on":"off")+'"'+(full?'':' title="'+esc(ar+"؛ "+note)+'"')+'>'+
     '<i></i>'+esc(ar)+'</span>').join("")+'</div>';
 }

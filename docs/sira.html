@@ -5,6 +5,8 @@
 <link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap"></noscript>
 <link rel="stylesheet" href="assets/app.css">
+<link rel="icon" href="assets/mark.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="assets/mark.svg">
+
 <script>(function(){var t=localStorage.getItem("turath-theme");if(t)document.documentElement.setAttribute("data-theme",t);})();</script>
 <title>السيرة · تُراث</title></head><body>
 <header class="nav"><div class="navin">
@@ -131,7 +133,7 @@ function vLine(){
    '<bdi>'+AR(n)+' حديثًا موصولًا</bdi><span class="sep">•</span>كتابا سيرة</div></section>'+
    '<div class="note" style="margin-bottom:1.4rem">لسنا نروي السيرة، بل نعرض ما قام عليه كلُّ حدثٍ '+
    'من المصادر. مع كلّ حدثٍ شريطٌ يبيّن أفي القرآن هو، أم في كتب الحديث، أم في كتب السيرة وحدها '+
-   '— ولكلّ نصٍّ موضعُه ليُراجَع. المنصة تنقل ولا ترجّح.</div>'+
+   'ولكلّ نصٍّ موضعُه ليُراجَع. المنصة تنقل ولا ترجّح.</div>'+
    '<div class="acts" style="margin-bottom:1.4rem">'+BK.map(b=>
      '<a class="act" href="#/b/'+b.slug+'">ابحث في '+esc(b.ar)+' ←</a>').join('')+
    '<a class="act" href="#/كتب">كل كتب السيرة</a></div>'+
@@ -164,7 +166,7 @@ function vEvent(e){
    '<h1>'+esc(e.ar)+'</h1>'+
    (siraAgeAr(e.y)?'<div class="m">'+siraAgeAr(e.y)+'</div>':'')+'</section>'+
    (e.whenFrom==='ترتيب'?'<div class="note" style="margin-bottom:1rem">لم يُنصّ تاريخُ هذا الحدث في '+
-     'عنوانه، وإنما حُصر بما قبله وما بعده من ترتيب الواقدي — وترتيبُه على التاريخ.</div>':'')+
+     'عنوانه، وإنما حُصر بما قبله وما بعده من ترتيب الواقدي، وترتيبُه على التاريخ.</div>':'')+
    siraTier(e.tier,{full:true})+
    '<div id="body"></div>'+pg+FOOT;
   foot(); scrollTo(0,0);
@@ -192,7 +194,7 @@ const SH2=(t,n)=>'<div class="sh"><h2>'+esc(t)+'</h2>'+(n!=null?'<span class="cn
 function secQuran(e){
   if(!e.quran.length) return SH2('ما نزل فيه من القرآن',0)+
     '<div class="pane msg">لم نصِل بهذا الحدث آيةً بنصٍّ من مصادرنا. '+
-    'وليس هذا نفيًا — إنّما لم يقم عندنا دليلٌ نعرضه.</div>';
+    'وليس هذا نفيًا؛ إنّما لم يقم عندنا دليلٌ نعرضه.</div>';
   const n=e.quran.reduce((a,g)=>a+g.vs.length,0);
   return SH2('ما نزل فيه من القرآن',n)+e.quran.map(g=>{
     const s=g.vs[0].s, v1=g.vs[0].v, v2=g.vs[g.vs.length-1].v;

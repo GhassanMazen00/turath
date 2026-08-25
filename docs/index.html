@@ -5,8 +5,10 @@
 <link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap"></noscript>
 <link rel="stylesheet" href="assets/app.css">
+<link rel="icon" href="assets/mark.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="assets/mark.svg">
+
 <script>(function(){var t=localStorage.getItem("turath-theme");if(t)document.documentElement.setAttribute("data-theme",t);})();</script>
-<title>$1</title></head><body>
+<title>تُراث · القرآن والسنّة موصولةً بمصادرها</title></head><body>
 <header class="nav"><div class="navin">
   <a class="brand" href="index.html"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2.2l2.3 1.9 3-.3.8 2.9 2.6 1.6-1.2 2.8 1.2 2.8-2.6 1.6-.8 2.9-3-.3L12 21.8l-2.3-1.9-3 .3-.8-2.9L3.3 15.7l1.2-2.8-1.2-2.8 2.6-1.6.8-2.9 3 .3z" stroke="currentColor" stroke-width="1.2"/><circle cx="12" cy="12" r="3.6" stroke="currentColor" stroke-width="1.2"/></svg>تُراث</a>
   <nav class="navl"><a href="tafsir.html">التفسير</a><a href="hadith.html">الحديث</a><a href="rijal.html">الرواة</a><a href="sharh.html">الشروح</a><a href="sira.html">السيرة</a>
@@ -118,13 +120,22 @@ theme(); document.getElementById('tg').innerHTML=TGL; mountFooter(document.getEl
  const th=Object.values(B).reduce((a,b)=>a+b.total,0);
  let rn=0; try{ rn=Object.keys(await rijalIndex()).length; }catch(e){}
  const shp=SHB.reduce((a,b)=>a+b.paras,0);
+ // الاختصار يقول ما في القسم لا اسمَه فقط: الاسمُ وحده لا يدلّ على ما يُنتفع به
+ const ICO={
+  tafsir:'<path d="M4 5.5h6.5a2 2 0 012 2V19a2.6 2.6 0 00-2-1H4zM20 5.5h-6.5a2 2 0 00-2 2V19a2.6 2.6 0 012-1H20z"/>',
+  hadith:'<path d="M6 3.5h9l4 4v13H6zM15 3.5V8h4"/><path d="M9 12.5h7M9 16h5"/>',
+  rijal:'<circle cx="9" cy="8.5" r="3"/><path d="M3.5 19.5c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/><path d="M16 6.2a3 3 0 010 5.6M17.5 19.5c0-2-.7-3.6-1.8-4.6"/>',
+  sharh:'<path d="M4 4.5h16v11H9l-5 4z"/><path d="M8 8.5h8M8 11.5h5"/>',
+  sira:'<path d="M12 3.5v17"/><circle cx="12" cy="7" r="2"/><circle cx="12" cy="13" r="2"/><circle cx="12" cy="19" r="1.6"/><path d="M14.5 7h5M14.5 13h4M4.5 19h5.6"/>'};
+ const ic=(k)=>`<svg class="ji" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">${ICO[k]}</svg>`;
  document.getElementById('jump').innerHTML=[
-   ['s-tafsir','تفسير',AR(T.length)+' كتاب تفسير'],
-   ['s-hadith','حديث',AR(th)+' حديثًا'],
-   ['s-rijal','رواة',AR(rn)+' راويًا'],
-   ['s-sharh','شرح الحديث',AR(SHB.length)+' شروح'],
-   ['s-sira','السيرة',AR(SRE.length)+' حدثًا'],
- ].map(([id,t,n])=>`<a class="jmp" href="#${id}"><b>${t}</b><span>${n}</span></a>`).join('');
+   ['s-tafsir','tafsir','التفسير',AR(T.length)+' تفسيرًا','للآية الواحدة، من الطبري وابن كثير إلى المعاصرين، تُقرأ متقابلةً.'],
+   ['s-hadith','hadith','الحديث',AR(th)+' حديثًا','الكتب الستة والموطأ، بأسانيدها وأحكام المحدّثين عليها وتخريجها.'],
+   ['s-rijal','rijal','الرواة',AR(rn)+' راويًا','لكل راوٍ طبقتُه وبلدُه وشيوخُه وتلاميذُه وما رواه في الكتب.'],
+   ['s-sharh','sharh','شرح الحديث',AR(SHB.length)+' شروح','فتح الباري والمنهاج وعون المعبود وتحفة الأحوذي، تُبحث بألفاظ المتن.'],
+   ['s-sira','sira','السيرة',AR(SRE.length)+' حدثًا','لكل حدثٍ ما قام عليه: آياتُه وأحاديثُه وما ساقه أهل السيرة.'],
+ ].map(([id,k,t,n,d])=>`<a class="jmp" href="#${id}">${ic(k)}<span class="jt"><b>${t}</b>
+     <span class="jn"><bdi>${n}</bdi></span></span><span class="jd">${d}</span></a>`).join('');
  // النزول سلسًا مع ترك مسافةٍ للترويسة اللاصقة
  document.getElementById('jump').addEventListener('click',e=>{
    const a=e.target.closest('.jmp'); if(!a)return;
