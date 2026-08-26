@@ -107,7 +107,8 @@ function gclass(g){
 /* ═══ محرّك البحث ═══
    يبحث في: أسماء السور · كتب التفسير · كتب الحديث وأبوابها · متون الأحاديث.
    فهارس الأحاديث تُجلب عند الحاجة وتُخزَّن، فالبحث الأول أبطأ ثم يصير فوريًا. */
-const SEARCH={books:null,surahs:null,tafsirs:null,idx:{},scope:"all",kind:"all",quran:null};
+const SEARCH={books:null,surahs:null,tafsirs:null,idx:{},scope:"all",kind:"all",quran:null,
+  rijal:null,sira:null,asbab:null,shb:null,srb:null};
 
 async function searchInit(){
   const [b,s,t]=await Promise.all([api.local("books.json"),api.local("surahs.json"),api.local("tafsirs.json")]);
@@ -133,6 +134,45 @@ function quranHits(q,limit=40){
   return out;
 }
 /* نتائج فورية من البيانات الخفيفة */
+/* ما يُبحث فيه من البيانات الثقيلة يُجلب عند أوّل بحثٍ يحتاجه لا عند فتح
+   الصفحة: فهرس الرواة وحده ٧٥٢ك.ب، ولا وجه لتحميله على من لم يبحث. */
+async function loadRijalIdx(){ if(!SEARCH.rijal) SEARCH.rijal=await api.local("rijal/index.json").catch(()=>({})); return SEARCH.rijal; }
+async function loadSiraIdx(){ if(!SEARCH.sira) SEARCH.sira=await api.local("sira/events.json").catch(()=>[]); return SEARCH.sira; }
+async function loadAsbabIdx(){
+  if(!SEARCH.asbab){
+    const m=await api.local("asbab.json").catch(()=>({}));
+    const rows=[];
+    for(const k in m) for(const it of m[k]) rows.push([k,it,norm(it.t)]);
+    SEARCH.asbab=rows;
+  }
+  return SEARCH.asbab;
+}
+async function loadColBooks(){
+  if(!SEARCH.shb) SEARCH.shb=await bookSet("sharh").catch(()=>[]);
+  if(!SEARCH.srb) SEARCH.srb=await bookSet("sira").catch(()=>[]);
+  return [...(SEARCH.shb||[]),...(SEARCH.srb||[])];
+}
+/* ما يلزم لكلّ مرشّح — يُجلب مرّةً ثم يُخزَّن */
+async function searchNeeds(kind){
+  const all=kind==="all";
+  const jobs=[];
+  if(all||kind==="rijal") jobs.push(loadRijalIdx());
+  if(all||kind==="sira")  jobs.push(loadSiraIdx());
+  if(all||kind==="asbab") jobs.push(loadAsbabIdx());
+  if(all||kind==="sharh"||kind==="sira") jobs.push(loadColBooks());
+  await Promise.all(jobs);
+}
+/* أسبابُ النزول: بحثٌ في نصّها، ومفتاحُها سورةٌ وآية */
+function asbabHits(q,limit=12){
+  const n=norm(q); if(n.length<3||!SEARCH.asbab) return [];
+  const out=[];
+  for(const [key,it,t] of SEARCH.asbab){
+    const at=t.indexOf(n); if(at<0) continue;
+    out.push({key,it,at});
+    if(out.length>=limit) break;
+  }
+  return out;
+}
 function quickHits(q,kind){
   const n=norm(q); if(!n)return[];
   kind=kind||"all";
@@ -152,6 +192,33 @@ function quickHits(q,kind){
     for(const sc of b.sections){
       if(norm(sc.ar).includes(n)) out.push({kind:"باب",title:sc.ar,
         sub:`${b.ar} · الأحاديث ${AR(sc.first||0)}–${AR(sc.last||0)}`,href:`hadith.html#/${k}/${sc.n}/1`});
+    }
+  }
+  /* الرواة: بالاسم العربي أو الإنجليزي */
+  if(want("rijal")&&SEARCH.rijal){
+    let c=0;
+    for(const key in SEARCH.rijal){ const r=SEARCH.rijal[key];
+      if(!(norm(r.n).includes(n)||(r.en||"").toLowerCase().includes(q.toLowerCase())))continue;
+      out.push({kind:"راوٍ",title:r.n,
+        sub:[r.g,r.d?dateAr(r.d):"",r.c!=null?AR(r.c)+" حديثًا":""].filter(Boolean).join(" · "),
+        href:`rijal.html#/${encodeURIComponent(key)}`});
+      if(++c>=12)break; }
+  }
+  /* أحداث السيرة: بالاسم أو الموضع */
+  if(want("sira")&&SEARCH.sira){
+    for(const e of SEARCH.sira){
+      if(!(norm(e.ar).includes(n)||(e.place&&norm(e.place).includes(n))))continue;
+      out.push({kind:"حدث",title:e.ar,
+        sub:[e.when,e.place,e.nh?AR(e.nh)+" حديثًا موصولًا":""].filter(Boolean).join(" · "),
+        href:`sira.html#/${e.id}`});
+    }
+  }
+  /* كتب الشروح والسيرة بأسمائها ومؤلّفيها */
+  if(want("sharh")||want("sira")){
+    for(const b of [...(SEARCH.shb||[]),...(SEARCH.srb||[])]){
+      if(!(norm(b.ar).includes(n)||norm(b.full||"").includes(n)||norm(b.author||"").includes(n)))continue;
+      const page=(SEARCH.srb||[]).some(x=>x.slug===b.slug)?`sira.html#/b/${b.slug}`:`sharh.html#/${b.slug}`;
+      out.push({kind:"كتاب",title:b.ar,sub:`${b.author} · ${AR(b.paras)} فقرة`,href:page});
     }
   }
   return out.slice(0,40);
@@ -197,11 +264,35 @@ function groupHits(hits){
 function hl(t,q){const i=t.indexOf(q); if(i<0)return esc(t);
   return esc(t.slice(0,i))+"<mark>"+esc(t.slice(i,i+q.length))+"</mark>"+esc(t.slice(i+q.length));}
 
-const KINDS=[["all","كل المحتوى"],["hadith","الحديث"],["quran","القرآن"],["tafsir","كتب التفسير"]];
+/* «كل المحتوى» يشمل ما يُبحث فيه سريعًا: الأسماء والعناوين والرواة
+   والأحداث، ومتونَ الأحاديث وآياتِ المصحف وأسبابَ النزول. وأمّا نصوصُ
+   الشروح وكتبِ السيرة — ثلاثةٌ وثلاثون مليون حرفٍ في ثمانية كتب — فلا
+   تُمسح إلا حين يطلبها القارئ بمرشّحها، فمسحُها في كلّ ضغطةِ مفتاحٍ
+   يُنزل عشرات الميغابايتات على من لم يردها. */
+const KINDS=[["all","كل المحتوى"],["hadith","الحديث"],["quran","القرآن"],
+  ["rijal","الرواة"],["sharh","الشروح"],["sira","السيرة"],
+  ["asbab","أسباب النزول"],["tafsir","كتب التفسير"]];
+
+/* بحثٌ في نصوص كتب الشروح والسيرة — بالآلة نفسها المستعملة في صفحاتها */
+async function colTextHits(q,which,onprog){
+  const books=await loadColBooks();
+  const pick=books.filter(b=>which==="sharh" ? (SEARCH.shb||[]).some(x=>x.slug===b.slug)
+                                             : (SEARCH.srb||[]).some(x=>x.slug===b.slug));
+  const out=[]; let done=0;
+  for(const b of pick){
+    try{
+      const hits=await sharhFind(b.slug,q,{limit:6,scan:6});
+      for(const h of hits) out.push({b,h});
+    }catch(e){}
+    if(onprog) onprog(++done,pick.length,out.length);
+  }
+  out.sort((a,x)=>x.h.score-a.h.score);
+  return out.slice(0,24);
+}
 
 function mountSearch(root,{autofocus=false}={}){
   root.innerHTML=`<div class="sbox"><svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.7"/><path d="M16.5 16.5L21 21" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
-    <input id="q" type="search" placeholder="ابحث في متون الأحاديث وآيات المصحف والسور والأبواب…" autocomplete="off"><kbd>/</kbd></div>
+    <input id="q" type="search" placeholder="ابحث في المتون والآيات والرواة والشروح وأحداث السيرة وأسباب النزول…" autocomplete="off"><kbd>/</kbd></div>
     <div class="chips" id="kind"></div><div class="chips sub" id="scope" hidden></div><div class="sres" id="sres"></div>`;
   const inp=root.querySelector("#q"),out=root.querySelector("#sres"),
         kd=root.querySelector("#kind"),sc=root.querySelector("#scope");
@@ -230,11 +321,14 @@ function mountSearch(root,{autofocus=false}={}){
   const run=async()=>{
     const q=inp.value.trim(),my=++seq,kind=SEARCH.kind;
     if(!q){out.innerHTML="";return;}
-    const quick=quickHits(q,kind);
-    const qh=quick.map(h=>`<a class="hit" href="${h.href}"><div class="m"><span class="tag c">${esc(h.kind)}</span>
+    /* النتائجُ الفورية تُحسب عند كل رسمٍ لا مرّةً واحدة: فهرسُ الرواة
+       وأحداثُ السيرة تُجلب بعد أوّل رسم، فحسابُها مرّةً قبلها يُسقطها
+       من النتيجة أبدًا. (وبهذا كان «أبو هريرة» لا يُخرج راويًا.) */
+    const quickHTML=()=>quickHits(q,kind).map(h=>`<a class="hit" href="${h.href}"><div class="m"><span class="tag c">${esc(h.kind)}</span>
       <span>${esc(h.sub)}</span></div><div class="tx">${esc(h.title)}</div></a>`).join("");
 
     const draw=(stat,ayat,groups)=>{ if(my!==seq)return;
+      const qh=quickHTML();
       const ah=(ayat||[]).map(([sn,a,tx])=>{
         const su=SEARCH.surahs.find(x=>x.n===sn);
         return `<a class="hit ayahit" href="tafsir.html#/${sn}/ar-tafsir-ibn-kathir/${a}">
@@ -247,19 +341,83 @@ function mountSearch(root,{autofocus=false}={}){
         }).join("");
         return `<div class="grp"><div class="grp-t">${hl(g.snippet,g.q)}</div>
           <div class="grp-b">${chips}</div></div>`;}).join("");
-      const body=qh+ah+gh;
+      const abh=(kind==="all"?asbabHits(q,4):[]).map(({key,it})=>{
+        const [sn,av]=key.split(":").map(Number);
+        const su=SEARCH.surahs.find(x=>x.n===sn);
+        const t=it.t.length>300?it.t.slice(0,300)+"…":it.t;
+        return `<a class="hit" href="tafsir.html#/${sn}/ar-tafsir-ibn-kathir/${av}">
+          <div class="m"><span class="tag c">سبب نزول</span><span>سورة ${esc(su?su.ar:"")} <bdi>${AR(sn)}:${AR(av)}</bdi></span></div>
+          <div class="tx amiri">${sharhMark(t,q)}</div></a>`;}).join("");
+      const body=qh+ah+abh+gh;
       const note=gh?`<div class="note">مقتطف المطابقة يُعرض بالرسم المجرَّد من التشكيل، وهو صورة البحث لا صورة الكتاب. النصّ كما ورد في صفحة الحديث.</div>`:"";
       out.innerHTML=(stat||"")+(body||`<div class="msg">لا نتائج لـ «${esc(q)}»</div>`)+note;};
 
     const wantQuran=kind==="all"||kind==="quran";
     const wantHadith=kind==="all"||kind==="hadith";
-    if(!wantQuran&&!wantHadith){ draw("",[],[]); return; }
+
+    /* المرشّحاتُ التي تحتاج جلبًا: يُنتظر جلبُها ثم تُعاد النتائج الفورية */
+    if(kind!=="quran"&&kind!=="tafsir"){
+      draw(`<div class="sstat"><span class="spin"></span><span>يجهّز…</span></div>`,[],[]);
+      await searchNeeds(kind); if(my!==seq)return;
+    }
+
+    /* نصوصُ الشروح وكتب السيرة: تُمسح بطلبٍ صريح لثقلها */
+    if(kind==="sharh"||kind==="sira"){
+      draw(`<div class="sstat"><span class="spin"></span><span>يبحث في الكتب…</span><span class="bar"><i style="width:8%"></i></span></div>`,[],[]);
+      const res=await colTextHits(q,kind,(d,t,c)=>{ if(my!==seq)return;
+        const bar=out.querySelector(".bar i"); if(bar)bar.style.width=Math.round(8+d/t*92)+"%";
+        const st=out.querySelector(".sstat span:nth-child(2)");
+        if(st)st.textContent=`يبحث في الكتب… ${AR(d)}/${AR(t)}، ${AR(c)} موضعًا`;});
+      if(my!==seq)return;
+      const cards=res.map(({b,h})=>{
+        const page=(SEARCH.srb||[]).some(x=>x.slug===b.slug)
+          ? `sira.html#/b/${b.slug}/r/${h.c}/${h.i}` : `sharh.html#/${b.slug}/r/${h.c}/${h.i}`;
+        const t=h.t.length>420?h.t.slice(0,420)+"…":h.t;
+        return `<a class="hit" href="${page}"><div class="m"><span class="tag c">${esc(b.ar)}</span>
+          <span><bdi>ج${AR(h.v)} ص${AR(h.p)}</bdi></span></div>
+          <div class="tx amiri">${h.qn?sharhMark(t,h.qn):esc(t)}</div></a>`;}).join("");
+      const quickCol=quickHits(q,kind).map(h=>`<a class="hit" href="${h.href}"><div class="m"><span class="tag c">${esc(h.kind)}</span>
+        <span>${esc(h.sub)}</span></div><div class="tx">${esc(h.title)}</div></a>`).join("");
+      out.innerHTML=`<div class="sstat"><bdi>${AR(res.length)} موضعًا</bdi> في <bdi>${AR(res.length?new Set(res.map(r=>r.b.slug)).size:0)}</bdi> من الكتب</div>`+
+        quickCol+(cards||`<div class="msg">لا مواضع لـ «${esc(q)}»</div>`);
+      return;
+    }
+
+    /* أسباب النزول وحدها */
+    if(kind==="asbab"){
+      const ab=asbabHits(q,20);
+      const cards=ab.map(({key,it})=>{
+        const [sn,av]=key.split(":").map(Number);
+        const su=SEARCH.surahs.find(x=>x.n===sn);
+        const t=it.t.length>420?it.t.slice(0,420)+"…":it.t;
+        return `<a class="hit" href="tafsir.html#/${sn}/ar-tafsir-ibn-kathir/${av}">
+          <div class="m"><span class="tag c">سبب نزول</span><span>سورة ${esc(su?su.ar:"")} <bdi>${AR(sn)}:${AR(av)}</bdi> <span class="sep">•</span> <bdi>ج${AR(it.v)} ص${AR(it.p)}</bdi></span></div>
+          <div class="tx amiri">${sharhMark(t,q)}</div></a>`;}).join("");
+      out.innerHTML=`<div class="sstat"><bdi>${AR(ab.length)} موضعًا</bdi> في أسباب النزول للواحدي</div>`+
+        (cards||`<div class="msg">لا مواضع لـ «${esc(q)}»</div>`);
+      return;
+    }
+
+    if(!wantQuran&&!wantHadith){
+      const qk=quickHits(q,kind);
+      out.innerHTML=`<div class="sstat"><bdi>${AR(qk.length)} نتيجة</bdi></div>`+
+        (qk.map(h=>`<a class="hit" href="${h.href}"><div class="m"><span class="tag c">${esc(h.kind)}</span>
+          <span>${esc(h.sub)}</span></div><div class="tx">${esc(h.title)}</div></a>`).join("")
+         ||`<div class="msg">لا نتائج لـ «${esc(q)}»</div>`);
+      return; }
     draw(`<div class="sstat"><span class="spin"></span><span>يبحث…</span><span class="bar"><i style="width:6%"></i></span></div>`,[],[]);
     try{
       let ayat=[];
       if(wantQuran){ await loadQuran(); if(my!==seq)return; ayat=quranHits(q,kind==="quran"?60:8); }
       if(!wantHadith){
-        draw(`<div class="sstat"><bdi>${AR(ayat.length)} آية</bdi></div>`,ayat,[]); return; }
+        /* العدُّ يشمل ما عُرض كلَّه لا الآياتِ وحدها: «الفاتحة» لا تَرِد
+           في متن آيةٍ فيُقال «٠ آية» وتحتها بطاقةُ السورة، فيتناقض العدّ
+           مع المعروض. */
+        const nq=quickHits(q,kind).length;
+        const parts=[];
+        if(ayat.length)parts.push(`<bdi>${AR(ayat.length)} آية</bdi>`);
+        if(nq)parts.push(`<bdi>${AR(nq)} نتيجة أخرى</bdi>`);
+        draw(`<div class="sstat">${parts.join(' <span class="sep">•</span> ')||"لا نتائج"}</div>`,ayat,[]); return; }
       draw(`<div class="sstat"><span class="spin"></span><span>يبحث في المتون…</span><span class="bar"><i style="width:18%"></i></span></div>`,ayat,[]);
       const hits=await textHits(q,SEARCH.scope,(d,t,c)=>{ if(my!==seq)return;
         const bar=out.querySelector(".bar i"); if(bar)bar.style.width=Math.round(18+d/t*82)+"%";
@@ -268,6 +426,8 @@ function mountSearch(root,{autofocus=false}={}){
       if(my!==seq)return;
       const groups=groupHits(hits);
       const parts=[];
+      const nq=quickHits(q,kind).length;
+      if(nq)parts.push(`<bdi>${AR(nq)} نتيجة</bdi>`);
       if(ayat.length)parts.push(`<bdi>${AR(ayat.length)} آية</bdi>`);
       parts.push(`<bdi>${AR(groups.length)} نصًّا</bdi> في <bdi>${AR(hits.length)} موضعًا</bdi>${hits.length>=60?" (أول ٦٠)":""}`);
       draw(`<div class="sstat">${parts.join(" <span class=\"sep\">•</span> ")}</div>`,ayat,groups);
