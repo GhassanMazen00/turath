@@ -22,20 +22,31 @@
 /* الليلي لا يُفرَض بتفضيل النظام: النهاري هو الأصل عند أوّل فتح،
    ولا يُنتقل إلى الليلي إلا باختيارٍ صريح يُحفظ في المتصفّح. */
 :root[data-theme="dark"]{
-  --bg:#04060a; --bg2:#070b12; --ink:#e9eff7;
-  --ink2:#a7b5c8; --mut:#6d7d93; --faint:#465468;
-  --hair:rgba(125,205,255,.13); --hair2:rgba(125,205,255,.26); --acc:#4dd9ff;
-  --acc2:#8ceaff; --accsoft:rgba(77,217,255,.12); --accink:#9eecff;
-  --acc-glow:rgba(77,217,255,.42); --amber:#e6bd6e; --ambersoft:rgba(230,189,110,.13);
-  --ok:#3ee0a0; --oksoft:rgba(62,224,160,.13); --warn:#ffc061;
-  --warnsoft:rgba(255,192,97,.13); --bad:#ff7a7a; --badsoft:rgba(255,122,122,.13);
-  --surf:rgba(125,205,255,.05); --surf2:rgba(125,205,255,.03); --panel:linear-gradient(180deg,rgba(125,205,255,.055),rgba(125,205,255,.014));
-  --panel2:linear-gradient(180deg,rgba(125,205,255,.10),rgba(125,205,255,.03)); --edge:linear-gradient(180deg,rgba(150,225,255,.42),rgba(150,225,255,.07) 34%,rgba(150,225,255,.02)); --edgeHot:linear-gradient(180deg,var(--acc),rgba(77,217,255,.22) 50%,rgba(77,217,255,.06));
-  --sh:0 1px 0 rgba(0,0,0,.5),0 8px 26px -12px rgba(0,0,0,.9); --sh2:0 2px 0 rgba(0,0,0,.5),0 28px 70px -20px rgba(0,0,0,.95); --grid:rgba(125,205,255,.045);
-  --gridN:rgba(125,205,255,.10); --halo1:rgba(77,217,255,.16); --halo2:rgba(120,90,255,.12);
-  --halo3:rgba(230,189,110,.07);
+  /* حبرٌ ليليٌّ دافئ وذهبُ المخطوط.
+     كان الوضع الداكن أزرقَ نيونيًّا بتوهّجٍ حوله، وذاك طابعُ الشاشات لا
+     طابعُ الورق المذهَّب. فالأرضُ سوادٌ يميل إلى الدفء لا إلى الزرقة،
+     والنصُّ لونُ الرَّقّ، واللونُ الدالُّ ذهبٌ بدرجتين: فاتحةٌ لما يُنقر
+     عليه، وأعمقُ لعناوين الأقسام. والتوهّجُ خُفض إلى أثرٍ لا يكاد يُرى. */
+  --bg:#0d0b08; --bg2:#131009; --ink:#f2ece1;
+  --ink2:#c8bca8; --mut:#948873; --faint:#847763;
+  --hair:rgba(236,220,190,.12); --hair2:rgba(236,220,190,.24); --acc:#e0c07a;
+  --acc2:#f2d89e; --accsoft:rgba(224,192,122,.11); --accink:#efd9a4;
+  --acc-glow:rgba(224,192,122,.16); --amber:#c9a15e; --ambersoft:rgba(201,161,94,.13);
+  --ok:#63c295; --oksoft:rgba(99,194,149,.12); --warn:#e29a55;
+  --warnsoft:rgba(226,154,85,.12); --bad:#e08585; --badsoft:rgba(224,133,133,.12);
+  --surf:rgba(236,220,190,.05); --surf2:rgba(236,220,190,.03);
+  --panel:linear-gradient(180deg,rgba(236,220,190,.055),rgba(236,220,190,.015));
+  --panel2:linear-gradient(180deg,rgba(236,220,190,.10),rgba(236,220,190,.03));
+  --edge:linear-gradient(180deg,rgba(240,226,198,.30),rgba(240,226,198,.06) 34%,rgba(240,226,198,.02));
+  --edgeHot:linear-gradient(180deg,var(--acc),rgba(224,192,122,.20) 50%,rgba(224,192,122,.05));
+  --sh:0 1px 0 rgba(0,0,0,.5),0 8px 26px -12px rgba(0,0,0,.9);
+  --sh2:0 2px 0 rgba(0,0,0,.5),0 28px 70px -20px rgba(0,0,0,.95);
+  --grid:rgba(236,220,190,.042); --gridN:rgba(236,220,190,.09);
+  --halo1:rgba(224,192,122,.10); --halo2:rgba(168,104,64,.07);
+  --halo3:rgba(201,161,94,.06);
   color-scheme:dark;
 }
+
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--ink);direction:rtl;font-size:17.5px;line-height:1.95;
@@ -240,7 +251,7 @@ a.cell:hover{border-color:var(--hair2);background:var(--surf2);transform:transla
 .matn{font-family:"Amiri",serif;font-size:1.6rem;line-height:2.4;color:var(--ink);
   padding:2rem 2.1rem;background:var(--panel2)}
 .matn::before{content:"";position:absolute;inset-inline-start:0;top:1rem;bottom:1rem;width:2px;
-  background:linear-gradient(180deg,var(--acc),transparent);box-shadow:0 0 12px var(--acc-glow);
+  background:linear-gradient(180deg,var(--acc),transparent);
   border-radius:2px;z-index:1}
 .matn>span{display:block;max-width:var(--measure)}
 .full{font-family:"Amiri",serif;font-size:1.42rem;line-height:2.4;color:var(--ink2);padding:1.9rem 2rem}
@@ -250,9 +261,12 @@ a.cell:hover{border-color:var(--hair2);background:var(--surf2);transform:transla
 .gband{display:flex;align-items:flex-start;gap:1.2rem;flex-wrap:wrap;padding:1.4rem 1.6rem}
 .gbig{font-family:"Noto Naskh Arabic",serif;font-weight:700;font-size:1.7rem;padding:.42rem 1.3rem;
   border-radius:var(--r2);position:relative}
-.gbig.ok{box-shadow:inset 0 0 0 1px rgba(62,224,160,.34),0 0 26px -8px rgba(62,224,160,.6)}
-.gbig.mid{box-shadow:inset 0 0 0 1px rgba(255,192,97,.34),0 0 26px -8px rgba(255,192,97,.55)}
-.gbig.bad{box-shadow:inset 0 0 0 1px rgba(255,122,122,.34),0 0 26px -8px rgba(255,122,122,.5)}
+/* حدُّ الدرجة حلقةٌ لا هالة: كانت هذه الألوان مكتوبةً نصًّا بقيم الوضع
+   الداكن القديم، فلا تتبدّل بالوضع، وتُخرج توهّجًا حول «صحيح» طابعُه
+   الشاشاتُ لا الورق. فصارت من الرموز، وبلا هالةٍ خارجية. */
+.gbig.ok{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--ok) 38%,transparent)}
+.gbig.mid{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--warn) 38%,transparent)}
+.gbig.bad{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--bad) 38%,transparent)}
 .gbig.ok{background:var(--oksoft);color:var(--ok)}.gbig.mid{background:var(--warnsoft);color:var(--warn)}
 .gbig.bad{background:var(--badsoft);color:var(--bad)}.gbig.na{background:var(--surf2);color:var(--mut)}
 .gdef{flex:1;min-width:14rem;max-width:34rem;font-size:.95rem;color:var(--mut);line-height:1.95}
@@ -377,9 +391,9 @@ table.t td:first-child{font-weight:600;white-space:nowrap}
   padding:1.05rem 1.2rem;margin-bottom:.85rem;position:relative;overflow:hidden}
 .ev::before{content:"";position:absolute;inset-block:0;inset-inline-start:0;width:3px;background:var(--evc)}
 .ev{--evc:var(--hair)}
-.ev-sure{--evc:#1f9d6b}
+.ev-sure{--evc:var(--ok)}
 .ev-strong{--evc:var(--acc)}
-.ev-bab{--evc:#b78a1e}
+.ev-bab{--evc:var(--amber)}
 .ev-weak{--evc:var(--faint)}
 .evh{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:.65rem}
 .evb{font-size:.76rem;font-weight:700;letter-spacing:.01em;padding:.24rem .68rem;border-radius:999px;
@@ -389,7 +403,7 @@ table.t td:first-child{font-weight:600;white-space:nowrap}
 .evw{list-style:none;margin:0 0 .85rem;padding:0;display:grid;gap:.4rem}
 .evw li{font-size:.87rem;line-height:1.85;color:var(--mut);padding-inline-start:1.5rem;position:relative}
 .evw li::before{position:absolute;inset-inline-start:0;top:0;font-weight:700;font-size:.9rem}
-.evw li.ok::before{content:"✓";color:#1f9d6b}
+.evw li.ok::before{content:"✓";color:var(--ok)}
 .evw li.mid::before{content:"•";color:var(--faint)}
 .evw li.no::before{content:"✕";color:var(--faint)}
 .evw .wc{font-size:.75rem;color:var(--faint)}
@@ -510,7 +524,7 @@ a.nm2:hover{border-color:var(--acc);color:var(--acc)}
   padding-top:.1em;letter-spacing:-.05em;margin:0;
   background:linear-gradient(168deg,var(--ink) 32%,var(--acc));
   -webkit-background-clip:text;background-clip:text;color:transparent;
-  filter:drop-shadow(0 0 34px var(--acc-glow))}
+  filter:drop-shadow(0 0 26px var(--acc-glow))}
 .mast .lede{font-family:"Amiri",serif;font-size:clamp(1.2rem,2.4vw,1.6rem);color:var(--mut);
   margin:.7rem auto 0;max-width:40rem;line-height:1.9}
 .mast .search{max-width:44rem;margin:2.2rem auto 0}
