@@ -180,7 +180,11 @@ async function vHadith(k,num){
       '<span class="sep">•</span>الموضع <bdi>'+AR(h.reference.book)+':'+AR(h.reference.hadith)+'</bdi></div></div>'+
       '<div class="dual"><div class="dcol">'+
       gband+
-      '<div class="pane matn"><span>'+esc(sp.matn||h.text)+'</span></div>'+
+      (String(h.text||'').trim()
+        ? '<div class="pane matn"><span>'+esc(sp.matn||h.text)+'</span></div>'
+        : '<div class="pane msg">لم يرد نصُّ هذا الحديث في المصدر المعتمد للمتون.'+
+          '<div class="note" style="margin:.7rem 0 0">رقمُه وبابُه وموضعُه المطبوع ثابتةٌ كما ترى، '+
+          'وإنّما خلا المصدرُ من متنه. ولا نملؤه من عندنا ولا نسكت عنه.</div></div>')+
       '<div class="tabs" role="tablist">'+
         '<button class="tab" role="tab" data-t="isnad" aria-selected="true">الإسناد<span class="c">'+AR(nodes.length)+'</span></button>'+
         '<button class="tab" role="tab" data-t="full" aria-selected="false">'+
@@ -198,7 +202,9 @@ async function vHadith(k,num){
           (n.sub?'<span class="sub">'+esc(n.sub)+'</span>':'')+'</span></div>';}).join('')+'</div>'+
           '<div class="note">'+(auth?'السلسلة من قاعدة رواة مفهرسة لكل حديث.':'لم تُفهرَس سلسلة هذا الحديث؛ استُخرجت الأسماء آليًّا وقد تنقص.')+'</div>'
          :'<div class="pane msg">لا سلسلة مفهرسة لهذا الحديث.</div>')+'</div>'+
-      '<div class="panel" data-p="full"><div class="pane full"><span>'+esc(h.text)+'</span></div></div>'+
+      '<div class="panel" data-p="full">'+(String(h.text||'').trim()
+        ? '<div class="pane full"><span>'+esc(h.text)+'</span></div>'
+        : '<div class="pane msg">لم يرد نصُّ هذا الحديث في المصدر المعتمد للمتون.</div>')+'</div>'+
       '<div class="panel" data-p="hukm">'+
         (grades.length?'<div class="pane"><table class="t"><tr><th>المحدِّث</th><th>الحكم</th><th>معناه</th></tr>'+
           grades.map(g=>'<tr><td>'+esc(g[0])+'</td><td><span class="g '+gclass(g[1])+'">'+esc(g[1])+'</span></td>'+
