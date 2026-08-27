@@ -54,11 +54,22 @@ export async function buildBook(b, outDir, { minBlocks = 300 } = {}) {
     fs.writeFileSync(path.join(dir, `c${i}.json`),
       JSON.stringify(c.map((x) => [x.t, x.v, x.p, x.lvl])), "utf8"));
 
+  /* الفهرس: لكل عنوانٍ موضعُه وعددُ فقراته إلى العنوان الذي يليه.
+     والعددُ لازم: عناوينُ الكتب في هذه الطبعات حاويةٌ يتلوها عنوانُ بابها
+     رأسًا، فلا فقرةَ بينهما — فإن جُعلت صفحاتٍ خرجت فارغة. وبالعدد تُعرف
+     الحاوية من ذات المحتوى بلا فتحِ الكتاب. */
   const toc = [];
+  const heads = [];
   blocks.forEach((x, i) => {
     if (!x.lvl) return;
     const t = cleanHead(x.t);
-    if (t.length > 2 && !/^PageV/.test(t)) toc.push([t, at[i][0], at[i][1], x.v, x.p]);
+    if (t.length > 2 && !/^PageV/.test(t)) heads.push({ t, i, v: x.v, p: x.p });
+  });
+  heads.forEach((h, j) => {
+    const end = j + 1 < heads.length ? heads[j + 1].i : blocks.length;
+    let n = 0;
+    for (let x = h.i; x < end; x++) if (!blocks[x].lvl) n++;
+    toc.push([h.t, at[h.i][0], at[h.i][1], h.v, h.p, n]);
   });
 
   const inv = new Map();

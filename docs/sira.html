@@ -95,9 +95,7 @@ async function vBook(b){
   wire(b); foot(); scrollTo(0,0);
   const toc=await sharhToc(b.slug);
   document.getElementById('tn').innerHTML='<bdi>'+AR(toc.length)+'</bdi>';
-  document.getElementById('toc').innerHTML='<div class="tiles">'+toc.map(t=>
-    '<a class="tile wrap" href="#/b/'+b.slug+'/r/'+t[1]+'/'+t[2]+'"><span class="n">ج'+AR(t[3])+'</span>'+
-    '<span class="t"><b>'+esc(t[0])+'</b><span>ج'+AR(t[3])+' ص'+AR(t[4])+'</span></span></a>').join('')+'</div>';
+  document.getElementById('toc').innerHTML=tocGroups(toc,'#/b/'+b.slug+'/r/');
 }
 async function vSearch(b,q){
   sideBooks(b.slug);
@@ -279,7 +277,12 @@ async function vRead(e,b,ci,pi,part){
     if(!bb) throw new Error('لا فهرس لهذا الكتاب');
     const base=e?'#/'+e.id+'/r/'+b.slug:'#/b/'+b.slug+'/r';
     document.getElementById('ph').innerHTML='<div class="k">'+esc(b.ar)+'<span class="sep">•</span>'+esc(b.author)+'</div>'+
-      '<h1>'+esc(bb.title)+'</h1><div class="m">ج'+AR(bb.v)+' ص'+AR(bb.p)+(e?'<span class="sep">•</span>'+esc(e.ar):'')+'</div>';
+      '<h1>'+esc(bb.title)+'</h1><div class="m">'+(bb.box&&bb.box.ar?esc(babClean(bb.box.ar))+'<span class="sep">•</span>':'')+'ج'+AR(bb.v)+' ص'+AR(bb.p)+(e?'<span class="sep">•</span>'+esc(e.ar):'')+'</div>';
+    if(bb.box){
+      document.getElementById('body').innerHTML=boxBody(base,bb)+
+        '<div class="acts"><a class="act" href="'+base+'/'+bb.kids[0].t[1]+'/'+bb.kids[0].t[2]+'">ابدأ من أوّل أبوابه</a></div>';
+      scrollTo(0,0); return;
+    }
     document.getElementById('body').innerHTML=
       babNav(base,bb)+babParts(base,bb,ci,pi)+babBody(bb,b.full)+
       '<div class="note">وهو كتاب أخبارٍ لا كتابُ حديثٍ على شرط الصحيح.</div>'+

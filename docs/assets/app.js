@@ -522,16 +522,41 @@ async function sharhChunk(slug,n){
  * العنوان الذي يليه، والتنقّلُ من بابٍ إلى بابٍ باسمه.
  */
 const BAB_MAX=40;   // بابٌ أطولُ من هذا يُقسَّم، ويُقال إنّه تتمّة
+/* عنوانٌ حاوٍ: لا فقرةَ تحته لأنّ عنوانَ بابه يتلوه رأسًا («كتاب الوضوء»
+   ثم «الباب الأول») — فليس صفحةً تُقرأ، وإنّما ظرفٌ لما بعده. وعددُ
+   فقراته مثبتٌ في الفهرس، فتُعرف بلا فتحِ الكتاب. */
+const isBox=(t)=>!(t[5]===undefined?1:t[5]);
+/* ما يقع تحت الحاوي.
+   الحاويات تتداخل: «كتاب الطهارة من الحدث» يليه «كتاب الوضوء» يليه أبوابُه.
+   فالوقوفُ عند أوّل حاوٍ يُخرج الأوّلَ فارغًا. والحدُّ الصحيح: يُمضى حتى
+   يُبلَغ حاوٍ بينه وبين أوّلِنا نصٌّ — فذاك قسيمُه لا قسمٌ منه. */
+function boxKids(toc,k){
+  const out=[]; let seen=false;
+  for(let j=k+1;j<toc.length;j++){
+    if(isBox(toc[j])&&seen) break;
+    if(!isBox(toc[j])) seen=true;
+    out.push({k:j,t:toc[j]});
+  }
+  return out;
+}
 async function readBab(slug,ci,pi,part){
   const toc=await sharhToc(slug);
   const meta=await sharhMeta(slug);
   if(!toc||!toc.length) return null;
-  /* البابُ الذي يقع فيه الموضع: آخرُ عنوانٍ لا يتجاوزه */
   let k=0;
   for(let j=0;j<toc.length;j++){ const t=toc[j];
     if(t[1]<ci||(t[1]===ci&&t[2]<=pi)) k=j; else break; }
+  /* إن وقع على حاوٍ فليس صفحةً: يُعرض فهرسُ ما تحته */
+  if(isBox(toc[k])){
+    const kids=boxKids(toc,k);
+    if(kids.length) return {box:true,k,total:toc.length,title:toc[k][0],
+      v:toc[k][3],p:toc[k][4],kids};
+  }
+  /* السابقُ والتاليَ يتخطّيان الحاويات، فلا يُنقل القارئ إلى صفحةٍ خاوية */
+  const step=(dir)=>{ let j=k+dir;
+    while(j>=0&&j<toc.length&&isBox(toc[j])) j+=dir;
+    return (j>=0&&j<toc.length)?{k:j,ar:toc[j][0],c:toc[j][1],i:toc[j][2]}:null; };
   const cur=toc[k], nxt=toc[k+1];
-  /* فقراتُ الباب: قد يمتدّ على جزأين، فيُجمع من كليهما */
   const from={c:cur[1],i:cur[2]};
   const to=nxt?{c:nxt[1],i:nxt[2]}:{c:meta.chunks-1,i:Infinity};
   const rows=[];
@@ -541,14 +566,28 @@ async function readBab(slug,ci,pi,part){
     const b=(c===to.c)?Math.min(to.i,r.length):r.length;
     for(let x=a;x<b;x++) rows.push(r[x]);
   }
+  /* الظرفُ الذي يقع فيه الباب، يُعرض فوق عنوانه */
+  let box=null;
+  for(let j=k-1;j>=0;j--) if(isBox(toc[j])){ box={ar:toc[j][0],c:toc[j][1],i:toc[j][2]}; break; }
   const parts=Math.max(1,Math.ceil(rows.length/BAB_MAX));
   const pt=Math.min(Math.max(0,part|0),parts-1);
-  const slice=rows.slice(pt*BAB_MAX,(pt+1)*BAB_MAX);
-  return {k,total:toc.length,title:babClean(cur[0]),v:cur[3],p:cur[4],
-          rows:slice,parts,part:pt,
-          prev:k>0?{k:k-1,ar:babClean(toc[k-1][0]),c:toc[k-1][1],i:toc[k-1][2]}:null,
-          next:toc[k+1]?{k:k+1,ar:babClean(toc[k+1][0]),c:toc[k+1][1],i:toc[k+1][2]}:null};
+  return {k,total:toc.length,title:babClean(cur[0]),v:cur[3],p:cur[4],box,
+          rows:rows.slice(pt*BAB_MAX,(pt+1)*BAB_MAX),parts,part:pt,
+          prev:step(-1),next:step(1)};
 }
+/* فهرسُ ما تحت الحاوي، يحلّ محلّ الصفحة الخاوية */
+function boxBody(base,b){
+  return '<div class="pane pad">'+
+    '<p class="evlead">هذا عنوانٌ حاوٍ لا نصَّ تحته، وإنّما تليه أبوابُه. اخترْ منها:</p>'+
+    '<div class="tiles">'+b.kids.map(x=>
+      '<a class="tile wrap" href="'+base+'/'+x.t[1]+'/'+x.t[2]+'">'+
+      '<span class="n">'+(isBox(x.t)?'▣':'<bdi>'+AR(x.t[5]||0)+'</bdi>')+'</span>'+
+      '<span class="t"><b>'+esc(babClean(x.t[0]))+'</b>'+
+      '<span>'+(isBox(x.t)?'قسمٌ فيه أبواب':'<bdi>'+AR(x.t[5]||0)+'</bdi> فقرة')+
+      ' <span class="sep">•</span> ج'+AR(x.t[3])+' ص'+AR(x.t[4])+'</span></span></a>').join('')+
+    '</div></div>';
+}
+
 /* شريطُ التنقّل بين الأبواب: يُسمّى البابُ ولا يُقال «التالي» مجرَّدًا */
 function babNav(base,b){
   const lnk=(x,dir)=>x
@@ -557,6 +596,7 @@ function babNav(base,b){
   const mid=b.parts>1
     ? `<span class="mid"><bdi>${AR(b.part+1)}/${AR(b.parts)}</bdi> من الباب</span>`
     : `<span class="mid"><bdi>باب ${AR(b.k+1)}</bdi> من <bdi>${AR(b.total)}</bdi></span>`;
+  if(b.box) return "";
   return `<div class="pager babnav">${lnk(b.prev,"الباب السابق")}${mid}${lnk(b.next,"الباب التالي")}</div>`;
 }
 /* تتمّةُ بابٍ طال: تنقّلٌ داخله لا خروجٌ منه */
@@ -1228,4 +1268,28 @@ function siraTier(t,{full=false}={}){
   return '<div class="tier'+(full?" tier-full":"")+'">'+TIERS.map(([k,ar,note])=>
     '<span class="tw '+(t[k]?"on":"off")+'"'+(full?'':' title="'+esc(ar+"؛ "+note)+'"')+'>'+
     '<i></i>'+esc(ar)+'</span>').join("")+'</div>';
+}
+
+/* فهرسُ الكتاب مجموعاتٍ: الحاوي عنوانُ مجموعةٍ وما تحته أبوابُها بعددِ
+   فقراتها — بدل قائمةٍ مسطّحة يُنقر فيها على عناوينَ لا نصَّ تحتها. */
+function tocGroups(toc,hrefBase){
+  let out="",open=false,shown=0;
+  const tile=(t)=>'<a class="tile wrap" href="'+hrefBase+t[1]+'/'+t[2]+'">'+
+    '<span class="n"><bdi>'+AR(t[5]==null?0:t[5])+'</bdi></span>'+
+    '<span class="t"><b>'+esc(babClean(t[0]))+'</b>'+
+    '<span>ج'+AR(t[3])+' ص'+AR(t[4])+'</span></span></a>';
+  for(const t of toc){
+    if(shown>=700) break;
+    if(isBox(t)){
+      if(open) out+='</div>';
+      out+='<div class="tocg"><h3>'+esc(babClean(t[0]))+'</h3></div><div class="tiles">';
+      open=true;
+    }else{
+      if(!open){ out+='<div class="tiles">'; open=true; }
+      out+=tile(t); shown++;
+    }
+  }
+  if(open) out+='</div>';
+  return out+(toc.filter(t=>!isBox(t)).length>700
+    ? '<div class="note">عُرض أوّل <bdi>٧٠٠</bdi> باب؛ والبحثُ يبلغ ما وراءها.</div>':'');
 }
