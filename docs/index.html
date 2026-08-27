@@ -11,7 +11,7 @@
 <title>تُراث · القرآن والسنّة موصولةً بمصادرها</title></head><body>
 <header class="nav"><div class="navin">
   <a class="brand" href="index.html"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2.2l2.3 1.9 3-.3.8 2.9 2.6 1.6-1.2 2.8 1.2 2.8-2.6 1.6-.8 2.9-3-.3L12 21.8l-2.3-1.9-3 .3-.8-2.9L3.3 15.7l1.2-2.8-1.2-2.8 2.6-1.6.8-2.9 3 .3z" stroke="currentColor" stroke-width="1.2"/><circle cx="12" cy="12" r="3.6" stroke="currentColor" stroke-width="1.2"/></svg>تُراث</a>
-  <nav class="navl"><a href="tafsir.html">التفسير</a><a href="hadith.html">الحديث</a><a href="rijal.html">الرواة</a><a href="sharh.html">الشروح</a><a href="sira.html">السيرة</a>
+  <nav class="navl"><a href="tafsir.html">التفسير</a><a href="hadith.html">الحديث</a><a href="rijal.html">الرواة</a><a href="sharh.html">الشروح</a><a href="sira.html">السيرة</a><a href="fiqh.html">الفقه</a>
   <span id="mnw"></span><span id="tg"></span></nav>
 </div></header>
 <div class="home">
@@ -65,6 +65,14 @@
     <div class="car" id="carSr"></div>
   </section>
 
+  <section class="band" id="s-fiqh">
+    <div class="sect"><div class="l"><div class="k">خريطةُ خلافٍ لا فتوى</div>
+      <h2>الفقه</h2>
+      <p>ما أجمع عليه أهل العلم مرقّمًا بنصّه من «الإجماع» لابن المنذر، وما اختُلف فيه من «بداية المجتهد» لابن رشد: الأقوالُ منسوبةً لأصحابها، وسببُ الخلاف كما ذكره هو، وأدلّتُه موصولةً بالمصحف وكتب الحديث. المنصة تعرض ولا تُفتي.</p></div>
+      <a class="more" href="fiqh.html">افتح القسم ←</a></div>
+    <div class="car" id="carF"></div>
+  </section>
+
   <section class="band">
     <div class="sect"><div class="l"><div class="k">دليل</div><h2>كيف تستعمل المنصة</h2>
       <p>المنصة أداة بحث ومراجعة، لا مرجعًا يُفتي.</p></div></div>
@@ -116,6 +124,8 @@ theme(); document.getElementById('tg').innerHTML=TGL; mountFooter(document.getEl
  const B=SEARCH.books,T=SEARCH.tafsirs,S=SEARCH.surahs;
  const SHB=await sharhBooks().catch(()=>[]);
  const SRE=await siraEvents().catch(()=>[]);
+ const FQB=await fiqhBooks().catch(()=>[]);
+ const FQS=await fiqhSummary().catch(()=>({ijmac:0,masail:0}));
  // اختصارات تنزل إلى الأقسام، وتحت كلٍّ منها ما فيه من عدد
  const th=Object.values(B).reduce((a,b)=>a+b.total,0);
  let rn=0; try{ rn=Object.keys(await rijalIndex()).length; }catch(e){}
@@ -126,6 +136,7 @@ theme(); document.getElementById('tg').innerHTML=TGL; mountFooter(document.getEl
   hadith:'<path d="M6 3.5h9l4 4v13H6zM15 3.5V8h4"/><path d="M9 12.5h7M9 16h5"/>',
   rijal:'<circle cx="9" cy="8.5" r="3"/><path d="M3.5 19.5c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/><path d="M16 6.2a3 3 0 010 5.6M17.5 19.5c0-2-.7-3.6-1.8-4.6"/>',
   sharh:'<path d="M4 4.5h16v11H9l-5 4z"/><path d="M8 8.5h8M8 11.5h5"/>',
+  fiqh:'<path d="M12 4.5v15"/><path d="M4 8.5l8-4 8 4"/><path d="M6.5 9.5l-2 6h4zM17.5 9.5l-2 6h4z"/>',
   sira:'<path d="M12 3.5v17"/><circle cx="12" cy="7" r="2"/><circle cx="12" cy="13" r="2"/><circle cx="12" cy="19" r="1.6"/><path d="M14.5 7h5M14.5 13h4M4.5 19h5.6"/>'};
  const ic=(k)=>`<svg class="ji" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">${ICO[k]}</svg>`;
  document.getElementById('jump').innerHTML=[
@@ -134,6 +145,7 @@ theme(); document.getElementById('tg').innerHTML=TGL; mountFooter(document.getEl
    ['s-rijal','rijal','الرواة',AR(rn)+' راويًا','لكل راوٍ طبقتُه وبلدُه وشيوخُه وتلاميذُه وما رواه في الكتب.'],
    ['s-sharh','sharh','شرح الحديث',AR(SHB.length)+' شروح','فتح الباري والمنهاج وعون المعبود وتحفة الأحوذي، تُبحث بألفاظ المتن.'],
    ['s-sira','sira','السيرة',AR(SRE.length)+' حدثًا','لكل حدثٍ ما قام عليه: آياتُه وأحاديثُه وما ساقه أهل السيرة.'],
+   ['s-fiqh','fiqh','الفقه',AR(FQS.ijmac+FQS.masail)+' مسألة','ما أُجمع عليه وما اختُلف فيه، بأقواله وسببِ خلافه وأدلّته. تعرض ولا تُفتي.'],
  ].map(([id,k,t,n,d])=>`<a class="jmp" href="#${id}">${ic(k)}<span class="jt"><b>${t}</b>
      <span class="jn"><bdi>${n}</bdi></span></span><span class="jd">${d}</span></a>`).join('');
  // النزول سلسًا مع ترك مسافةٍ للترويسة اللاصقة
@@ -145,6 +157,13 @@ theme(); document.getElementById('tg').innerHTML=TGL; mountFooter(document.getEl
    scrollTo({top:y,behavior:'smooth'});
    history.replaceState(null,'',a.getAttribute('href'));
  });
+ // شريط الفقه
+ if(FQB.length) carousel(document.getElementById('carF'),{slides:FQB.map(b=>
+   `<a class="scard" href="fiqh.html#/b/${b.slug}"><div class="top"><span class="idx">${esc(b.kind||'فقه')}</span></div>
+     <h3>${esc(b.ar)}</h3><div class="by">${esc(b.author)}</div>
+     <p>${esc(b.note||b.full)}</p>
+     <div class="go">افتح ←</div></a>`)});
+
  // شريط السيرة — أوّل ما يُعرض من كل حدثٍ شريطُ توثيقه
  carousel(document.getElementById('carSr'),{slides:SRE.map(e=>
    `<a class="scard" href="sira.html#/${e.id}"><div class="top"><span class="idx">${esc(e.when)}</span></div>

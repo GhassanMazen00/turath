@@ -108,7 +108,7 @@ function gclass(g){
    يبحث في: أسماء السور · كتب التفسير · كتب الحديث وأبوابها · متون الأحاديث.
    فهارس الأحاديث تُجلب عند الحاجة وتُخزَّن، فالبحث الأول أبطأ ثم يصير فوريًا. */
 const SEARCH={books:null,surahs:null,tafsirs:null,idx:{},scope:"all",kind:"all",quran:null,
-  rijal:null,sira:null,asbab:null,shb:null,srb:null};
+  rijal:null,sira:null,asbab:null,shb:null,srb:null,fqb:null,fqm:null};
 
 async function searchInit(){
   const [b,s,t]=await Promise.all([api.local("books.json"),api.local("surahs.json"),api.local("tafsirs.json")]);
@@ -150,7 +150,25 @@ async function loadAsbabIdx(){
 async function loadColBooks(){
   if(!SEARCH.shb) SEARCH.shb=await bookSet("sharh").catch(()=>[]);
   if(!SEARCH.srb) SEARCH.srb=await bookSet("sira").catch(()=>[]);
-  return [...(SEARCH.shb||[]),...(SEARCH.srb||[])];
+  if(!SEARCH.fqb) SEARCH.fqb=await bookSet("fiqh").catch(()=>[]);
+  return [...(SEARCH.shb||[]),...(SEARCH.srb||[]),...(SEARCH.fqb||[])];
+}
+/* مسائلُ الفقه: تُبحث في نصّها، ولكلٍّ موضعُه ووسمُه */
+async function loadFiqhMasail(){
+  if(!SEARCH.fqm){
+    const [m,j]=await Promise.all([api.local("fiqh/masail.json").catch(()=>[]),
+                                   api.local("fiqh/ijmac.json").catch(()=>[])]);
+    SEARCH.fqm=[...m.map(x=>({...x,src:"khilaf"})),
+                ...j.map(x=>({t:x.t,kitab:x.kitab,bab:x.bab,v:x.v,p:x.p,n:x.n,tags:["ijmac"],src:"ijmac"}))]
+      .map(x=>[x,norm(x.t)]);
+  }
+  return SEARCH.fqm;
+}
+function fiqhHits(q,limit=20){
+  const n=norm(q); if(n.length<3||!SEARCH.fqm) return [];
+  const out=[];
+  for(const [x,t] of SEARCH.fqm){ if(t.indexOf(n)<0) continue; out.push(x); if(out.length>=limit) break; }
+  return out;
 }
 /* ما يلزم لكلّ مرشّح — يُجلب مرّةً ثم يُخزَّن */
 async function searchNeeds(kind){
@@ -159,7 +177,8 @@ async function searchNeeds(kind){
   if(all||kind==="rijal") jobs.push(loadRijalIdx());
   if(all||kind==="sira")  jobs.push(loadSiraIdx());
   if(all||kind==="asbab") jobs.push(loadAsbabIdx());
-  if(all||kind==="sharh"||kind==="sira") jobs.push(loadColBooks());
+  if(all||kind==="sharh"||kind==="sira"||kind==="fiqh") jobs.push(loadColBooks());
+  if(all||kind==="fiqh") jobs.push(loadFiqhMasail());
   await Promise.all(jobs);
 }
 /* أسبابُ النزول: بحثٌ في نصّها، ومفتاحُها سورةٌ وآية */
@@ -214,10 +233,12 @@ function quickHits(q,kind){
     }
   }
   /* كتب الشروح والسيرة بأسمائها ومؤلّفيها */
-  if(want("sharh")||want("sira")){
-    for(const b of [...(SEARCH.shb||[]),...(SEARCH.srb||[])]){
+  if(want("sharh")||want("sira")||want("fiqh")){
+    for(const b of [...(SEARCH.shb||[]),...(SEARCH.srb||[]),...(SEARCH.fqb||[])]){
       if(!(norm(b.ar).includes(n)||norm(b.full||"").includes(n)||norm(b.author||"").includes(n)))continue;
-      const page=(SEARCH.srb||[]).some(x=>x.slug===b.slug)?`sira.html#/b/${b.slug}`:`sharh.html#/${b.slug}`;
+      const page=(SEARCH.srb||[]).some(x=>x.slug===b.slug)?`sira.html#/b/${b.slug}`
+                :(SEARCH.fqb||[]).some(x=>x.slug===b.slug)?`fiqh.html#/b/${b.slug}`
+                :`sharh.html#/${b.slug}`;
       out.push({kind:"كتاب",title:b.ar,sub:`${b.author} · ${AR(b.paras)} فقرة`,href:page});
     }
   }
@@ -271,13 +292,13 @@ function hl(t,q){const i=t.indexOf(q); if(i<0)return esc(t);
    يُنزل عشرات الميغابايتات على من لم يردها. */
 const KINDS=[["all","كل المحتوى"],["hadith","الحديث"],["quran","القرآن"],
   ["rijal","الرواة"],["sharh","الشروح"],["sira","السيرة"],
-  ["asbab","أسباب النزول"],["tafsir","كتب التفسير"]];
+  ["fiqh","الفقه"],["asbab","أسباب النزول"],["tafsir","كتب التفسير"]];
 
 /* بحثٌ في نصوص كتب الشروح والسيرة — بالآلة نفسها المستعملة في صفحاتها */
 async function colTextHits(q,which,onprog){
   const books=await loadColBooks();
-  const pick=books.filter(b=>which==="sharh" ? (SEARCH.shb||[]).some(x=>x.slug===b.slug)
-                                             : (SEARCH.srb||[]).some(x=>x.slug===b.slug));
+  const set=which==="sharh"?SEARCH.shb:which==="sira"?SEARCH.srb:SEARCH.fqb;
+  const pick=books.filter(b=>(set||[]).some(x=>x.slug===b.slug));
   const out=[]; let done=0;
   for(const b of pick){
     try{
@@ -362,6 +383,24 @@ function mountSearch(root,{autofocus=false}={}){
     }
 
     /* نصوصُ الشروح وكتب السيرة: تُمسح بطلبٍ صريح لثقلها */
+    /* الفقه: مسائلُه أوّلًا فهي المقصودة، ثم نصوصُ كتبه */
+    if(kind==="fiqh"){
+      const ms=fiqhHits(q,20);
+      const cards=ms.map(x=>{
+        const t=x.t.length>420?x.t.slice(0,420)+"…":x.t;
+        const href=x.src==="ijmac"?`fiqh.html#/ijmac/${encodeURIComponent(x.kitab||"")}`
+                                  :`fiqh.html#/khilaf/${encodeURIComponent(x.kitab||"")}`;
+        return `<a class="hit" href="${href}"><div class="m">${fiqhTags(x.tags)}
+          <span>${esc(x.kitab||"")}${x.bab?" <span class=\"sep\">•</span> "+esc(x.bab):""} <span class="sep">•</span> <bdi>ج${AR(x.v)} ص${AR(x.p)}</bdi></span></div>
+          <div class="tx amiri">${sharhMark(t,q)}</div></a>`;}).join("");
+      const qk=quickHits(q,kind).map(h=>`<a class="hit" href="${h.href}"><div class="m"><span class="tag c">${esc(h.kind)}</span>
+        <span>${esc(h.sub)}</span></div><div class="tx">${esc(h.title)}</div></a>`).join("");
+      out.innerHTML=`<div class="sstat"><bdi>${AR(ms.length)} مسألة</bdi></div>`+qk+
+        (cards||`<div class="msg">لا مسائل لـ «${esc(q)}»</div>`)+
+        `<div class="note">القسمُ يعرض ولا يُفتي؛ والمسألةُ بلفظ صاحبها وموضعِه.</div>`;
+      return;
+    }
+
     if(kind==="sharh"||kind==="sira"){
       draw(`<div class="sstat"><span class="spin"></span><span>يبحث في الكتب…</span><span class="bar"><i style="width:8%"></i></span></div>`,[],[]);
       const res=await colTextHits(q,kind,(d,t,c)=>{ if(my!==seq)return;
@@ -456,6 +495,7 @@ async function bookSet(col){
 const bookDir=(slug)=>SH.dir[slug]||"sharh";
 async function sharhBooks(){ SH.books=await bookSet("sharh"); return SH.books; }
 async function siraBooks(){ return bookSet("sira"); }
+async function fiqhBooks(){ return bookSet("fiqh"); }
 async function sharhMeta(slug){
   if(SH.meta[slug]) return SH.meta[slug];
   const bs=await sharhBooks(); return bs.find(b=>b.slug===slug);
@@ -672,6 +712,7 @@ const SOURCES=[
  ["نصّ القرآن الكريم","الرسم الإملائي المعياري.","https://github.com/fawazahmed0/quran-api"],
  ["كتب التفسير","ثمانية عشر كتابًا من الطبري وابن كثير والقرطبي إلى ابن عاشور.","https://github.com/spa5k/tafsir_api"],
  ["شروح الأحاديث","تُجلب من الموسوعة الحديثية للدرر السنية عند توفّر الاتصال.","https://dorar.net"],
+ ["كتب الفقه المقارن","بداية المجتهد لابن رشد، والإجماع لابن المنذر، والمغني لابن قدامة، من مدوّنة OpenITI الأكاديمية المنشورة. ويُعرض منها ما صرّح به مصنّفوها من اتّفاقٍ وخلافٍ وسببِ خلاف، ولا تُفتي المنصة ولا ترجّح.","https://github.com/OpenITI"],
  ["ثغرةٌ معلومة في المتون","‏٤٠٨ أحاديث من ٣٦٬٥١٢ (١٫١٪) خلا مصدرُ المتون من نصّها، أكثرُها في مقدّمتَي صحيح مسلم وسنن النسائي. أرقامُها وأبوابُها وأحكامُها ثابتة، ويُقال في صفحاتها صراحةً إنّ المتن لم يرد. وقد فُحصت النسخة العربية الثانية من المصدر نفسه فوُجدت الثغرةُ فيها كما هي.","https://github.com/fawazahmed0/hadith-api"],
  ["شروح الحديث: أربعة كتب","فتح الباري لابن حجر، والمنهاج للنووي، وعون المعبود، وتحفة الأحوذي، من مدوّنة OpenITI الأكاديمية المنشورة، نصوصًا مرقونة لا ممسوحة ضوئيًّا.","https://github.com/OpenITI"],
 ];
@@ -1079,6 +1120,24 @@ function asbabBlock(list){
     '<div class="note">كتابُ أسبابِ نزولٍ يسوق الرواية بإسنادها، وفيه المرسلُ والضعيف. '+
     'يُقرأ على أنّه كذلك، والمنصة تنقل ولا ترجّح.</div>';
 }
+
+/* ── الفقه ──
+ * القسمُ خريطةُ خلافٍ لا فتوى. تُعرض المسألةُ بلفظ صاحبها، وتُوسَم بما
+ * صرّح به هو: «اتفقوا» و«واختلفوا» و«وسبب اختلافهم». ولا يُقال فيها
+ * «الراجح» ولا يُجاب عن «ما حكم كذا» — وهذا شرطُ المنصة لا زينةَ قول.
+ */
+const FQ={m:null,j:null};
+async function fiqhMasail(){ if(!FQ.m) FQ.m=await api.local("fiqh/masail.json"); return FQ.m; }
+async function fiqhIjmac(){ if(!FQ.j) FQ.j=await api.local("fiqh/ijmac.json"); return FQ.j; }
+async function fiqhSummary(){ if(!FQ.s) FQ.s=await api.local("fiqh/summary.json"); return FQ.s; }
+const FQTAG={ijmac:["موضع اتّفاق","ok"],khilaf:["موضع خلاف","mid"],sabab:["سبب الخلاف","acc"]};
+function fiqhTags(tags){
+  return (tags||[]).map(t=>{const [ar,c]=FQTAG[t]||[t,""];
+    return '<span class="ftag f-'+c+'">'+esc(ar)+'</span>';}).join("");
+}
+const FIQH_NOTE='<div class="note fnote">هذا القسم <b>يعرض ولا يُفتي</b>. تُنقل المسألة بلفظ '+
+ 'صاحبها وموضعِه من كتابه، ويُبيَّن ما صرّح به من اتّفاقٍ أو خلافٍ أو سببٍ للخلاف. '+
+ 'ولا تقول المنصة «الراجح» ولا تُجيب عن «ما حكم كذا» — ومن أراد العمل فليسأل أهل العلم.</div>';
 
 const SR={ev:null};
 async function siraEvents(){ if(!SR.ev) SR.ev=await api.local("sira/events.json"); return SR.ev; }
