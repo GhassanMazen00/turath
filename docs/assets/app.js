@@ -514,6 +514,71 @@ async function sharhChunk(slug,n){
   if(!SH.chunk[k]) SH.chunk[k]=await api.local(`${bookDir(slug)}/${slug}/c${n}.json`);
   return SH.chunk[k];
 }
+/* ── القراءة بابًا بابًا ──
+ * كان القارئ ينتقل بأربعَ عشرةَ فقرةً في كلّ ضغطة: عددٌ لا معنى له في
+ * الكتاب، فيبدأ الموضعُ في وسط كلامٍ وينتهي في وسط آخر، و«السابق»
+ * و«التالي» لا يدلّان على شيءٍ يعرفه القارئ. وفهرسُ الكتاب فيه حدودُ
+ * أبوابه أصلًا، فتُتّخذ حدودًا للصفحات: الصفحةُ بابٌ من عنوانه إلى
+ * العنوان الذي يليه، والتنقّلُ من بابٍ إلى بابٍ باسمه.
+ */
+const BAB_MAX=40;   // بابٌ أطولُ من هذا يُقسَّم، ويُقال إنّه تتمّة
+async function readBab(slug,ci,pi,part){
+  const toc=await sharhToc(slug);
+  const meta=await sharhMeta(slug);
+  if(!toc||!toc.length) return null;
+  /* البابُ الذي يقع فيه الموضع: آخرُ عنوانٍ لا يتجاوزه */
+  let k=0;
+  for(let j=0;j<toc.length;j++){ const t=toc[j];
+    if(t[1]<ci||(t[1]===ci&&t[2]<=pi)) k=j; else break; }
+  const cur=toc[k], nxt=toc[k+1];
+  /* فقراتُ الباب: قد يمتدّ على جزأين، فيُجمع من كليهما */
+  const from={c:cur[1],i:cur[2]};
+  const to=nxt?{c:nxt[1],i:nxt[2]}:{c:meta.chunks-1,i:Infinity};
+  const rows=[];
+  for(let c=from.c;c<=to.c;c++){
+    const r=await sharhChunk(slug,c);
+    const a=(c===from.c)?from.i:0;
+    const b=(c===to.c)?Math.min(to.i,r.length):r.length;
+    for(let x=a;x<b;x++) rows.push(r[x]);
+  }
+  const parts=Math.max(1,Math.ceil(rows.length/BAB_MAX));
+  const pt=Math.min(Math.max(0,part|0),parts-1);
+  const slice=rows.slice(pt*BAB_MAX,(pt+1)*BAB_MAX);
+  return {k,total:toc.length,title:babClean(cur[0]),v:cur[3],p:cur[4],
+          rows:slice,parts,part:pt,
+          prev:k>0?{k:k-1,ar:babClean(toc[k-1][0]),c:toc[k-1][1],i:toc[k-1][2]}:null,
+          next:toc[k+1]?{k:k+1,ar:babClean(toc[k+1][0]),c:toc[k+1][1],i:toc[k+1][2]}:null};
+}
+/* شريطُ التنقّل بين الأبواب: يُسمّى البابُ ولا يُقال «التالي» مجرَّدًا */
+function babNav(base,b){
+  const lnk=(x,dir)=>x
+    ? `<a href="${base}/${x.c}/${x.i}"><span class="bd">${dir}</span><span class="bn">${esc(x.ar.slice(0,42))}</span></a>`
+    : `<span class="off"><span class="bd">${dir}</span></span>`;
+  const mid=b.parts>1
+    ? `<span class="mid"><bdi>${AR(b.part+1)}/${AR(b.parts)}</bdi> من الباب</span>`
+    : `<span class="mid"><bdi>باب ${AR(b.k+1)}</bdi> من <bdi>${AR(b.total)}</bdi></span>`;
+  return `<div class="pager babnav">${lnk(b.prev,"الباب السابق")}${mid}${lnk(b.next,"الباب التالي")}</div>`;
+}
+/* تتمّةُ بابٍ طال: تنقّلٌ داخله لا خروجٌ منه */
+function babParts(base,b,ci,pi){
+  if(b.parts<2) return "";
+  const at=(n)=>`${base}/${ci}/${pi}/${n}`;
+  return `<div class="pager sub">`+
+    (b.part>0?`<a href="${at(b.part-1)}">‹ ما قبله من الباب</a>`:`<span class="off">‹ ما قبله</span>`)+
+    `<span class="mid">الباب طويل، فقُسّم</span>`+
+    (b.part<b.parts-1?`<a href="${at(b.part+1)}">تتمّة الباب ›</a>`:`<span class="off">تتمّته ›</span>`)+
+    `</div>`;
+}
+/* جسمُ الصفحة: عنوانُ الباب ثم فقراته كما وردت */
+function babBody(b,bookFull){
+  return '<div class="pane pad prose">'+
+    '<h3 class="shh babt">'+esc(b.title)+'</h3>'+
+    b.rows.map((r,k)=>(r[3]&&k===0)?'':
+      (r[3]?'<h3 class="shh">'+esc(babClean(r[0]))+'</h3>'
+           :'<p class="para">'+esc(r[0])+'</p>')).join('')+'</div>'+
+    '<div class="note">'+esc(bookFull)+'، ج'+AR(b.v)+' ص'+AR(b.p)+'. النصّ كما ورد في المصدر.</div>';
+}
+
 /* ألفاظٌ لا تدلّ على موضع: أدوات وألفاظ إسنادٍ ورفع، تَرِد في كل صفحة */
 const SH_STOP=new Set(("عن قال قالت قوله انه اني اذا الذي التي هذا هذه ذلك وقد كان كانت ثم "+
  "لا ما لم في من الي علي هو هي به له بن ابن ابي ابو رسول الله النبي صلي عليه وسلم "+

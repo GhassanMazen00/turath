@@ -34,7 +34,7 @@ function route(){
   const b=BS.find(x=>x.slug===p[0]);
   if(!b) return vBooks();
   if(p[1]==='q') return vSearch(b,p.slice(2).join('/'));
-  if(p[1]==='r') return vRead(b,+p[2]||0,+p[3]||0);
+  if(p[1]==='r') return vRead(b,+p[2]||0,+p[3]||0,+p[4]||0);
   return vBook(b);
 }
 function sideBooks(active){
@@ -102,32 +102,23 @@ async function vSearch(b,q){
       sharhRank(hits,q,null).map(h=>sharhCard(b.slug,h,q,null)).join('');
   }catch(e){ failed(res,e); }
 }
-async function vRead(b,ci,pi){
+async function vRead(b,ci,pi,part){
   sideBooks(b.slug);
   app().innerHTML='<nav class="crumb"><a href="#/">الشروح</a><span class="sep">›</span>'+
    '<a href="#/'+b.slug+'">'+esc(b.ar)+'</a><span class="sep">›</span><span>قراءة</span></nav>'+
    '<section class="ph" id="ph"></section>'+box(b)+'<div id="body"></div>'+FOOT;
-  wire(b); foot(); loading(document.getElementById('body'),'جارٍ فتح الموضع…');
+  wire(b); foot(); loading(document.getElementById('body'),'جارٍ فتح الباب…');
   try{
-    const rows=await sharhChunk(b.slug,ci);
-    const at=Math.min(Math.max(0,pi),rows.length-1);
-    const cur=rows[at];
-    document.getElementById('ph').innerHTML='<div class="k">'+esc(b.ar)+'</div>'+
-      '<h1>الجزء '+AR(cur[1])+'، صفحة '+AR(cur[2])+'</h1>'+
-      '<div class="m">'+esc(b.author)+'</div>';
-    const pg=()=>{const pv=at>0?'#/'+b.slug+'/r/'+ci+'/'+(at-1):(ci>0?'#/'+b.slug+'/r/'+(ci-1)+'/999999':null);
-      const nx=at<rows.length-1?'#/'+b.slug+'/r/'+ci+'/'+(at+1):(ci<b.chunks-1?'#/'+b.slug+'/r/'+(ci+1)+'/0':null);
-      return '<div class="pager">'+(pv?'<a href="'+pv+'">‹ السابق</a>':'<span class="off">‹ السابق</span>')+
-      '<span class="mid"><bdi>ج'+AR(cur[1])+' ص'+AR(cur[2])+'</bdi></span>'+
-      (nx?'<a href="'+nx+'">التالي ›</a>':'<span class="off">التالي ›</span>')+'</div>';};
-    // الموضع وما يليه، ليقرأ متّصلًا
-    const win=rows.slice(at,Math.min(rows.length,at+12));
-    document.getElementById('body').innerHTML=pg()+
-      '<div class="pane pad prose">'+win.map((r,k)=>
-        (r[3]?'<h3 class="shh">'+esc(r[0])+'</h3>':
-         '<p class="para'+(k===0?' here':'')+'">'+esc(r[0])+'</p>')).join('')+'</div>'+
-      '<div class="note">'+esc(b.full)+'، ج'+AR(cur[1])+' ص'+AR(cur[2])+'. النصّ كما ورد في المصدر.</div>'+pg();
+    const bb=await readBab(b.slug,ci,pi,part);
+    if(!bb) throw new Error('لا فهرس لهذا الكتاب');
+    const base='#/'+b.slug+'/r';
+    document.getElementById('ph').innerHTML='<div class="k">'+esc(b.ar)+'<span class="sep">•</span>'+esc(b.author)+'</div>'+
+      '<h1>'+esc(bb.title)+'</h1><div class="m">ج'+AR(bb.v)+' ص'+AR(bb.p)+'</div>';
+    document.getElementById('body').innerHTML=
+      babNav(base,bb)+babParts(base,bb,ci,pi)+babBody(bb,b.full)+
+      babParts(base,bb,ci,pi)+babNav(base,bb)+
+      '<div class="acts"><a class="act" href="#/'+b.slug+'">كل أبواب '+esc(b.ar)+'</a></div>';
     scrollTo(0,0);
-  }catch(e){ failed(document.getElementById('body'),e); }
+  }catch(err){ failed(document.getElementById('body'),err); }
 }
 </script></body></html>

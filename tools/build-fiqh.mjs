@@ -18,6 +18,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { norm } from "./lib/openiti.mjs";
+import { cleanHead } from "./lib/ingest.mjs";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 const DATA = path.join(ROOT, "docs", "data");
@@ -74,7 +75,11 @@ function buildIjmac() {
     const rows = rd(path.join(FIQH, slug, `c${ci}.json`));
     rows.forEach((r, i) => {
       const [t, v, p, lvl] = r;
-      if (lvl) { if (/^كتاب|^ما أجمع/.test(t)) { kitab = t; bab = ""; } else bab = t; return; }
+      /* عناوينُ هذه الطبعة تحمل علاماتِ المدوّنة («CHECK»، «AUTO»)، وهي
+         تُنزع في الفهرس ولا تُنزع في الفقرات. فتُنزع هنا أيضًا، وإلّا لم
+         يُطابَق «كتاب» في أوّل العنوان فضاع تصنيفُ المسائل كلِّه. */
+      const h = cleanHead(t);
+      if (lvl) { if (/^كتاب|^ما أجمع/.test(h)) { kitab = h; bab = ""; } else bab = h; return; }
       const m = t.match(/^(\d+)\s*[-–]\s*(.+)$/s);
       if (!m) return;
       if (!/أجمع|اتفق/.test(m[2].slice(0, 60))) return;
@@ -99,8 +104,8 @@ function buildMasail() {
     const rows = rd(path.join(FIQH, slug, `c${ci}.json`));
     rows.forEach((r, i) => {
       const [t, v, p, lvl] = r;
-      if (lvl) { if (/^\[?كتاب/.test(t)) { kitab = t.replace(/^\[|\]$/g, ""); bab = ""; }
-                 else bab = t.replace(/^\[|\]$/g, ""); return; }
+      const h = cleanHead(t);
+      if (lvl) { if (/^كتاب/.test(h)) { kitab = h; bab = ""; } else bab = h; return; }
       const tags = MARK.filter(([, re]) => re.test(t)).map(([k]) => k);
       if (!tags.length) return;
 
@@ -142,9 +147,22 @@ const summary = {
   sabab: byTag("sabab"),
   ayat: masail.reduce((a, m) => a + m.ayat.length, 0),
   ahadith: masail.reduce((a, m) => a + m.ahadith.length, 0),
-  kutubIjmac: [...new Set(ijmac.map((x) => x.kitab).filter(Boolean))],
-  kutubMasail: [...new Set(masail.map((x) => x.kitab).filter(Boolean))],
+  /* الكتبُ بعددِ مسائلها، ليُعرض فهرسٌ مرتَّبٌ لا كومةُ أزرار */
+  kutubIjmac: countBy(ijmac),
+  kutubMasail: countBy(masail),
 };
+function countBy(rows) {
+  const m = new Map();
+  for (const r of rows) {
+    if (!r.kitab) continue;
+    const e = m.get(r.kitab) || { ar: r.kitab, n: 0, khilaf: 0, sabab: 0 };
+    e.n++;
+    if (r.tags && r.tags.includes("khilaf")) e.khilaf++;
+    if (r.tags && r.tags.includes("sabab")) e.sabab++;
+    m.set(r.kitab, e);
+  }
+  return [...m.values()];
+}
 fs.writeFileSync(path.join(FIQH, "summary.json"), JSON.stringify(summary), "utf8");
 
 console.log(`مسائل الإجماع (ابن المنذر): ${ijmac.length} مرقّمة`);

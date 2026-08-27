@@ -31,7 +31,7 @@ function route(){
   const p=h?h.split('/'):[];
   if(p[0]==='b'){ const b=BK.find(x=>x.slug===p[1]); if(!b)return vHome();
     if(p[2]==='q') return vSearch(b,p.slice(3).join('/'));
-    if(p[2]==='r') return vRead(b,+p[3]||0,+p[4]||0);
+    if(p[2]==='r') return vRead(b,+p[3]||0,+p[4]||0,+p[5]||0);
     return vBook(b); }
   if(p[0]==='ijmac') return vIjmac(p[1]?decodeURIComponent(p[1]):'');
   if(p[0]==='khilaf') return vKhilaf(p[1]?decodeURIComponent(p[1]):'');
@@ -81,51 +81,81 @@ async function vHome(){
    '</div>';
 }
 
+/* ── فهرسُ الكتب: صفحةٌ مستقلّة لكل كتاب ──
+   كانت الكتبُ الثمانيةَ والستّون تُكوَّم أزرارًا فوق القائمة، فلا تُقرأ
+   ولا يُعرف أيُّها أغزر. فصارت فهرسًا لكلٍّ عددُ مسائله، ولكلٍّ صفحتُه. */
+function kutubIndex(list,base,note){
+  return '<p class="evlead">'+note+'</p>'+
+    '<div class="kgrid">'+list.map(k=>
+      '<a class="kcard" href="'+base+'/'+encodeURIComponent(k.ar)+'">'+
+      '<b>'+esc(k.ar.replace(/^كتاب\s+/,''))+'</b>'+
+      '<span class="kn"><bdi>'+AR(k.n)+'</bdi> مسألة'+
+      (k.sabab?'<span class="ks"><bdi>'+AR(k.sabab)+'</bdi> بسببها</span>':'')+'</span>'+
+      '</a>').join('')+'</div>';
+}
+function kutubNav(list,sel,base){
+  const i=list.findIndex(k=>k.ar===sel);
+  const pv=i>0?list[i-1]:null, nx=i>=0&&i<list.length-1?list[i+1]:null;
+  const lnk=(x,d)=>x?'<a href="'+base+'/'+encodeURIComponent(x.ar)+'"><span class="bd">'+d+'</span>'+
+      '<span class="bn">'+esc(x.ar)+'</span></a>':'<span class="off"><span class="bd">'+d+'</span></span>';
+  return '<div class="pager babnav">'+lnk(pv,'الكتاب السابق')+
+    '<span class="mid"><a href="'+base+'">كل الكتب</a></span>'+lnk(nx,'الكتاب التالي')+'</div>';
+}
+
 /* ── ما أُجمع عليه ── */
 async function vIjmac(kitab){
   sideNav('ijmac');
-  app().innerHTML='<nav class="crumb"><a href="#/">الفقه</a><span class="sep">›</span><span>ما أُجمع عليه</span></nav>'+
+  const sm=await fiqhSummary();
+  const kutub=sm.kutubIjmac||[];
+  const sel=kitab&&kutub.some(k=>k.ar===kitab)?kitab:'';
+  app().innerHTML='<nav class="crumb"><a href="#/">الفقه</a><span class="sep">›</span>'+
+   '<a href="#/ijmac">ما أُجمع عليه</a>'+(sel?'<span class="sep">›</span><span>'+esc(sel)+'</span>':'')+'</nav>'+
    '<section class="ph"><div class="k">الإجماع لابن المنذر<span class="sep">•</span>ت٣١٩هـ</div>'+
-   '<h1>ما أُجمع عليه</h1><div class="m" id="cnt"></div></section>'+
+   '<h1>'+esc(sel||'ما أُجمع عليه')+'</h1><div class="m" id="cnt"></div></section>'+
    FIQH_NOTE+'<div id="body"></div>'+FOOT;
-  foot(); loading(document.getElementById('body'),'جارٍ الجلب…');
-  const ij=await fiqhIjmac(); IJ=ij; sideNav('ijmac');
-  const kutub=[...new Set(ij.map(x=>x.kitab).filter(Boolean))];
-  const sel=kitab&&kutub.includes(kitab)?kitab:'';
-  const list=sel?ij.filter(x=>x.kitab===sel):ij;
-  document.getElementById('cnt').innerHTML='<bdi>'+AR(list.length)+' مسألة</bdi>'+
-    (sel?'<span class="sep">•</span>'+esc(sel):'');
-  document.getElementById('body').innerHTML=
-   '<div class="chips">'+[['','كل الكتب']].concat(kutub.map(k=>[k,k])).map(([v,l])=>
-     '<a class="chip" href="#/ijmac/'+encodeURIComponent(v)+'" aria-pressed="'+(v===sel)+'">'+esc(l)+'</a>').join('')+'</div>'+
-   '<div class="ijl">'+list.map(x=>
+  foot(); scrollTo(0,0);
+  if(!sel){
+    document.getElementById('cnt').innerHTML='<bdi>'+AR(sm.ijmac)+' مسألة</bdi><span class="sep">•</span><bdi>'+AR(kutub.length)+' كتابًا</bdi>';
+    document.getElementById('body').innerHTML=kutubIndex(kutub,'#/ijmac',
+      'مسائلُ مرقّمةٌ بنصّها فيما أجمع عليه أهل العلم. اختر كتابًا لتقرأ مسائله.');
+    return;
+  }
+  loading(document.getElementById('body'),'جارٍ الجلب…');
+  const ij=(await fiqhIjmac()).filter(x=>x.kitab===sel);
+  document.getElementById('cnt').innerHTML='<bdi>'+AR(ij.length)+' مسألة</bdi>';
+  document.getElementById('body').innerHTML=kutubNav(kutub,sel,'#/ijmac')+
+   '<div class="ijl">'+ij.map(x=>
      '<div class="ij"><span class="ijn"><bdi>'+AR(x.n)+'</bdi></span>'+
      '<div class="ijb"><p class="ijt amiri">'+esc(x.t)+'</p>'+
-     '<div class="ijm">'+esc(x.kitab||'')+(x.bab?'<span class="sep">•</span>'+esc(x.bab):'')+
-     '<span class="sep">•</span><a href="#/b/ijmac-ibn-almundhir/r/'+x.c+'/'+x.i+'">ج'+AR(x.v)+' ص'+AR(x.p)+'</a></div>'+
-     '</div></div>').join('')+'</div>';
-  scrollTo(0,0);
+     '<div class="ijm">'+esc(x.bab||'')+
+     '<span class="sep">•</span><a href="#/b/ijmac-ibn-almundhir/r/'+x.c+'/'+x.i+'">اقرأ الباب · ج'+AR(x.v)+' ص'+AR(x.p)+'</a></div>'+
+     '</div></div>').join('')+'</div>'+kutubNav(kutub,sel,'#/ijmac');
 }
 
 /* ── مسائل الخلاف ── */
 async function vKhilaf(kitab){
   sideNav('khilaf');
-  app().innerHTML='<nav class="crumb"><a href="#/">الفقه</a><span class="sep">›</span><span>مسائل الخلاف</span></nav>'+
+  const sm=await fiqhSummary();
+  const kutub=sm.kutubMasail||[];
+  const sel=kitab&&kutub.some(k=>k.ar===kitab)?kitab:'';
+  app().innerHTML='<nav class="crumb"><a href="#/">الفقه</a><span class="sep">›</span>'+
+   '<a href="#/khilaf">مسائل الخلاف</a>'+(sel?'<span class="sep">›</span><span>'+esc(sel)+'</span>':'')+'</nav>'+
    '<section class="ph"><div class="k">بداية المجتهد لابن رشد<span class="sep">•</span>ت٥٩٥هـ</div>'+
-   '<h1>مسائل الخلاف</h1><div class="m" id="cnt"></div></section>'+
+   '<h1>'+esc(sel||'مسائل الخلاف')+'</h1><div class="m" id="cnt"></div></section>'+
    FIQH_NOTE+'<div id="body"></div>'+FOOT;
-  foot(); loading(document.getElementById('body'),'جارٍ الجلب…');
-  const ms=await fiqhMasail(); MS=ms; sideNav('khilaf');
-  const kutub=[...new Set(ms.map(x=>x.kitab).filter(Boolean))];
-  const sel=kitab&&kutub.includes(kitab)?kitab:kutub[0];
-  const list=ms.filter(x=>x.kitab===sel);
-  document.getElementById('cnt').innerHTML='<bdi>'+AR(list.length)+' موضعًا</bdi><span class="sep">•</span>'+esc(sel||'');
-  const B=SEARCH.books||{};
-  const S=SEARCH.surahs||[];
-  document.getElementById('body').innerHTML=
-   '<div class="chips">'+kutub.map(k=>
-     '<a class="chip" href="#/khilaf/'+encodeURIComponent(k)+'" aria-pressed="'+(k===sel)+'">'+esc(k)+'</a>').join('')+'</div>'+
-   list.map(m=>{
+  foot(); scrollTo(0,0);
+  if(!sel){
+    document.getElementById('cnt').innerHTML='<bdi>'+AR(sm.masail)+' موضعًا</bdi><span class="sep">•</span><bdi>'+AR(kutub.length)+' كتابًا</bdi>';
+    document.getElementById('body').innerHTML=kutubIndex(kutub,'#/khilaf',
+      'الأقوالُ منسوبةً لأصحابها، ومنها ما يذكر ابن رشد فيه سببَ الخلاف نفسَه. اختر كتابًا.');
+    return;
+  }
+  loading(document.getElementById('body'),'جارٍ الجلب…');
+  const ms=(await fiqhMasail()).filter(x=>x.kitab===sel);
+  document.getElementById('cnt').innerHTML='<bdi>'+AR(ms.length)+' موضعًا</bdi>';
+  const B=SEARCH.books||{}, S=SEARCH.surahs||[];
+  document.getElementById('body').innerHTML=kutubNav(kutub,sel,'#/khilaf')+
+   ms.map(m=>{
      const ay=m.ayat.map(a=>{const su=S.find(x=>x.n===a.s);
        return '<a class="dlink" href="tafsir.html#/'+a.s+'/ar-tafsir-ibn-kathir/'+a.v+'">'+
        '<span class="dk">آية</span>'+esc(su?su.ar:'')+' <bdi>'+AR(a.v)+'</bdi></a>';}).join('');
@@ -134,15 +164,13 @@ async function vKhilaf(kitab){
        esc((B[k]||{}).ar||k)+' <bdi>'+AR(n)+'</bdi></a>').join('')).join('');
      return '<div class="masla">'+
        '<div class="mhead">'+fiqhTags(m.tags)+
-         '<span class="mp"><a href="#/b/bidayat-almujtahid/r/'+m.c+'/'+m.i+'">ج'+AR(m.v)+' ص'+AR(m.p)+'</a></span></div>'+
+         '<span class="mp"><a href="#/b/bidayat-almujtahid/r/'+m.c+'/'+m.i+'">اقرأ الباب · ج'+AR(m.v)+' ص'+AR(m.p)+'</a></span></div>'+
        (m.bab?'<div class="mbab">'+esc(m.bab)+'</div>':'')+
        '<p class="mtx amiri">'+esc(m.t)+'</p>'+
        ((ay||hd)?'<div class="dl"><span class="dlh">ما استُدلّ به في هذا الموضع</span>'+ay+hd+'</div>':'')+
      '</div>';}).join('')+
    '<div class="note">النصّ كما ورد في بداية المجتهد بجزئه وصفحته. والوسمُ مأخوذٌ من تصريح المصنّف '+
-   'نفسِه («اتفقوا»، «واختلفوا»، «وسبب اختلافهم») لا من حكمٍ علينا. والأدلّةُ ما اقتبسه هو، '+
-   'وُصلت بالمصحف وكتب الحديث بمطابقة اللفظ.</div>';
-  scrollTo(0,0);
+   'نفسِه («اتفقوا»، «واختلفوا»، «وسبب اختلافهم») لا من حكمٍ علينا.</div>'+kutubNav(kutub,sel,'#/khilaf');
 }
 
 /* ── الكتب: تصفُّحًا وبحثًا وقراءة ── */
@@ -186,29 +214,22 @@ async function vSearch(b,q){
         .replace(/<\/div>$/,'<a class="evgo" href="#/b/'+b.slug+'/r/'+h.c+'/'+h.i+'">اقرأ الموضع وما حوله ←</a></div>')).join('');
   }catch(e){ failed(res,e); }
 }
-async function vRead(b,ci,pi){
+async function vRead(b,ci,pi,part){
   sideNav(b.slug);
   app().innerHTML='<nav class="crumb"><a href="#/">الفقه</a><span class="sep">›</span>'+
    '<a href="#/b/'+b.slug+'">'+esc(b.ar)+'</a><span class="sep">›</span><span>قراءة</span></nav>'+
    '<section class="ph" id="ph"></section>'+box(b)+'<div id="body"></div>'+FOOT;
-  wire(b); foot(); loading(document.getElementById('body'),'جارٍ فتح الموضع…');
+  wire(b); foot(); loading(document.getElementById('body'),'جارٍ فتح الباب…');
   try{
-    const rows=await sharhChunk(b.slug,ci);
-    const at=Math.min(Math.max(0,pi),rows.length-1), cur=rows[at];
-    document.getElementById('ph').innerHTML='<div class="k">'+esc(b.ar)+'<span class="sep">•</span>'+esc(b.author)+'</div>'+
-      '<h1>الجزء '+AR(cur[1])+'، صفحة '+AR(cur[2])+'</h1><div class="m">'+esc(b.full)+'</div>';
+    const bb=await readBab(b.slug,ci,pi,part);
+    if(!bb) throw new Error('لا فهرس لهذا الكتاب');
     const base='#/b/'+b.slug+'/r';
-    const nav=()=>{const pv=at>0?base+'/'+ci+'/'+(at-1):(ci>0?base+'/'+(ci-1)+'/999999':null);
-      const nx=at<rows.length-1?base+'/'+ci+'/'+(at+1):(ci<b.chunks-1?base+'/'+(ci+1)+'/0':null);
-      return '<div class="pager">'+(pv?'<a href="'+pv+'">‹ السابق</a>':'<span class="off">‹ السابق</span>')+
-      '<span class="mid"><bdi>ج'+AR(cur[1])+' ص'+AR(cur[2])+'</bdi></span>'+
-      (nx?'<a href="'+nx+'">التالي ›</a>':'<span class="off">التالي ›</span>')+'</div>';};
-    const win=rows.slice(at,Math.min(rows.length,at+14));
-    document.getElementById('body').innerHTML=nav()+
-      '<div class="pane pad prose">'+win.map((r,k)=>
-        (r[3]?'<h3 class="shh">'+esc(r[0])+'</h3>':'<p class="para'+(k===0?' here':'')+'">'+esc(r[0])+'</p>')).join('')+'</div>'+
-      '<div class="note">'+esc(b.full)+'، ج'+AR(cur[1])+' ص'+AR(cur[2])+'. النصّ كما ورد في المصدر.</div>'+nav()+
-      '<div class="acts"><a class="act" href="#/b/'+b.slug+'">عُد إلى '+esc(b.ar)+' ←</a></div>';
+    document.getElementById('ph').innerHTML='<div class="k">'+esc(b.ar)+'<span class="sep">•</span>'+esc(b.author)+'</div>'+
+      '<h1>'+esc(bb.title)+'</h1><div class="m">ج'+AR(bb.v)+' ص'+AR(bb.p)+'</div>';
+    document.getElementById('body').innerHTML=
+      babNav(base,bb)+babParts(base,bb,ci,pi)+babBody(bb,b.full)+
+      babParts(base,bb,ci,pi)+babNav(base,bb)+
+      '<div class="acts"><a class="act" href="#/b/'+b.slug+'">كل أبواب '+esc(b.ar)+'</a></div>';
     scrollTo(0,0);
   }catch(err){ failed(document.getElementById('body'),err); }
 }
