@@ -23,13 +23,37 @@ export async function get(url) {
   }
 }
 
-/* عنوانُ الباب كما يُعرض: تُزال علاماتُ المحقّق وأرقامُه ويبقى اللفظ */
+/* عنوانُ الباب كما يُعرض: تُزال علاماتُ المحقّق والمدوّنة ويبقى اللفظ.
+   و«PARATEXT|» و«AUTO» و«CHECK» علاماتُ المدوّنة لا من الكتاب، فتُزال. */
 export function cleanHead(t) {
-  return String(t || "")
+  const out = String(t || "")
     .replace(/\[|\]/g, " ").replace(/\(¬?\d+\)/g, " ")
-    .replace(/^(CHECK|AUTO)\s+/i, "").replace(/^\d+\s*[-–]\s*/, "")
+    .replace(/\bPARATEXT\s*\|?/gi, " ").replace(/\b(CHECK|AUTO)\b/gi, " ")
+    .replace(/^\d+\s*[-–]\s*/, "")
+    /* طبعاتُ الشروح تُصدّر الترجمة برقمٍ وقوسٍ و«قوله»: «1 ( قوله باب … )».
+       وكان هذا يُنزع عند العرض لا عند البناء، فيُخزَّن العنوانُ بغير صورته
+       التي تُرى — فلا يُعرف العاطلُ منه. فصار النزعُ هنا مرّةً واحدة. */
+    .replace(/^\d+\s*/, "").replace(/^[(]\s*/, "").replace(/\s*[)]\s*$/, "")
+    .replace(/^\d+\s*/, "").replace(/^[(]\s*/, "").replace(/^قوله\s+/, "")
+    .replace(/\s*[)]\s*$/, "")
+    .replace(/^[\s*|:،.-]+/, "").replace(/[\s*|:،.-]+$/, "")
     .replace(/\s+/g, " ").trim();
+  return tidyParens(out);
 }
+/* أقواسُ المحقّق تتداخل وتفرغ: «أبواب ( ( شرح ) ) الطهارة». والتداخلُ
+   يزيد على طبقةٍ، فيُكرَّر الطيُّ حتى يستقرّ اللفظ. */
+function tidyParens(t) {
+  let prev;
+  do { prev = t;
+    t = t.replace(/\(\s*\)/g, " ").replace(/\(\s*\(/g, "(").replace(/\)\s*\)/g, ")");
+  } while (t !== prev);
+  return t.replace(/\s+/g, " ").trim();
+}
+/* عنوانٌ لا يدلّ: «باب» و«فصل» مجرَّدين، أو ما خلا من حرفٍ عربي.
+   وهي في المصدر كذلك — أبوابٌ بلا ترجمة — فلا تُغيَّر، وإنّما يُضمّ
+   إليها فاتحةُ كلامها لتُعرف. */
+const BARE = /^(باب|فصل|كتاب|أبواب|جماع|تتمة)$/;
+export const isBareHead = (t) => { const c = cleanHead(t); return c.length < 3 || BARE.test(c) || !/[ء-ي]/.test(c); };
 
 export async function buildBook(b, outDir, { minBlocks = 300 } = {}) {
   process.stdout.write(`\n${b.ar} — جلب… `);
@@ -63,13 +87,15 @@ export async function buildBook(b, outDir, { minBlocks = 300 } = {}) {
   blocks.forEach((x, i) => {
     if (!x.lvl) return;
     const t = cleanHead(x.t);
-    if (t.length > 2 && !/^PageV/.test(t)) heads.push({ t, i, v: x.v, p: x.p });
+    if (!/^PageV/.test(x.t)) heads.push({ t: x.t, i, v: x.v, p: x.p });
   });
   heads.forEach((h, j) => {
     const end = j + 1 < heads.length ? heads[j + 1].i : blocks.length;
-    let n = 0;
-    for (let x = h.i; x < end; x++) if (!blocks[x].lvl) n++;
-    toc.push([h.t, at[h.i][0], at[h.i][1], h.v, h.p, n]);
+    let n = 0, first = "";
+    for (let x = h.i; x < end; x++) if (!blocks[x].lvl) { n++; if (!first) first = blocks[x].t; }
+    /* فاتحةُ الكلام تُضمّ للعنوان الذي لا يدلّ، لا لغيره */
+    const hint = isBareHead(h.t) ? first.replace(/\s+/g, " ").slice(0, 70).trim() : "";
+    toc.push([cleanHead(h.t), at[h.i][0], at[h.i][1], h.v, h.p, n, hint]);
   });
 
   const inv = new Map();

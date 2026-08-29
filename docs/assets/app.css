@@ -786,3 +786,8 @@ a.scard:hover{border-color:var(--acc);background:var(--surf2);transform:translat
 .tocg:first-child{margin-top:0}
 .tocg h3{font-family:"Noto Naskh Arabic",serif;font-size:1.08rem;font-weight:700;color:var(--acc);margin:0}
 .tocg::after{content:"";flex:1;height:1px;background:var(--hair)}
+
+/* عناوينُ المحدّثين تطول عمدًا (يصف الباب ما فيه كلَّه)، فتُحدّ بسطرين
+   في البلاطات والتنقّل، والنصُّ كاملٌ في صفحة الباب وفي عنوان التلميح. */
+.tile .t b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tocg h3{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}

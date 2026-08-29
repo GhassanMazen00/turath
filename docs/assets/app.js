@@ -526,6 +526,13 @@ const BAB_MAX=40;   // بابٌ أطولُ من هذا يُقسَّم، ويُق
    ثم «الباب الأول») — فليس صفحةً تُقرأ، وإنّما ظرفٌ لما بعده. وعددُ
    فقراته مثبتٌ في الفهرس، فتُعرف بلا فتحِ الكتاب. */
 const isBox=(t)=>!(t[5]===undefined?1:t[5]);
+/* اسمُ الموضع كما يُعرض: عنوانُه، فإن كان عاطلًا («باب» مجرَّدًا) أو ذهب
+   بالتنظيف قامت فاتحةُ كلامه مقامه أو تلته. */
+function tocName(t){
+  const ttl=babClean(t[0]||""), hint=(t[6]||"").trim();
+  if(!ttl) return hint||"موضع";
+  return hint?ttl+" · "+hint:ttl;
+}
 /* ما يقع تحت الحاوي.
    الحاويات تتداخل: «كتاب الطهارة من الحدث» يليه «كتاب الوضوء» يليه أبوابُه.
    فالوقوفُ عند أوّل حاوٍ يُخرج الأوّلَ فارغًا. والحدُّ الصحيح: يُمضى حتى
@@ -549,13 +556,13 @@ async function readBab(slug,ci,pi,part){
   /* إن وقع على حاوٍ فليس صفحةً: يُعرض فهرسُ ما تحته */
   if(isBox(toc[k])){
     const kids=boxKids(toc,k);
-    if(kids.length) return {box:true,k,total:toc.length,title:toc[k][0],
+    if(kids.length) return {box:true,k,total:toc.length,title:tocName(toc[k]),
       v:toc[k][3],p:toc[k][4],kids};
   }
   /* السابقُ والتاليَ يتخطّيان الحاويات، فلا يُنقل القارئ إلى صفحةٍ خاوية */
   const step=(dir)=>{ let j=k+dir;
     while(j>=0&&j<toc.length&&isBox(toc[j])) j+=dir;
-    return (j>=0&&j<toc.length)?{k:j,ar:toc[j][0],c:toc[j][1],i:toc[j][2]}:null; };
+    return (j>=0&&j<toc.length)?{k:j,ar:tocName(toc[j]),c:toc[j][1],i:toc[j][2]}:null; };
   const cur=toc[k], nxt=toc[k+1];
   const from={c:cur[1],i:cur[2]};
   const to=nxt?{c:nxt[1],i:nxt[2]}:{c:meta.chunks-1,i:Infinity};
@@ -568,10 +575,10 @@ async function readBab(slug,ci,pi,part){
   }
   /* الظرفُ الذي يقع فيه الباب، يُعرض فوق عنوانه */
   let box=null;
-  for(let j=k-1;j>=0;j--) if(isBox(toc[j])){ box={ar:toc[j][0],c:toc[j][1],i:toc[j][2]}; break; }
+  for(let j=k-1;j>=0;j--) if(isBox(toc[j])){ box={ar:tocName(toc[j]),c:toc[j][1],i:toc[j][2]}; break; }
   const parts=Math.max(1,Math.ceil(rows.length/BAB_MAX));
   const pt=Math.min(Math.max(0,part|0),parts-1);
-  return {k,total:toc.length,title:babClean(cur[0]),v:cur[3],p:cur[4],box,
+  return {k,total:toc.length,title:tocName(cur),v:cur[3],p:cur[4],box,
           rows:rows.slice(pt*BAB_MAX,(pt+1)*BAB_MAX),parts,part:pt,
           prev:step(-1),next:step(1)};
 }
@@ -582,7 +589,7 @@ function boxBody(base,b){
     '<div class="tiles">'+b.kids.map(x=>
       '<a class="tile wrap" href="'+base+'/'+x.t[1]+'/'+x.t[2]+'">'+
       '<span class="n">'+(isBox(x.t)?'▣':'<bdi>'+AR(x.t[5]||0)+'</bdi>')+'</span>'+
-      '<span class="t"><b>'+esc(babClean(x.t[0]))+'</b>'+
+      '<span class="t"><b>'+esc(tocName(x.t))+'</b>'+
       '<span>'+(isBox(x.t)?'قسمٌ فيه أبواب':'<bdi>'+AR(x.t[5]||0)+'</bdi> فقرة')+
       ' <span class="sep">•</span> ج'+AR(x.t[3])+' ص'+AR(x.t[4])+'</span></span></a>').join('')+
     '</div></div>';
@@ -636,8 +643,8 @@ async function sharhBabBefore(slug,ci){
   for(const t of toc){ if(t[1]>=ci) break; last=t[0]; }
   return last;
 }
-/* عنوان الباب كما يُعرض: تُزال منه علامات الترقيم وأرقام الطبعة و«قوله»
-   كما يُفعل في فهرس الكتاب، ويبقى اللفظ كما ورد. */
+/* عنوان الباب كما يُعرض. والتنظيفُ صار عند البناء، فهذا حارسٌ لما بقي
+   من بياناتٍ قديمة لا غير. */
 function babClean(t){
   return String(t||"").replace(/^\d+\s*/,"").replace(/^[(]\s*/,"").replace(/\s*[)]\s*$/,"")
     .replace(/^\d+\s*/,"").replace(/^[(]\s*/,"").replace(/^قوله\s+/,"")
@@ -1276,18 +1283,22 @@ function tocGroups(toc,hrefBase){
   let out="",open=false,shown=0;
   const tile=(t)=>'<a class="tile wrap" href="'+hrefBase+t[1]+'/'+t[2]+'">'+
     '<span class="n"><bdi>'+AR(t[5]==null?0:t[5])+'</bdi></span>'+
-    '<span class="t"><b>'+esc(babClean(t[0]))+'</b>'+
+    '<span class="t"><b>'+esc(tocName(t))+'</b>'+
     '<span>ج'+AR(t[3])+' ص'+AR(t[4])+'</span></span></a>';
+  /* حاوٍ يتلوه حاوٍ كان يُخرج مجموعةً فارغة، وهو الذي يُرى عنوانَ كتابٍ
+     لا شيءَ تحته. فلا تُفتح المجموعةُ إلا عند أوّل بابٍ فيها، وتُجمع
+     عناوينُ الحاويات المتتابعة في ترويسةٍ واحدة. */
+  let pend=[];
   for(const t of toc){
     if(shown>=700) break;
-    if(isBox(t)){
-      if(open) out+='</div>';
-      out+='<div class="tocg"><h3>'+esc(babClean(t[0]))+'</h3></div><div class="tiles">';
-      open=true;
-    }else{
-      if(!open){ out+='<div class="tiles">'; open=true; }
-      out+=tile(t); shown++;
+    if(isBox(t)){ pend.push(tocName(t)); continue; }
+    if(pend.length){
+      if(open){ out+='</div>'; open=false; }
+      out+='<div class="tocg"><h3>'+esc(pend.join(" › "))+'</h3></div>';
+      pend=[];
     }
+    if(!open){ out+='<div class="tiles">'; open=true; }
+    out+=tile(t); shown++;
   }
   if(open) out+='</div>';
   return out+(toc.filter(t=>!isBox(t)).length>700

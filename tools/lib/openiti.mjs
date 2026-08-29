@@ -17,21 +17,35 @@ export function parseOpenITI(raw) {
     meta[m[2]] = m[3].trim();
   }
 
-  // جمع الأسطر: سطرٌ يبدأ بـ # يفتح فقرة، و~~ يواصلها
+  /* جمع الأسطر: سطرٌ يبدأ بـ # يفتح فقرة، و~~ يواصلها.
+   *
+   * والعنوانُ لا يواصَل: سطرُ العنوان في هذه المدوّنة لا يجاوز ثمانيةً
+   * وتسعين حرفًا في الكتب كلِّها، وما تلاه من ~~ فهو نصُّ ما تحته لا تتمّةُ
+   * اسمه. وكان يُضمّ إليه فتخرج عناوينُ في آلاف الحروف: «باب» يبتلع صفحةً
+   * من فتح الباري، وعنوانٌ في سيرة ابن هشام يبتلع قصيدةً بأكملها. فيُفصل
+   * ما بعده فقرةً مستقلّة — ولا يضيع حرف.
+   *
+   * وسطرٌ مُعلَّمٌ عنوانًا وفيه «%» ليس عنوانًا: «%» فاصلُ شطرَي البيت،
+   * فالسطرُ شعرٌ عُلّم خطأً في المصدر (ستّةُ مواضع في ابن هشام).
+   */
   const blocks = [];
   let cur = null;
+  const push = () => { if (cur) blocks.push(cur); cur = null; };
   for (const lnRaw of body.split("\n")) {
     const ln = lnRaw.replace(/\r$/, "");
     if (!ln.trim() || ln.startsWith("#META#")) continue;
     if (ln.startsWith("~~")) {
-      if (cur) cur.parts.push(ln.slice(2));
+      if (cur && !cur.level) cur.parts.push(ln.slice(2));
+      else { push(); cur = { level: 0, parts: [ln.slice(2)] }; }
       continue;
     }
-    if (cur) blocks.push(cur);
+    push();
     const h = ln.match(/^(#+)\s*(\|+)?\s*(.*)$/);
-    cur = { level: h && h[2] ? h[2].length : 0, parts: [h ? h[3] : ln] };
+    const txt = h ? h[3] : ln;
+    const isHead = !!(h && h[2]) && !txt.includes("%");
+    cur = { level: isHead ? h[2].length : 0, parts: [txt] };
   }
-  if (cur) blocks.push(cur);
+  push();
 
   // تتبّع الجزء والصفحة: العلامة تقع في آخر الصفحة، فما قبلها منها
   const out = [];
