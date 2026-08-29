@@ -828,24 +828,16 @@ const SOURCES=[
  ["ثغرةٌ معلومة في المتون","‏٤٠٨ أحاديث من ٣٦٬٥١٢ (١٫١٪) خلا مصدرُ المتون من نصّها، أكثرُها في مقدّمتَي صحيح مسلم وسنن النسائي. أرقامُها وأبوابُها وأحكامُها ثابتة، ويُقال في صفحاتها صراحةً إنّ المتن لم يرد. وقد فُحصت النسخة العربية الثانية من المصدر نفسه فوُجدت الثغرةُ فيها كما هي.","https://github.com/fawazahmed0/hadith-api"],
  ["شروح الحديث: أربعة كتب","فتح الباري لابن حجر، والمنهاج للنووي، وعون المعبود، وتحفة الأحوذي، من مدوّنة OpenITI الأكاديمية المنشورة، نصوصًا مرقونة لا ممسوحة ضوئيًّا.","https://github.com/OpenITI"],
 ];
+const FOOTER_TAG='<footer class="foot" id="foot"></footer>';
 function mountFooter(el){
-  el.innerHTML=`<a class="srcbtn" href="#" id="srcOpen">
+  /* زرٌّ واحدٌ يفتح صفحةً كاملة، بدل نافذةٍ صغيرةٍ لا تكفي التعريف */
+  el.innerHTML=`<a class="srcbtn" href="about.html">
     <svg viewBox="0 0 24 24" fill="none"><path d="M4 5.5h9a2 2 0 012 2V19H6a2 2 0 01-2-2z" stroke="currentColor" stroke-width="1.5"/><path d="M20 8v11H9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-    المصادر</a>
+    من نحن · مصادرنا</a>
     <p>تُعرض النصوص كما وردت في مصادرها بلا تعديل ولا تلخيص.<br>
     تُراث تنقل أقوال أهل العلم ولا ترجّح بينها ولا تُصدر فتوى.</p>
-    <dialog class="srcdlg" id="srcDlg"><div class="hd"><b>مصادر البيانات</b>
-      <button class="x" id="srcX" aria-label="إغلاق">×</button></div>
-      <div class="bd">${SOURCES.map(([t,d,u])=>`<div class="it"><b>${esc(t)}</b><span>${esc(d)}</span>
-        <a href="${u}" target="_blank" rel="noopener">${esc(u.replace(/^https:\/\//,""))} ↗</a></div>`).join("")}
-      <div class="it"><span>كل نصّ في المنصة يحمل كتابه وموضعه ورقمه المعتمد. لا يُضاف محتوى بلا مصدر.</span></div>
-      </div></dialog>`;
-  const dlg=el.querySelector("#srcDlg");
-  el.querySelector("#srcOpen").onclick=(e)=>{e.preventDefault();dlg.showModal();};
-  el.querySelector("#srcX").onclick=()=>dlg.close();
-  dlg.addEventListener("click",e=>{ if(e.target===dlg)dlg.close(); });
+`;
 }
-
 /* ── شرح الحديث: يُجلب من الموسوعة الحديثية (الدرر السنية) عبر وسيط عام.
    لا يُخزَّن عندنا ولا يُختلق؛ فإن تعذّر الاتصال عُرض رابط مباشر للشرح. ── */
 /* وسيط الشرح: الدرر السنية تُخرج الشرح صفحةَ HTML، وسياسة CORS تمنع المتصفح
@@ -1113,6 +1105,7 @@ function tribeAr(s){
 }
 
 /* ── الجانب ── */
+
 function sidebar(el,{title,items,active}={}){
   if(!el)return;
   el.innerHTML=`<h4>${esc(title||"")}</h4><div class="lst">`+
@@ -1125,9 +1118,12 @@ const MENU=`<button class="menu" id="mn" aria-label="القائمة"><svg viewBo
 <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>`;
 
 /* ── شريط متحرك: يتقدّم تلقائيًا، ويتوقّف عند المرور أو اللمس ── */
-function carousel(root,{slides,interval=4200}={}){
-  root.innerHTML=`<div class="track">${slides.map(s=>`<div class="slide">${s}</div>`).join("")}</div>
-    <div class="dots"></div>`;
+/* arrows: سهمان يقلّبهما القارئ بيده إلى جانب النقاط
+   full:   شريحةٌ واحدةٌ بعرض الإطار — للنماذج لا للبطاقات */
+function carousel(root,{slides,interval=4200,arrows=false,full=false}={}){
+  const A=(c,l,g)=>arrows?'<button class="carw '+c+'" aria-label="'+l+'">'+g+'</button>':"";
+  root.innerHTML=`<div class="track${full?" full":""}">${slides.map(s=>`<div class="slide">${s}</div>`).join("")}</div>
+    <div class="cnav">${A("prev","السابق","\u203a")}<div class="dots"></div>${A("next","التالي","\u2039")}</div>`;
   const track=root.querySelector(".track"), dots=root.querySelector(".dots");
 
   /* هندسة الشريط: عرض الشريحة والفجوة كما هما فعلًا، لا تقديرًا من عرض الإطار.
@@ -1185,6 +1181,9 @@ function carousel(root,{slides,interval=4200}={}){
   function stop(){ if(timer){clearInterval(timer);timer=null;} }
   function reset(){ start(); }
   drawDots(); go(false);
+  const pv=root.querySelector(".carw.prev"), nx=root.querySelector(".carw.next");
+  if(pv) pv.onclick=()=>{cur--;go();reset();};
+  if(nx) nx.onclick=()=>{cur++;go();reset();};
   root.addEventListener("mouseenter",stop); root.addEventListener("mouseleave",start);
   root.addEventListener("touchstart",stop,{passive:true});
   track.addEventListener("scroll",()=>{
@@ -1312,114 +1311,232 @@ function tocGroups(toc,hrefBase){
  * واحدٌ يُسحب من المنصّة نفسها حيًّا: لا صورةً ولا وصفًا، بل الشيءَ نفسَه
  * كما يراه من دخل. وإن تغيّرت البيانات تغيّر النموذج، فلا يكذب أبدًا.
  */
-const DEMO={h:"abudawud",n:229,s:2,a:189,ev:"badr"};
+const DEMO={
+  hadith:[["abudawud",229],["abudawud",2030],["tirmidhi",1873],["ibnmajah",1502],["nasai",2475]],
+  ayah:[[2,189],[58,1],[9,84],[2,222]],
+  rijal:["13","53","18","19","17","11013","20020","30367"],
+  ev:"badr",
+};
 
 /* يُؤجَّل الجلبُ حتى يقترب النموذج من العين، فلا يُثقَل أوّلُ التحميل */
 function whenSeen(el,fn){
   if(!el) return;
   if(!("IntersectionObserver" in window)) return fn();
   const io=new IntersectionObserver((es)=>{ for(const e of es) if(e.isIntersecting){ io.disconnect(); fn(); } },
-    {rootMargin:"320px"});
+    {rootMargin:"340px"});
   io.observe(el);
 }
 const demoSkel=(n)=>'<div class="demo skel">'+Array.from({length:n||3},()=>'<i></i>').join("")+'</div>';
+const cut=(t,n)=>String(t||"").replace(/\s+/g," ").slice(0,n).trim()+"…";
 
-/* حديثٌ اختُلف في حكمه: أظهرُ ما يميّز المنصّة — تُعرض الأحكام كلُّها
-   بأصحابها ولا يُرجَّح بينها */
-async function demoHadith(el){
+/* ── حديثٌ اختُلف في حكمه ── */
+async function oneHadith(bk,num){
+  const [d,idx]=await Promise.all([api.hadith(bk,num),loadIdx(bk)]);
+  const h=(d&&d.hadiths&&d.hadiths[0])||{};
+  const b=(SEARCH.books||{})[bk]||{};
+  const row=idx.find(r=>r[0]===num);
+  /* الأحكامُ من فهرسنا لا من واجهة المتون — وهي خاليةٌ منها. ويُقدَّم
+     المكتوبُ بالعربية على المنقول بحروفٍ لاتينية، ولا يُبدَّل حكمُ أحد. */
+  const g=((row&&row[3])||[]).filter(x=>x[0]&&x[1]).map(x=>({name:x[0],grade:x[1]}))
+    .sort((a,b)=>(/[ء-ي]/.test(b.grade)?1:0)-(/[ء-ي]/.test(a.grade)?1:0));
+  const kinds=new Set(g.map(x=>gclass(x.grade)).filter(k=>k!=="na"));
+  const sp=splitIsnad(h.text||"");
+  return '<div class="demo">'+
+    '<div class="dmh"><span class="dmk">حديث</span>'+
+      '<a class="dmref" href="hadith.html#/'+bk+'/h/'+num+'">'+esc(b.ar||bk)+' <bdi>'+AR(num)+'</bdi> ←</a></div>'+
+    '<p class="dmtx amiri">'+esc(cut((sp&&sp.matn)||h.text,230))+'</p>'+
+    (kinds.size>1?'<div class="dmwarn">العلماء لم يتّفقوا على حكم هذا الحديث. نعرض كلامهم كلَّه بأسمائهم، ولا نختار بينهم.</div>':'')+
+    '<div class="dmg">'+g.map(x=>'<span class="gp"><b>'+esc(x.name)+'</b>'+
+      '<span class="g '+gclass(x.grade)+'">'+esc(x.grade)+'</span></span>').join("")+'</div>'+
+    '<div class="dmf">وفي صفحته: رواتُه واحدًا واحدًا، ومواضعُه في بقيّة الكتب، وشرحُه مع سبب اختيار كل موضع.</div>'+
+  '</div>';
+}
+/* ── آيةٌ بسبب نزولها وتفسيرين ── */
+async function oneAyah(sn,an){
+  const [av,t1,t2,sb]=await Promise.all([
+    api.ayah(sn,an),
+    api.tafsir("ar-tafsir-muyassar",sn,an).catch(()=>null),
+    api.tafsir("ar-tafsir-ibn-kathir",sn,an).catch(()=>null),
+    asbab(sn,an)]);
+  const su=(SEARCH.surahs||[]).find(x=>x.n===sn);
+  return '<div class="demo">'+
+    '<div class="dmh"><span class="dmk">آية</span>'+
+      '<a class="dmref" href="tafsir.html#/'+sn+'/ar-tafsir-ibn-kathir/'+an+'">سورة '+esc(su?su.ar:"")+
+      ' <bdi>'+AR(an)+'</bdi> ←</a></div>'+
+    '<p class="dmtx amiri qv">'+esc(av.text)+'</p>'+
+    (sb&&sb.length?'<div class="dmsb"><b>سبب نزولها</b>'+esc(cut(sb[0].t,190))+
+      ' <span class="dmsrc">أسباب النزول للواحدي · ج'+AR(sb[0].v)+' ص'+AR(sb[0].p)+'</span></div>':'')+
+    '<div class="dmtwo">'+
+      (t1?'<div class="dmcol"><b>الميسّر</b><p>'+esc(cut(t1.text,200))+'</p></div>':'')+
+      (t2?'<div class="dmcol"><b>ابن كثير</b><p>'+esc(cut(t2.text,200))+'</p></div>':'')+
+    '</div>'+
+    '<div class="dmf">وثمانيةَ عشرَ تفسيرًا لهذه الآية وحدها، تقرأها جنبًا إلى جنب.</div>'+
+  '</div>';
+}
+/* ── بطاقةُ راوٍ مصغَّرة: صورةٌ صغيرة من ترجمته ── */
+function rijalCard(key,r){
+  const bits=[genAr(r.gen),placeAr(r.p)].filter(Boolean);
+  return '<a class="rcard" href="rijal.html#/'+encodeURIComponent(key)+'">'+
+    '<span class="rct">'+esc(r.g||"راوٍ")+'</span>'+
+    '<b>'+esc(r.n)+'</b>'+
+    '<span class="rcb">'+esc(bits.slice(0,2).join(" · ")||"—")+'</span>'+
+    (r.d?'<span class="rcb">'+esc("توفّي "+dateAr(r.d))+'</span>':'')+
+    '<span class="rcn"><bdi>'+AR(r.c||0)+'</bdi> حديثًا في الكتب</span></a>';
+}
+/* ── موضعُ فقهٍ مصغَّر ── */
+function fiqhCard(m){
+  const B=SEARCH.books||{}, S=SEARCH.surahs||[];
+  const ay=m.ayat.slice(0,2).map(a=>{const su=S.find(x=>x.n===a.s);
+    return '<a class="dlink" href="tafsir.html#/'+a.s+'/ar-tafsir-ibn-kathir/'+a.v+'">'+
+    '<span class="dk">آية</span>'+esc(su?su.ar:"")+' <bdi>'+AR(a.v)+'</bdi></a>';}).join("");
+  const hd=(m.ahadith[0]?m.ahadith[0].at.slice(0,2):[]).map(([k,n])=>
+    '<a class="dlink" href="hadith.html#/'+k+'/h/'+n+'"><span class="dk">حديث</span>'+
+    esc((B[k]||{}).ar||k)+' <bdi>'+AR(n)+'</bdi></a>').join("");
+  return '<div class="demo">'+
+    '<div class="dmh"><span class="dmk">مسألة</span>'+
+      '<a class="dmref" href="fiqh.html#/khilaf/'+encodeURIComponent(m.kitab||"")+'">'+esc(m.kitab||"")+' ←</a></div>'+
+    '<div class="mhead">'+fiqhTags(m.tags)+'<span class="mp">بداية المجتهد · ج'+AR(m.v)+' ص'+AR(m.p)+'</span></div>'+
+    '<p class="dmtx amiri">'+esc(cut(m.t,290))+'</p>'+
+    ((ay||hd)?'<div class="dl"><span class="dlh">ما استدلّوا به</span>'+ay+hd+'</div>':'')+
+    '<div class="dmf">لا نقول «الراجح». ننقل المسألة بكلام صاحبها وموضعِه من كتابه.</div>'+
+  '</div>';
+}
+/* ── حدثٌ من السيرة ── */
+async function oneSira(id){
+  const ev=(await siraEvents()).find(x=>x.id===id);
+  if(!ev) return "";
+  const g=ev.quran[0], v=g&&g.vs[0];
+  const su=(SEARCH.surahs||[]).find(x=>x.n===(v?v.s:0));
+  return '<div class="demo">'+
+    '<div class="dmh"><span class="dmk">حدث</span>'+
+      '<a class="dmref" href="sira.html#/'+ev.id+'">'+esc(ev.ar)+' ←</a></div>'+
+    siraTier(ev.tier,{full:true})+
+    (v?'<p class="dmtx amiri qv">'+esc(v.t)+'</p>'+
+       '<div class="dmsrc">'+esc(su?"سورة "+su.ar:"")+' <bdi>'+AR(v.v)+'</bdi> · '+esc(g.why)+'</div>':'')+
+    '<div class="dmf">ومعه <bdi>'+AR(ev.nh)+'</bdi> حديثًا موصولًا به، و<bdi>'+AR(ev.anchor.length)+
+      '</bdi> موضعًا من كتب السيرة بجزئه وصفحته.</div>'+
+  '</div>';
+}
+/* شريطُ نماذجَ يتبدّل: تُبنى كلُّها ثم تُعرض شريحةً شريحة */
+async function demoStrip(el,make,items,{interval=7500}={}){
   try{
-    /* الأحكامُ من فهرسنا لا من واجهة المتون: مصدرُ المتون خالٍ منها
-       رأسًا، وهي من مصدر أحكام المحدّثين. (وكان النموذج يخرج بلا حكم.) */
-    /* الواجهةُ تُغلّف الحديث في hadiths[0]، والمتنُ منها، والأحكامُ من
-       فهرسنا — فمصدرُ المتون خالٍ منها رأسًا. */
-    const [d,idx]=await Promise.all([api.hadith(DEMO.h,DEMO.n),loadIdx(DEMO.h)]);
-    const h=(d&&d.hadiths&&d.hadiths[0])||{};
-    const b=(SEARCH.books||{})[DEMO.h]||{};
-    const row=idx.find(r=>r[0]===DEMO.n);
-    /* بعضُ المصادر يكتب الحكم منقولًا بحروفٍ لاتينية («Da'if»). يُعرض كما
-       ورد — لا يُبدَّل حكمُ محدّثٍ — ولكن تُقدَّم عليه العربيةُ في الترتيب. */
-    const g=((row&&row[3])||[]).filter(x=>x[0]&&x[1]).map(x=>({name:x[0],grade:x[1]}))
-      .sort((a,b)=>(/[ء-ي]/.test(b.grade)?1:0)-(/[ء-ي]/.test(a.grade)?1:0));
-    const kinds=new Set(g.map(x=>gclass(x.grade)).filter(k=>k!=="na"));
-    const sp=splitIsnad(h.text||"");
-    el.innerHTML='<div class="demo">'+
-      '<div class="dmh"><span class="dmk">حديثٌ واحد</span>'+
-        '<a class="dmref" href="hadith.html#/'+DEMO.h+'/h/'+DEMO.n+'">'+esc(b.ar||DEMO.h)+' <bdi>'+AR(DEMO.n)+'</bdi> ←</a></div>'+
-      '<p class="dmtx amiri">'+esc(String(sp&&sp.matn||h.text||"").slice(0,240))+'…</p>'+
-      (kinds.size>1?'<div class="dmwarn">اختلف المحدّثون في حكمه، فتُعرض أحكامُهم كلُّها بأسمائهم ولا تُرجّح المنصّة بينها.</div>':'')+
-      '<div class="dmg">'+g.map(x=>'<span class="gp"><b>'+esc(x.name)+'</b>'+
-        '<span class="g '+gclass(x.grade)+'">'+esc(x.grade)+'</span></span>').join("")+'</div>'+
-      '<div class="dmf">ومعه على صفحته: سلسلةُ رواته، وتخريجُه في بقيّة الكتب، وشرحُه من كتب الشروح بدليل كلّ موضع.</div>'+
-    '</div>';
-  }catch(e){ el.innerHTML='<div class="note">تعذّر جلب النموذج.</div>'; }
+    /* تُجلب معًا لا واحدًا بعد واحد: التتابعُ يُطيل الانتظار، وتأخّرُ
+       واحدٍ كان يُسقط ما بعده. وما أخفق منها يُترك ويمضي الباقي. */
+    const res=await Promise.allSettled(items.map(it=>Array.isArray(it)?make.apply(null,it):make(it)));
+    const out=res.filter(r=>r.status==="fulfilled"&&r.value).map(r=>r.value);
+    if(!out.length) throw new Error("لا نماذج");
+    el.innerHTML="";
+    carousel(el,{slides:out,interval,full:true,arrows:true});
+  }catch(e){ el.innerHTML='<div class="note">تعذّر جلب النماذج.</div>'; }
 }
 
-/* آيةٌ واحدة: تفسيران متقابلان وسببُ نزولها */
-async function demoAyah(el){
-  try{
-    const [av,t1,t2,sb]=await Promise.all([
-      api.ayah(DEMO.s,DEMO.a),
-      api.tafsir("ar-tafsir-muyassar",DEMO.s,DEMO.a).catch(()=>null),
-      api.tafsir("ar-tafsir-ibn-kathir",DEMO.s,DEMO.a).catch(()=>null),
-      asbab(DEMO.s,DEMO.a)]);
-    const su=(SEARCH.surahs||[]).find(x=>x.n===DEMO.s);
-    const cut=(t,n)=>String(t||"").replace(/\s+/g," ").slice(0,n).trim()+"…";
-    el.innerHTML='<div class="demo">'+
-      '<div class="dmh"><span class="dmk">آيةٌ واحدة</span>'+
-        '<a class="dmref" href="tafsir.html#/'+DEMO.s+'/ar-tafsir-ibn-kathir/'+DEMO.a+'">سورة '+esc(su?su.ar:"")+
-        ' <bdi>'+AR(DEMO.a)+'</bdi> ←</a></div>'+
-      '<p class="dmtx amiri qv">'+esc(av.text)+'</p>'+
-      (sb&&sb.length?'<div class="dmsb"><b>سببُ نزولها</b> '+esc(cut(sb[0].t,200))+
-        ' <span class="dmsrc">أسباب النزول للواحدي · ج'+AR(sb[0].v)+' ص'+AR(sb[0].p)+'</span></div>':'')+
-      '<div class="dmtwo">'+
-        (t1?'<div class="dmcol"><b>الميسّر</b><p>'+esc(cut(t1.text,220))+'</p></div>':'')+
-        (t2?'<div class="dmcol"><b>ابن كثير</b><p>'+esc(cut(t2.text,220))+'</p></div>':'')+
-      '</div>'+
-      '<div class="dmf">وثمانيةَ عشرَ تفسيرًا لهذه الآية وحدها، تُقرأ متقابلةً.</div>'+
-    '</div>';
-  }catch(e){ el.innerHTML='<div class="note">تعذّر جلب النموذج.</div>'; }
-}
+/* ═══ صفحة «من نحن ومصادرنا» ═══
+ * الكتبُ تُسمّى وتُشرح ولا تُوضع لها روابط: القارئ يريد أن يعرف على أيّ
+ * شيءٍ يقرأ، لا أن يُساق إلى مستودعاتٍ تقنية.
+ */
+const SRCBOOKS=[
+ ["كتب الحديث",[
+  ["صحيح البخاري","جمعه الإمام محمد بن إسماعيل البخاري في نحو ستة عشر عامًا. أصحّ الكتب بعد كتاب الله عند جمهور أهل العلم. ٧٬٥٨٩ حديثًا بترقيمه المطبوع."],
+  ["صحيح مسلم","للإمام مسلم بن الحجاج. ثاني الصحيحين، امتاز بجمع طرق الحديث الواحد في موضع واحد وحسن ترتيبه. ٧٬٥٦٣ حديثًا."],
+  ["سنن أبي داود","للإمام أبي داود السجستاني. عُني بأحاديث الأحكام التي يبني عليها الفقهاء. ٥٬٢٧٤ حديثًا."],
+  ["جامع الترمذي","للإمام الترمذي. يذكر الحديث ثم حكمه ثم أقوال الفقهاء فيه، وهو من أنفع الكتب لمن أراد أن يعرف الخلاف. ٣٬٩٩٨ حديثًا."],
+  ["سنن النسائي","المجتبى للإمام النسائي. أدقّ السنن شرطًا في الرجال. ٥٬٧٦٥ حديثًا."],
+  ["سنن ابن ماجه","رابع السنن، وفيه زوائد كثيرة لا توجد في غيره. ٤٬٣٤٣ حديثًا."],
+  ["موطأ مالك","أقدم كتب السنّة المصنّفة، جمع فيه الإمام مالك الحديث مع عمل أهل المدينة. ١٬٨٥٨ حديثًا."],
+  ["الأربعون النووية","أربعون حديثًا جوامع اختارها الإمام النووي، عليها مدار كثير من الدين."],
+  ["الأربعون القدسية","أربعون من الأحاديث القدسية."],
+  ["أربعون الشاه ولي الله","اختارها الشاه ولي الله الدهلوي."]]],
+ ["كتب التفسير",[
+  ["جامع البيان للطبري","أمّ كتب التفسير بالمأثور، يسوق أقوال السلف بأسانيدها."],
+  ["تفسير ابن كثير","يفسّر القرآن بالقرآن ثم بالسنة ثم بأقوال السلف."],
+  ["الجامع لأحكام القرآن للقرطبي","يُعنى باستخراج الأحكام الفقهية من الآيات."],
+  ["التحرير والتنوير لابن عاشور","أوسع تفسير حديث في البلاغة ونظم القرآن ومقاصده."],
+  ["وأربعة عشر تفسيرًا غيرها","منها الميسّر والمختصر والجلالان والبغوي والسعدي والبيضاوي والألوسي والبحر المحيط وفتح القدير للشوكاني وتفسير ابن عثيمين والرازي وابن عطية وابن الجوزي والوسيط. ثمانية عشر تفسيرًا للآية الواحدة."]]],
+ ["كتب شرح الحديث",[
+  ["فتح الباري لابن حجر العسقلاني","أشهر شروح صحيح البخاري وأوسعها."],
+  ["المنهاج شرح صحيح مسلم للنووي","شرح صحيح مسلم، جامع مختصر العبارة."],
+  ["عون المعبود شرح سنن أبي داود","لمحمد أشرف العظيم آبادي."],
+  ["تحفة الأحوذي بشرح جامع الترمذي","للمباركفوري."]]],
+ ["كتب السيرة",[
+  ["السيرة النبوية لابن هشام","تهذيب ابن هشام لسيرة ابن إسحاق، وهو الأصل الذي تدور عليه كتب السيرة بعده."],
+  ["مغازي الواقدي","أوسع الكتب في تفاصيل الغزوات وتواريخها وأعداد من شهدها، ومرتّب على التاريخ."],
+  ["دلائل النبوة للبيهقي","يسوق أخبار السيرة بأسانيدها كما تُساق الأحاديث، فهو بين كتب الحديث وكتب الأخبار."],
+  ["الطبقات الكبرى لابن سعد","تراجم من شهد الأحداث، مرتّبة على الطبقات."]]],
+ ["كتب الفقه",[
+  ["بداية المجتهد ونهاية المقتصد لابن رشد الحفيد","أشهر كتب الفقه المقارن: يذكر المسألة، ثم ما اتفق عليه وما اختُلف فيه، ثم سبب الاختلاف نفسه وأدلّة كل قول. وهو عمود قسم الفقه عندنا."],
+  ["الإجماع لابن المنذر النيسابوري","مسائل مرقّمة فيما أجمع عليه أهل العلم، وهو أقدم ما صُنّف في بابه."],
+  ["المغني لابن قدامة المقدسي","أوسع كتب الفقه المقارن، يسوق المسألة بأقوال المذاهب وأدلّتها."]]],
+ ["كتب أخرى",[
+  ["أسباب النزول للواحدي","يذكر سبب نزول الآية بإسناده. وصلناه بالآيات بمطابقة اللفظ الذي يقتبسه بنصّ المصحف."],
+  ["أحكام المحدّثين على الأحاديث","أحكام الألباني وشعيب الأرناؤوط وزبير علي زئي وأحمد شاكر ومحمد محيي الدين عبد الحميد وغيرهم، كلٌّ منسوب إلى قائله."],
+  ["تراجم الرواة وسلاسل الأسانيد","٤٬٢١٠ راويًا بأزمانهم وبلدانهم وشيوخهم وتلاميذهم، وسلسلة رواة كل حديث."],
+  ["نصّ القرآن الكريم","بالرسم الإملائي المعياري."]]],
+];
 
-/* حدثٌ واحد: على أيّ الطبقات قام */
-async function demoSira(el){
-  try{
-    const ev=(await siraEvents()).find(x=>x.id===DEMO.ev);
-    if(!ev) throw 0;
-    const g=ev.quran[0], v=g&&g.vs[0];
-    const su=(SEARCH.surahs||[]).find(x=>x.n===(v?v.s:0));
-    el.innerHTML='<div class="demo">'+
-      '<div class="dmh"><span class="dmk">حدثٌ واحد</span>'+
-        '<a class="dmref" href="sira.html#/'+ev.id+'">'+esc(ev.ar)+' ←</a></div>'+
-      siraTier(ev.tier,{full:true})+
-      (v?'<p class="dmtx amiri qv">'+esc(v.t)+'</p>'+
-         '<div class="dmsrc">'+esc(su?"سورة "+su.ar:"")+' <bdi>'+AR(v.v)+'</bdi> · '+esc(g.why)+'</div>':'')+
-      '<div class="dmf">ومعه <bdi>'+AR(ev.nh)+'</bdi> حديثًا موصولًا بمفتاحين، و<bdi>'+AR(ev.anchor.length)+
-        '</bdi> موضعًا من كتب السيرة بجزئها وصفحتها.</div>'+
-    '</div>';
-  }catch(e){ el.innerHTML='<div class="note">تعذّر جلب النموذج.</div>'; }
-}
+const ABOUT_HTML=`
+<section id="who" class="abs">
+  <h2>من نحن</h2>
+  <p>تُراث موقع يجمع كتب التراث الإسلامي في مكان واحد، ويصل بعضها ببعض. ليس مكتبة تضع بين يديك كتبًا وتتركك، بل محاولة أن ترى الصورة كاملة: حين تفتح حديثًا ترى معه من رواه، وماذا قال العلماء في تصحيحه أو تضعيفه بأسمائهم، وأين ورد الحديث نفسه في بقية الكتب، وماذا قال الشرّاح فيه. وحين تفتح آية ترى سبب نزولها وثمانية عشر تفسيرًا لها جنبًا إلى جنب.</p>
+  <p>هذا العمل ليس وراءه مؤسسة ولا جهة. هو جهد شخصي، وما زال يُبنى.</p>
+</section>
 
-/* مسألةٌ واحدة: اتفاقٌ وخلافٌ وسببُه وأدلّته */
-async function demoFiqh(el){
-  try{
-    const ms=await fiqhMasail();
-    const m=ms.find(x=>x.tags.includes("sabab")&&x.ayat.length&&x.ahadith.length)
-          ||ms.find(x=>x.tags.includes("sabab"));
-    if(!m) throw 0;
-    const B=SEARCH.books||{}, S=SEARCH.surahs||[];
-    const ay=m.ayat.slice(0,2).map(a=>{const su=S.find(x=>x.n===a.s);
-      return '<a class="dlink" href="tafsir.html#/'+a.s+'/ar-tafsir-ibn-kathir/'+a.v+'">'+
-      '<span class="dk">آية</span>'+esc(su?su.ar:"")+' <bdi>'+AR(a.v)+'</bdi></a>';}).join("");
-    const hd=(m.ahadith[0]?m.ahadith[0].at.slice(0,2):[]).map(([k,n])=>
-      '<a class="dlink" href="hadith.html#/'+k+'/h/'+n+'"><span class="dk">حديث</span>'+
-      esc((B[k]||{}).ar||k)+' <bdi>'+AR(n)+'</bdi></a>').join("");
-    el.innerHTML='<div class="demo">'+
-      '<div class="dmh"><span class="dmk">مسألةٌ واحدة</span>'+
-        '<a class="dmref" href="fiqh.html#/khilaf/'+encodeURIComponent(m.kitab||"")+'">'+esc(m.kitab||"مسائل الخلاف")+' ←</a></div>'+
-      '<div class="mhead">'+fiqhTags(m.tags)+'<span class="mp">بداية المجتهد · ج'+AR(m.v)+' ص'+AR(m.p)+'</span></div>'+
-      '<p class="dmtx amiri">'+esc(String(m.t).replace(/\s+/g," ").slice(0,300))+'…</p>'+
-      ((ay||hd)?'<div class="dl"><span class="dlh">ما استُدلّ به</span>'+ay+hd+'</div>':'')+
-      '<div class="dmf">ولا تقول المنصة «الراجح»: تنقل المسألة بلفظ صاحبها وموضعِه.</div>'+
-    '</div>';
-  }catch(e){ el.innerHTML='<div class="note">تعذّر جلب النموذج.</div>'; }
+<section id="why" class="abs">
+  <h2>لماذا نفعل هذا</h2>
+  <div class="abox">
+    <b>نبتغي الثواب، ولا نبتغي الربح.</b>
+    <p>لا إعلانات، ولا اشتراكات، ولا بيع بيانات، ولا مقابل من أحد. الموقع مجاني بالكامل ولن يتغيّر هذا. وكل ما نرجوه أن ينفع الله به، وأن يكون في ميزان من أعان عليه. فإن انتفعت به فادعُ لمن كتبه ولمن حفظ هذه الكتب قبلنا.</p>
+  </div>
+  <p>والسبب الثاني أن كتب التراث موجودة على الشابكة لكنها متفرّقة: القرآن في موقع، والتفسير في آخر، والحديث في ثالث، وحكم العلماء عليه في رابع. فيفتح الباحث ستة مواقع ليتحقّق من حديث واحد. القيمة عندنا ليست في امتلاك النصوص — النصوص متاحة — بل في الوصل بينها.</p>
+</section>
+
+<section id="rules" class="abs">
+  <h2>قواعد نلتزم بها</h2>
+  <ol class="abr">
+    <li><b>لا نفتي.</b> لا نقول «الراجح» ولا نجيب عن «ما حكم كذا». نعرض ما قاله أهل العلم فقط، ومن أراد العمل فليسأل أهل العلم.</li>
+    <li><b>لا نختار بين العلماء.</b> إذا اختلفوا في حكم حديث عرضنا كلامهم كله بأسمائهم ومواضعه، ونبّهنا أنّه مختلَف فيه.</li>
+    <li><b>لا معلومة بلا مصدر.</b> كل نصّ تراه يحمل كتابه وجزءه وصفحته أو رقمه المعتمد.</li>
+    <li><b>لا نكتب نصًّا دينيًّا من عندنا.</b> ولا يكتبه الذكاء الاصطناعي. كل ما تقرأه منقول من كتابه.</li>
+    <li><b>النصوص كما وردت.</b> لا نصحّح ولا نلخّص ولا نغيّر.</li>
+    <li><b>ما نقص نقوله.</b> إن لم نجد شيئًا قلنا ذلك ولم نملأ الفراغ بالظنّ. وإن خلا مصدرنا من نصّ حديث قلناه في صفحته.</li>
+  </ol>
+</section>
+
+<section id="src" class="abs">
+  <h2>مصادرنا</h2>
+  <p>هذه الكتب التي بُني عليها كل ما في الموقع. كلها كتب منشورة معروفة، أخذناها من مدوّنات علمية نصوصها مكتوبة لا ممسوحة ضوئيًّا. ولم نُدخل كتابًا واحدًا عن طريق تصوير أو استخراج آليّ من ملفّات، لأنّ ذلك يورث أخطاءً لا تُكتشف.</p>
+  ${SRCBOOKS.map(([g,items])=>`<div class="absec"><h3>${esc(g)}</h3>
+    <div class="abl">${items.map(([t,d])=>`<div class="abi"><b>${esc(t)}</b><span>${esc(d)}</span></div>`).join("")}</div></div>`).join("")}
+  <p class="note">أرقام الأحاديث والأجزاء والصفحات في الموقع هي أرقام الطبعات المعتمدة لهذه الكتب، فما تراه هنا تجده هناك.</p>
+</section>`;
+
+/* ═══ تنبيهُ أوّل زيارة ═══
+ * يُعرض مرّةً واحدة لمن دخل أوّل مرّة، ولا يعود بعد الموافقة. ولا يُغلق
+ * إلا بالضغط على «موافق» — فالمقصود أن يُقرأ لا أن يُزاح.
+ */
+function firstVisitNotice(){
+  const KEY="turath-agreed";
+  try{ if(localStorage.getItem(KEY)) return; }catch(e){ return; }
+  const d=document.createElement("dialog");
+  d.className="agree";
+  d.innerHTML=`<div class="agh">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2.2l2.3 1.9 3-.3.8 2.9 2.6 1.6-1.2 2.8 1.2 2.8-2.6 1.6-.8 2.9-3-.3L12 21.8l-2.3-1.9-3 .3-.8-2.9L3.3 15.7l1.2-2.8-1.2-2.8 2.6-1.6.8-2.9 3 .3z" stroke="currentColor" stroke-width="1.2"/><circle cx="12" cy="12" r="3.6" stroke="currentColor" stroke-width="1.2"/></svg>
+      <b>قبل أن تبدأ</b></div>
+    <div class="agb">
+      <p class="agl">هذا الموقع <b>لا يُفتي</b>.</p>
+      <p>نحن ننقل ما في الكتب ونصل بعضه ببعض، ولا نقول لك ما الحكم ولا أيّ الأقوال أصحّ. وإذا اختلف العلماء عرضنا كلامهم كلَّه بأسمائهم.</p>
+      <ul class="agu">
+        <li>إن أردت العمل بشيء فتحقّق منه بنفسك، واسأل أهل العلم.</li>
+        <li>راجع كل نصّ في مصدره — وقد وضعنا مع كل شيء كتابه وموضعه.</li>
+        <li>والخطأ وارد: في النقل، وفي الوصل بين النصوص، وفي البرمجة. فإن رأيت خطأً فلا تبنِ عليه.</li>
+      </ul>
+      <p class="agf">وليس وراء هذا العمل ربح ولا جهة؛ إنّما نبتغي به الثواب.</p>
+    </div>
+    <div class="aga"><button class="agbtn" id="agOK">موافق</button>
+      <a class="aglink" href="about.html">من نحن ومصادرنا</a></div>`;
+  document.body.appendChild(d);
+  const ok=()=>{ try{ localStorage.setItem(KEY,"1"); }catch(e){} d.close(); d.remove(); };
+  d.querySelector("#agOK").onclick=ok;
+  /* لا يُغلق بالمفتاح: التنبيهُ يُقرأ ويُوافَق عليه */
+  d.addEventListener("cancel",(e)=>e.preventDefault());
+  if(d.showModal) d.showModal(); else d.setAttribute("open","");
 }
