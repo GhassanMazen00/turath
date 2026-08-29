@@ -791,3 +791,55 @@ a.scard:hover{border-color:var(--acc);background:var(--surf2);transform:translat
    في البلاطات والتنقّل، والنصُّ كاملٌ في صفحة الباب وفي عنوان التلميح. */
 .tile .t b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .tocg h3{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+/* ═══ نماذجُ الرئيسية الحيّة ═══
+   الرفُّ ليس المنتَج، فلا تُصدَّر الصفحةُ ببطاقات كتب. ولكلّ قسمٍ نموذجٌ
+   من المنصّة نفسها: شكلُه شكلُ ما يجده الزائر في الداخل. */
+.demo{border:1px solid var(--hair);border-radius:var(--r);background:var(--panel);
+  padding:1.3rem 1.5rem;box-shadow:var(--sh)}
+.dmh{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;margin-bottom:.9rem}
+.dmk{font-size:.7rem;letter-spacing:.2em;font-weight:700;color:var(--faint)}
+.dmref{margin-inline-start:auto;font-size:.88rem;font-weight:700;color:var(--acc)}
+.dmref:hover{text-decoration:underline}
+.dmtx{font-family:"Amiri",serif;font-size:1.3rem;line-height:2.1;color:var(--ink2);margin:0 0 .9rem;
+  max-width:var(--measure)}
+.dmtx.qv{font-size:1.42rem}
+.dmp{color:var(--mut);line-height:1.95;margin:0 0 .9rem;max-width:var(--measure)}
+.dmwarn{font-size:.86rem;line-height:1.85;color:var(--warn);border-inline-start:3px solid var(--warn);
+  background:var(--warnsoft);border-radius:var(--r2);padding:.6rem .9rem;margin-bottom:.8rem}
+.dmg{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:.9rem}
+.gp{display:inline-flex;align-items:center;gap:.45rem;border:1px solid var(--hair);border-radius:999px;
+  padding:.22rem .5rem .22rem .75rem;background:var(--surf);font-size:.8rem}
+.gp b{color:var(--mut);font-weight:600}
+.dmsb{font-size:.9rem;line-height:1.95;color:var(--mut);border-inline-start:3px solid var(--amber);
+  padding:.6rem .9rem;background:var(--ambersoft);border-radius:var(--r2);margin-bottom:.9rem}
+.dmsb b{color:var(--amber);display:block;font-size:.78rem;margin-bottom:.2rem}
+.dmsrc{font-size:.76rem;color:var(--faint)}
+.dmtwo{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:.9rem}
+.dmcol{border:1px solid var(--hair);border-radius:var(--r2);padding:.8rem 1rem;background:var(--surf2)}
+.dmcol b{display:block;font-size:.8rem;color:var(--acc);margin-bottom:.35rem}
+.dmcol p{margin:0;font-size:.92rem;line-height:1.9;color:var(--mut)}
+.dmf{font-size:.83rem;color:var(--faint);line-height:1.9;border-top:1px solid var(--hair);padding-top:.8rem}
+.demo .tier-full{margin:0 0 .9rem}
+.demo .mhead{margin-bottom:.7rem}
+.demo .dl{margin-top:.2rem;border-top:0;padding-top:0}
+.skel{display:grid;gap:.7rem}
+.skel i{display:block;height:1.1rem;border-radius:6px;background:var(--surf);
+  animation:pulse 1.4s ease-in-out infinite}
+.skel i:nth-child(2){width:80%}.skel i:nth-child(3){width:55%}
+@keyframes pulse{0%,100%{opacity:.5}50%{opacity:.9}}
+
+/* أرقامُ الوصل */
+.lnums{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem}
+.lnum{border:1px solid var(--hair);border-radius:var(--r2);background:var(--panel);padding:1rem 1.15rem}
+.lnum b{display:block;font-family:"Noto Naskh Arabic",serif;font-size:1.9rem;font-weight:800;
+  color:var(--acc);line-height:1.25;font-variant-numeric:tabular-nums}
+.lnum span{display:block;font-size:.92rem;font-weight:600;color:var(--ink2);margin:.15rem 0 .3rem}
+.lnum i{display:block;font-style:normal;font-size:.79rem;color:var(--faint);line-height:1.75}
+@media(max-width:64rem){.lnums{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:40rem){
+  .lnums{grid-template-columns:1fr}
+  .dmtwo{grid-template-columns:1fr}
+  .demo{padding:1.1rem 1.15rem}
+  .dmtx{font-size:1.18rem}
+}

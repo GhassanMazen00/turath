@@ -1304,3 +1304,122 @@ function tocGroups(toc,hrefBase){
   return out+(toc.filter(t=>!isBox(t)).length>700
     ? '<div class="note">عُرض أوّل <bdi>٧٠٠</bdi> باب؛ والبحثُ يبلغ ما وراءها.</div>':'');
 }
+
+/* ═══ نماذجُ حيّة للرئيسية ═══
+ *
+ * كانت الرئيسيةُ ستّةَ أشرطةٍ كلُّها بطاقاتُ كتب، فتقول للزائر: عندنا رفٌّ.
+ * والرفُّ ليس المنتَج — المنتَجُ الوصلُ بين ما فيه. فصار لكلّ قسمٍ نموذجٌ
+ * واحدٌ يُسحب من المنصّة نفسها حيًّا: لا صورةً ولا وصفًا، بل الشيءَ نفسَه
+ * كما يراه من دخل. وإن تغيّرت البيانات تغيّر النموذج، فلا يكذب أبدًا.
+ */
+const DEMO={h:"abudawud",n:229,s:2,a:189,ev:"badr"};
+
+/* يُؤجَّل الجلبُ حتى يقترب النموذج من العين، فلا يُثقَل أوّلُ التحميل */
+function whenSeen(el,fn){
+  if(!el) return;
+  if(!("IntersectionObserver" in window)) return fn();
+  const io=new IntersectionObserver((es)=>{ for(const e of es) if(e.isIntersecting){ io.disconnect(); fn(); } },
+    {rootMargin:"320px"});
+  io.observe(el);
+}
+const demoSkel=(n)=>'<div class="demo skel">'+Array.from({length:n||3},()=>'<i></i>').join("")+'</div>';
+
+/* حديثٌ اختُلف في حكمه: أظهرُ ما يميّز المنصّة — تُعرض الأحكام كلُّها
+   بأصحابها ولا يُرجَّح بينها */
+async function demoHadith(el){
+  try{
+    /* الأحكامُ من فهرسنا لا من واجهة المتون: مصدرُ المتون خالٍ منها
+       رأسًا، وهي من مصدر أحكام المحدّثين. (وكان النموذج يخرج بلا حكم.) */
+    /* الواجهةُ تُغلّف الحديث في hadiths[0]، والمتنُ منها، والأحكامُ من
+       فهرسنا — فمصدرُ المتون خالٍ منها رأسًا. */
+    const [d,idx]=await Promise.all([api.hadith(DEMO.h,DEMO.n),loadIdx(DEMO.h)]);
+    const h=(d&&d.hadiths&&d.hadiths[0])||{};
+    const b=(SEARCH.books||{})[DEMO.h]||{};
+    const row=idx.find(r=>r[0]===DEMO.n);
+    /* بعضُ المصادر يكتب الحكم منقولًا بحروفٍ لاتينية («Da'if»). يُعرض كما
+       ورد — لا يُبدَّل حكمُ محدّثٍ — ولكن تُقدَّم عليه العربيةُ في الترتيب. */
+    const g=((row&&row[3])||[]).filter(x=>x[0]&&x[1]).map(x=>({name:x[0],grade:x[1]}))
+      .sort((a,b)=>(/[ء-ي]/.test(b.grade)?1:0)-(/[ء-ي]/.test(a.grade)?1:0));
+    const kinds=new Set(g.map(x=>gclass(x.grade)).filter(k=>k!=="na"));
+    const sp=splitIsnad(h.text||"");
+    el.innerHTML='<div class="demo">'+
+      '<div class="dmh"><span class="dmk">حديثٌ واحد</span>'+
+        '<a class="dmref" href="hadith.html#/'+DEMO.h+'/h/'+DEMO.n+'">'+esc(b.ar||DEMO.h)+' <bdi>'+AR(DEMO.n)+'</bdi> ←</a></div>'+
+      '<p class="dmtx amiri">'+esc(String(sp&&sp.matn||h.text||"").slice(0,240))+'…</p>'+
+      (kinds.size>1?'<div class="dmwarn">اختلف المحدّثون في حكمه، فتُعرض أحكامُهم كلُّها بأسمائهم ولا تُرجّح المنصّة بينها.</div>':'')+
+      '<div class="dmg">'+g.map(x=>'<span class="gp"><b>'+esc(x.name)+'</b>'+
+        '<span class="g '+gclass(x.grade)+'">'+esc(x.grade)+'</span></span>').join("")+'</div>'+
+      '<div class="dmf">ومعه على صفحته: سلسلةُ رواته، وتخريجُه في بقيّة الكتب، وشرحُه من كتب الشروح بدليل كلّ موضع.</div>'+
+    '</div>';
+  }catch(e){ el.innerHTML='<div class="note">تعذّر جلب النموذج.</div>'; }
+}
+
+/* آيةٌ واحدة: تفسيران متقابلان وسببُ نزولها */
+async function demoAyah(el){
+  try{
+    const [av,t1,t2,sb]=await Promise.all([
+      api.ayah(DEMO.s,DEMO.a),
+      api.tafsir("ar-tafsir-muyassar",DEMO.s,DEMO.a).catch(()=>null),
+      api.tafsir("ar-tafsir-ibn-kathir",DEMO.s,DEMO.a).catch(()=>null),
+      asbab(DEMO.s,DEMO.a)]);
+    const su=(SEARCH.surahs||[]).find(x=>x.n===DEMO.s);
+    const cut=(t,n)=>String(t||"").replace(/\s+/g," ").slice(0,n).trim()+"…";
+    el.innerHTML='<div class="demo">'+
+      '<div class="dmh"><span class="dmk">آيةٌ واحدة</span>'+
+        '<a class="dmref" href="tafsir.html#/'+DEMO.s+'/ar-tafsir-ibn-kathir/'+DEMO.a+'">سورة '+esc(su?su.ar:"")+
+        ' <bdi>'+AR(DEMO.a)+'</bdi> ←</a></div>'+
+      '<p class="dmtx amiri qv">'+esc(av.text)+'</p>'+
+      (sb&&sb.length?'<div class="dmsb"><b>سببُ نزولها</b> '+esc(cut(sb[0].t,200))+
+        ' <span class="dmsrc">أسباب النزول للواحدي · ج'+AR(sb[0].v)+' ص'+AR(sb[0].p)+'</span></div>':'')+
+      '<div class="dmtwo">'+
+        (t1?'<div class="dmcol"><b>الميسّر</b><p>'+esc(cut(t1.text,220))+'</p></div>':'')+
+        (t2?'<div class="dmcol"><b>ابن كثير</b><p>'+esc(cut(t2.text,220))+'</p></div>':'')+
+      '</div>'+
+      '<div class="dmf">وثمانيةَ عشرَ تفسيرًا لهذه الآية وحدها، تُقرأ متقابلةً.</div>'+
+    '</div>';
+  }catch(e){ el.innerHTML='<div class="note">تعذّر جلب النموذج.</div>'; }
+}
+
+/* حدثٌ واحد: على أيّ الطبقات قام */
+async function demoSira(el){
+  try{
+    const ev=(await siraEvents()).find(x=>x.id===DEMO.ev);
+    if(!ev) throw 0;
+    const g=ev.quran[0], v=g&&g.vs[0];
+    const su=(SEARCH.surahs||[]).find(x=>x.n===(v?v.s:0));
+    el.innerHTML='<div class="demo">'+
+      '<div class="dmh"><span class="dmk">حدثٌ واحد</span>'+
+        '<a class="dmref" href="sira.html#/'+ev.id+'">'+esc(ev.ar)+' ←</a></div>'+
+      siraTier(ev.tier,{full:true})+
+      (v?'<p class="dmtx amiri qv">'+esc(v.t)+'</p>'+
+         '<div class="dmsrc">'+esc(su?"سورة "+su.ar:"")+' <bdi>'+AR(v.v)+'</bdi> · '+esc(g.why)+'</div>':'')+
+      '<div class="dmf">ومعه <bdi>'+AR(ev.nh)+'</bdi> حديثًا موصولًا بمفتاحين، و<bdi>'+AR(ev.anchor.length)+
+        '</bdi> موضعًا من كتب السيرة بجزئها وصفحتها.</div>'+
+    '</div>';
+  }catch(e){ el.innerHTML='<div class="note">تعذّر جلب النموذج.</div>'; }
+}
+
+/* مسألةٌ واحدة: اتفاقٌ وخلافٌ وسببُه وأدلّته */
+async function demoFiqh(el){
+  try{
+    const ms=await fiqhMasail();
+    const m=ms.find(x=>x.tags.includes("sabab")&&x.ayat.length&&x.ahadith.length)
+          ||ms.find(x=>x.tags.includes("sabab"));
+    if(!m) throw 0;
+    const B=SEARCH.books||{}, S=SEARCH.surahs||[];
+    const ay=m.ayat.slice(0,2).map(a=>{const su=S.find(x=>x.n===a.s);
+      return '<a class="dlink" href="tafsir.html#/'+a.s+'/ar-tafsir-ibn-kathir/'+a.v+'">'+
+      '<span class="dk">آية</span>'+esc(su?su.ar:"")+' <bdi>'+AR(a.v)+'</bdi></a>';}).join("");
+    const hd=(m.ahadith[0]?m.ahadith[0].at.slice(0,2):[]).map(([k,n])=>
+      '<a class="dlink" href="hadith.html#/'+k+'/h/'+n+'"><span class="dk">حديث</span>'+
+      esc((B[k]||{}).ar||k)+' <bdi>'+AR(n)+'</bdi></a>').join("");
+    el.innerHTML='<div class="demo">'+
+      '<div class="dmh"><span class="dmk">مسألةٌ واحدة</span>'+
+        '<a class="dmref" href="fiqh.html#/khilaf/'+encodeURIComponent(m.kitab||"")+'">'+esc(m.kitab||"مسائل الخلاف")+' ←</a></div>'+
+      '<div class="mhead">'+fiqhTags(m.tags)+'<span class="mp">بداية المجتهد · ج'+AR(m.v)+' ص'+AR(m.p)+'</span></div>'+
+      '<p class="dmtx amiri">'+esc(String(m.t).replace(/\s+/g," ").slice(0,300))+'…</p>'+
+      ((ay||hd)?'<div class="dl"><span class="dlh">ما استُدلّ به</span>'+ay+hd+'</div>':'')+
+      '<div class="dmf">ولا تقول المنصة «الراجح»: تنقل المسألة بلفظ صاحبها وموضعِه.</div>'+
+    '</div>';
+  }catch(e){ el.innerHTML='<div class="note">تعذّر جلب النموذج.</div>'; }
+}
