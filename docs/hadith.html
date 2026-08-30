@@ -24,10 +24,10 @@ const app=()=>document.getElementById('app'), side=()=>document.getElementById('
 const FOOT='<footer class="foot" id="foot"></footer>';
 function foot(){const f=document.getElementById('foot'); if(f)mountFooter(f);}
 (async()=>{ try{ await searchInit(); B=SEARCH.books;
-    const [gd,sh,shm,st]=await Promise.all([
+    const [tk,gd,sh,shm,st]=await Promise.all([api.local('takhrij.json').catch(()=>({})),
       api.local('grades.json').catch(()=>({})),api.local('sharh.json').catch(()=>({})),
       api.local('sharh-manual.json').catch(()=>({})),api.local('stats.json').catch(()=>({}))]);
-    GDEF=gd;
+    TAK=tk; GDEF=gd;
     // أيُّ الكتب وردت لأحاديثها أحكامٌ وأسانيد — يُقرأ من البيانات لا يُكتب هنا
     GRADED=new Set(st.gradedBooks||[]); ISNAD=new Set(st.isnadBooks||[]);
     // اليدويّ يعلو على المجلوب آليًّا؛ ومفاتيح الدليل تُتخطّى
@@ -35,13 +35,6 @@ function foot(){const f=document.getElementById('foot'); if(f)mountFooter(f);}
     for(const k in shm){ if(k.charAt(0)==='_')continue; SHARH[k]=shm[k]; }
   }catch(e){ return failed(app(),e); }
   addEventListener('hashchange',route); route(); })();
-/* تخريجُ الكتاب وحده يُجلب عند فتحه — لا تخريجُ المدوّنة كلِّها */
-const TAKED=new Set();
-async function loadTak(k){
-  if(TAKED.has(k)) return;
-  const d=await api.local('takhrij/'+k+'.json').catch(()=>null);
-  if(d){ Object.assign(TAK,d); TAKED.add(k); }
-}
 function route(){
   const p=location.hash.replace(/^#\/?/,'').split('/').filter(Boolean);
   if(!p.length) return vBooks();
@@ -88,7 +81,6 @@ async function vList(k,sec,page){
    '<div class="m"><bdi>'+AR(s.count)+' حديثًا</bdi></div></div><div id="body"></div>'+FOOT;
   loading(document.getElementById('body'),'جارٍ الجلب…'); foot(); scrollTo(0,0);
   try{
-    await loadTak(k);
     const idx=await loadIdx(k); const rows=idx.filter(r=>r[1]===sec);
     const pages=Math.max(1,Math.ceil(rows.length/PER)); page=Math.min(Math.max(1,page),pages);
     const pg=()=>{const pv=page>1?'#/'+k+'/'+sec+'/'+(page-1):null,nx=page<pages?'#/'+k+'/'+sec+'/'+(page+1):null;
@@ -122,17 +114,13 @@ async function vHadith(k,num){
   app().innerHTML='<div id="body"></div>'+FOOT;
   loading(document.getElementById('body'),'جارٍ جلب الحديث…'); foot(); scrollTo(0,0);
   try{
-    await loadTak(k);
     const idx=await loadIdx(k); const row=idx.find(r=>r[0]===num);
     const sec=row?b.sections.find(x=>x.n===row[1]):null;
     if(sec) sideSections(k,sec.n); else sideBooks(k);
     const d=await api.hadith(k,num); const h=(d.hadiths&&d.hadiths[0])||{};
     // الموضعُ المطبوع لا يَرِد إلا في الكتب العشرة؛ وما زِيد عليها يُترقَّم برقمه وحده
     const ref=h.reference&&h.reference.book!=null?AR(h.reference.book)+':'+AR(h.reference.hadith):'';
-    /* الكتبُ المنتخَبة (بلوغ المرام ورياض الصالحين ومشكاة المصابيح) تنسب
-       الحديث إلى صحابيّه وتذكر من أخرجه ولا تسوق سلسلته، فلا يُفصَل فيها
-       سندٌ عن متن — وإجراءُ الفصل عليها كان يأكل أوّل المتن. */
-    const sp=b.isnad===false?{isnad:null,matn:h.text||''}:splitIsnad(h.text||'');
+    const sp=splitIsnad(h.text||'');
     const grades=row?row[3]:[], raw=(row&&row[4])||[];
     const RI=await rijalIndex();
     const all=idx.map(r=>r[0]),i=all.indexOf(num);
@@ -234,9 +222,7 @@ async function vHadith(k,num){
           '<a href="'+n.href+'">'+esc(n.name)+'</a></span>'+
           (n.sub?'<span class="sub">'+esc(n.sub)+'</span>':'')+'</span></div>';}).join('')+'</div>'+
           '<div class="note">'+(auth?'السلسلة من قاعدة رواة مفهرسة لكل حديث.':'لم تُفهرَس سلسلة هذا الحديث؛ استُخرجت الأسماء آليًّا وقد تنقص.')+'</div>'
-         :'<div class="pane msg">'+(b.isnad===false
-            ?'هذا الكتاب منتخَب: يَنسب الحديث إلى صحابيّه ويذكر من أخرجه من الأئمة، ولا يسوق سلسلة إسناده. فالسلسلة تُطلب في الكتاب الذي أخرجه.'
-            :'لا سلسلة مفهرسة لهذا الحديث.')+
+         :'<div class="pane msg">لا سلسلة مفهرسة لهذا الحديث.'+
             (chainAt.length?'<div class="note" style="margin:.9rem 0 0">وأخرجه بإسناده: '+
               chainAt.map(r=>{const [bb,nn]=r.split(':');
                 return '<a href="#/'+bb+'/h/'+nn+'">'+esc((B[bb]||{}).ar||bb)+' <bdi>'+AR(nn)+'</bdi></a>';}).join(' <span class="sep">•</span> ')+

@@ -35,7 +35,7 @@
   <section class="band band-tint" id="s-hadith">
     <div class="sect"><div class="l"><div class="k">السنّة النبوية</div>
       <h2>الحديث الشريف</h2>
-      <p>الكتب الستة والموطأ والدارمي، ومنتخَبات مشهورة كرياض الصالحين وبلوغ المرام ومشكاة المصابيح والأدب المفرد والشمائل، والأربعينات — بترقيمها المعتمد المطبوع. كل حديث يُعرض بحكمه ومعناه، ثم متنه، ثم سلسلة رواته، وتخريجه في بقية الكتب، وشرحه حيث توفّر.</p></div>
+      <p>الكتب الستة والموطأ والأربعينات، بترقيمها المعتمد المطبوع. كل حديث يُعرض بحكمه ومعناه، ثم متنه، ثم سلسلة رواته، وتخريجه في بقية الكتب، وشرحه حيث توفّر.</p></div>
       <a class="more" href="hadith.html"><span class="ml">كل الكتب</span><span class="md" id="nH">&nbsp;</span></a></div>
     <div id="dmH"></div>
     <div class="sub-strip"><h3>ابدأ من كتاب</h3></div>
@@ -63,7 +63,7 @@
   <section class="band" id="s-sharh">
     <div class="sect"><div class="l"><div class="k">شروح المحدّثين</div>
       <h2>شرح الحديث</h2>
-      <p>شروحٌ كاملة: فتح الباري لابن حجر، والمنهاج للنووي، وعون المعبود، وتحفة الأحوذي، وحاشيتا السندي على النسائي وابن ماجه، والمنتقى للباجي، وجامع العلوم والحكم لابن رجب، وسبل السلام للصنعاني، ومرقاة المفاتيح وجمع الوسائل للقاري، ودليل الفالحين لابن علّان. تُقرأ كتبًا وتُبحث بألفاظها، ويُعرض كل موضعٍ بجزئه وصفحته المطبوعين.</p></div>
+      <p>ثمانية شروحٍ كاملة: فتح الباري لابن حجر، والمنهاج للنووي، وعون المعبود، وتحفة الأحوذي، وحاشيتا السندي على النسائي وابن ماجه، والمنتقى للباجي على الموطّأ، وجامع العلوم والحكم لابن رجب على الأربعين النووية. تُقرأ كتبًا وتُبحث بألفاظها، ويُعرض كل موضعٍ بجزئه وصفحته المطبوعين.</p></div>
       <a class="more" href="sharh.html"><span class="ml">كل الشروح</span><span class="md" id="nSh">&nbsp;</span></a></div>
     <div id="dmSh"></div>
   </section>
@@ -153,7 +153,7 @@ theme(); firstVisitNotice(); document.getElementById('tg').innerHTML=TGL; mountF
  const nH=document.getElementById('nH');
  if(nH) nH.innerHTML='<bdi>'+AR(Object.keys(B).length)+'</bdi> مصنَّفًا <span class="sep">•</span> <bdi>'+ARG(th)+'</bdi> حديثًا';
  const nSh=document.getElementById('nSh');
- if(nSh) nSh.innerHTML='<bdi>'+AR(SHB.length)+'</bdi> شرحًا <span class="sep">•</span> <bdi>'+ARG(shp)+'</bdi> فقرة';
+ if(nSh) nSh.innerHTML='<bdi>'+AR(SHB.length)+'</bdi> شروح <span class="sep">•</span> <bdi>'+ARG(shp)+'</bdi> فقرة';
  // الاختصار يقول ما في القسم لا اسمَه فقط: الاسمُ وحده لا يدلّ على ما يُنتفع به
  const ICO={
   tafsir:'<path d="M4 5.5h6.5a2 2 0 012 2V19a2.6 2.6 0 00-2-1H4zM20 5.5h-6.5a2 2 0 00-2 2V19a2.6 2.6 0 012-1H20z"/>',
@@ -165,9 +165,9 @@ theme(); firstVisitNotice(); document.getElementById('tg').innerHTML=TGL; mountF
  const ic=(k)=>`<svg class="ji" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">${ICO[k]}</svg>`;
  document.getElementById('jump').innerHTML=[
    ['s-tafsir','tafsir','التفسير',AR(T.length)+' تفسيرًا','للآية الواحدة، من الطبري وابن كثير إلى كتب اليوم، تقرأها جنبًا إلى جنب.'],
-   ['s-hadith','hadith','الحديث',ARG(th)+' حديثًا','الكتب الستة والموطأ والدارمي ومنتخَبات مشهورة، مع رواة كل حديث وكلام العلماء في تصحيحه ومواضعه في بقية الكتب.'],
+   ['s-hadith','hadith','الحديث',ARG(th)+' حديثًا','الكتب الستة والموطأ، مع رواة كل حديث وكلام العلماء في تصحيحه ومواضعه في بقية الكتب.'],
    ['s-rijal','rijal','الرواة',ARG(rn)+' راويًا','لكل راوٍ: زمنه وبلده ومن أخذ عنهم ومن أخذوا عنه، وكم حديثًا روى.'],
-   ['s-sharh','sharh','شرح الحديث',AR(SHB.length)+' شرحًا','فتح الباري والمنهاج وسبل السلام ومرقاة المفاتيح وغيرها، تبحث فيها بكلمات الحديث.'],
+   ['s-sharh','sharh','شرح الحديث',AR(SHB.length)+' شروح','فتح الباري والمنهاج وعون المعبود وتحفة الأحوذي وحاشيتا السندي والمنتقى وجامع العلوم، تبحث فيها بكلمات الحديث.'],
    ['s-sira','sira','السيرة',AR(SRE.length)+' حدثًا','لكل حدث ما يثبته: آياته وأحاديثه وما ذكره أهل السيرة.'],
    ['s-fiqh','fiqh','الفقه',ARG(FQS.ijmac+FQS.masail)+' مسألة','ما اتفق عليه العلماء وما اختلفوا فيه، وسبب الخلاف ودليل كل رأي. نعرض ولا نفتي.'],
  ].map(([id,k,t,n,d])=>`<a class="jmp" href="#${id}">${ic(k)}<span class="jt"><b>${t}</b>
@@ -297,9 +297,6 @@ theme(); firstVisitNotice(); document.getElementById('tg').innerHTML=TGL; mountF
    {t:'h',b:'bukhari',n:65,note:'تفسير النبي ﷺ للقرآن من صحيح البخاري.'},
    {t:'q',n:36,slug:'ar-tafsir-ibn-kathir',note:'سورة يس، من أكثر السور قراءةً وحفظًا.'},
    {t:'h',b:'muslim',n:4,note:'كتاب الصلاة في صحيح مسلم، مجموع الطرق.'},
-   {t:'h',b:'riyad',n:null,note:'منتخَب النووي في الآداب والأخلاق، مع شرحه دليل الفالحين.'},
-   {t:'h',b:'bulugh',n:1,note:'أحاديث الأحكام مختصرة، مع شرحها سبل السلام للصنعاني.'},
-   {t:'h',b:'shamail',n:null,note:'صفته ﷺ كما رواها أصحابه، مع شرحها للقاري.'},
    {t:'t',slug:'ar-tafseer-tahrir-al-tanwir',note:'أوسع تفسير حديث في البلاغة ونظم القرآن ومقاصده.'},
    {t:'h',b:'malik',n:null,note:'أقدم المصنّفات، ومدخل حسن لعمل أهل المدينة.'}];
  carousel(document.getElementById('carS'),{slides:picks.map(pk=>{

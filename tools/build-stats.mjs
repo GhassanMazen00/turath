@@ -56,8 +56,7 @@ const stats = {
   sharhBooks: shb.length,
   sharhParas: shb.reduce((a, b) => a + b.paras, 0),
   sharhOn: shb.filter((b) => b.on).length,
-  takhrij: fs.readdirSync(path.join(DATA, "takhrij"))
-    .reduce((a, f) => a + Object.values(rd(path.join(DATA, "takhrij", f))).flat().length, 0),
+  takhrij: Object.values(rd(path.join(DATA, "takhrij.json"))).flat().length,
   asbab: Object.keys(rd(path.join(DATA, "asbab.json"))).length,
   rijal: Object.keys(rd(path.join(DATA, "rijal", "index.json"))).length,
   /* «أكثرُ أحاديثه» حدُّها النصف: كتابٌ دونه لا يُقال لقارئٍ اذهب إليه */

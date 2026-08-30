@@ -42,15 +42,10 @@ async function get(url) {
 }
 
 const books = rd(path.join(DATA, "books.json"));
-/* كتبٌ متنُها من مصدرٍ آخر (tools/fetch-hadith-books.mjs) ولا وجود لها في
-   هذه الواجهة: لو طُلبت منها لخرج 404 وسقط السكربتُ كلُّه. */
-const OTHER = new Set(fs.existsSync(path.join(DATA, "txt", "books.json"))
-  ? rd(path.join(DATA, "txt", "books.json")) : []);
 const report = [], blockers = [];
 let totEmpty = 0, totRows = 0;
 
 for (const k of Object.keys(books)) {
-  if (OTHER.has(k)) { console.log(`${books[k].ar} … من مصدرٍ آخر، يُترك`); continue; }
   const oldRows = rd(path.join(IDX, `${k}.json`));
   const oldBy = new Map(oldRows.map((r) => [r[0], r]));
   process.stdout.write(`${books[k].ar} … `);
