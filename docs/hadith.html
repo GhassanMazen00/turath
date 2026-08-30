@@ -41,18 +41,18 @@ function route(){
   return vList(p[0],+p[1],+(p[2]||1));
 }
 function sideBooks(a){sidebar(side(),{title:'كتب الحديث',active:a,
-  items:Object.keys(B).map(k=>({key:k,href:'#/'+k,label:B[k].ar,side:AR(B[k].total)}))});}
+  items:Object.keys(B).map(k=>({key:k,href:'#/'+k,label:B[k].ar,side:ARG(B[k].total)}))});}
 function sideSections(k,a){const b=B[k];sidebar(side(),{title:b.ar,active:a,
   items:b.sections.map(s=>({key:s.n,href:'#/'+k+'/'+s.n+'/1',n:s.n,label:s.ar,side:AR(s.count)}))});}
 function vBooks(){
   sideBooks(); const tot=Object.values(B).reduce((a,b)=>a+b.total,0);
   app().innerHTML='<nav class="crumb"><span>كتب الحديث</span></nav>'+
    '<div class="ph"><div class="k">السنّة النبوية</div><h1>كتب الحديث</h1>'+
-   '<div class="m"><bdi>'+AR(Object.keys(B).length)+' كتب</bdi><span class="sep">•</span><bdi>'+AR(tot)+' حديثًا</bdi></div></div>'+
+   '<div class="m"><bdi>'+AR(Object.keys(B).length)+' كتابًا</bdi><span class="sep">•</span><bdi>'+ARG(tot)+' حديثًا</bdi></div></div>'+
    '<div id="s"></div><div class="sh"><h2>الكتب</h2><span class="ln"></span></div>'+
    '<div class="bento">'+Object.keys(B).map(k=>{const b=B[k];
      return '<a class="cell b3 card" href="#/'+k+'"><div class="ch"><h3>'+esc(b.ar)+'</h3>'+
-     '<span class="cn"><bdi>'+AR(b.total)+'</bdi><small>حديثًا</small></span></div>'+
+     '<span class="cn"><bdi>'+ARG(b.total)+'</bdi><small>حديثًا</small></span></div>'+
      '<p class="au">'+esc(b.author)+'</p>'+
      (BOOKNOTE[k]?'<p>'+esc(BOOKNOTE[k])+'</p>':'')+
      '<div class="meta"><bdi>'+AR(b.sections.length)+' كتابًا وبابًا</bdi>'+
@@ -63,7 +63,7 @@ function vSections(k){
   const b=B[k]; if(!b) return vBooks(); sideSections(k);
   app().innerHTML='<nav class="crumb"><a href="#/">كتب الحديث</a><span class="sep">›</span><span>'+esc(b.ar)+'</span></nav>'+
    '<div class="ph"><div class="k">'+esc(b.author)+'</div><h1>'+esc(b.ar)+'</h1>'+
-   '<div class="m"><bdi>'+AR(b.total)+' حديثًا</bdi><span class="sep">•</span><bdi>'+AR(b.sections.length)+' كتابًا</bdi></div></div>'+
+   '<div class="m"><bdi>'+ARG(b.total)+' حديثًا</bdi><span class="sep">•</span><bdi>'+AR(b.sections.length)+' كتابًا</bdi></div></div>'+
    '<div class="sh"><h2>الكتب والأبواب</h2><span class="ln"></span></div>'+
    '<div class="tiles">'+b.sections.map(s=>
      '<a class="tile wrap" href="#/'+k+'/'+s.n+'/1"><span class="n">'+AR(s.n)+'</span>'+
@@ -115,13 +115,19 @@ async function vHadith(k,num){
     const idx=await loadIdx(k); const row=idx.find(r=>r[0]===num);
     const sec=row?b.sections.find(x=>x.n===row[1]):null;
     if(sec) sideSections(k,sec.n); else sideBooks(k);
-    const d=await api.hadith(k,num); const h=d.hadiths[0];
-    const sp=splitIsnad(h.text), grades=row?row[3]:[], raw=(row&&row[4])||[];
+    const d=await api.hadith(k,num); const h=(d.hadiths&&d.hadiths[0])||{};
+    // الموضعُ المطبوع لا يَرِد إلا في الكتب العشرة؛ وما زِيد عليها يُترقَّم برقمه وحده
+    const ref=h.reference&&h.reference.book!=null?AR(h.reference.book)+':'+AR(h.reference.hadith):'';
+    /* الكتبُ المنتخَبة (بلوغ المرام ورياض الصالحين ومشكاة المصابيح) تنسب
+       الحديث إلى صحابيّه وتذكر من أخرجه ولا تسوق سلسلته، فلا يُفصَل فيها
+       سندٌ عن متن — وإجراءُ الفصل عليها كان يأكل أوّل المتن. */
+    const sp=b.isnad===false?{isnad:null,matn:h.text||''}:splitIsnad(h.text||'');
+    const grades=row?row[3]:[], raw=(row&&row[4])||[];
     const RI=await rijalIndex();
     const all=idx.map(r=>r[0]),i=all.indexOf(num);
     const prev=i>0?all[i-1]:null,next=i>=0&&i<all.length-1?all[i+1]:null;
     const pg='<div class="pager">'+(prev?'<a href="#/'+k+'/h/'+prev+'">‹ حديث '+AR(prev)+'</a>':'<span class="off">‹</span>')+
-      '<span class="mid"><bdi>حديث '+AR(num)+' من '+AR(b.total)+'</bdi></span>'+
+      '<span class="mid"><bdi>حديث '+AR(num)+' من '+ARG(b.total)+'</bdi></span>'+
       (next?'<a href="#/'+k+'/h/'+next+'">حديث '+AR(next)+' ›</a>':'<span class="off">›</span>')+'</div>';
     const auth=raw.length&&raw[0][0]==='i';
     const nodes=raw.map(([kind,v])=>{
@@ -148,7 +154,7 @@ async function vHadith(k,num){
           '<dt>الكتاب</dt><dd>'+esc(b.ar)+'</dd>'+
           (sec?'<dt>الباب</dt><dd>'+esc(sec.ar)+'</dd>':'')+
           '<dt>رقم الحديث</dt><dd><bdi>'+AR(num)+'</bdi></dd>'+
-          '<dt>الموضع المطبوع</dt><dd><bdi>'+AR(h.reference.book)+':'+AR(h.reference.hadith)+'</bdi></dd>'+
+          (ref?'<dt>الموضع المطبوع</dt><dd><bdi>'+ref+'</bdi></dd>':'')+
         '</dl></div>'+
         (nodes.length?'<div class="rc glass"><h4>الإسناد</h4><dl>'+
           '<dt>عدد الرواة</dt><dd><bdi>'+AR(nodes.length)+'</bdi></dd>'+
@@ -177,7 +183,7 @@ async function vHadith(k,num){
       '<span class="sep">›</span><span>حديث '+AR(num)+'</span></nav>'+pg+
       '<div class="ph"><div class="k">'+esc(b.ar)+(sec?'<span class="sep">•</span>'+esc(sec.ar):'')+'</div>'+
       '<h1>حديث '+AR(num)+'</h1><div class="m">'+esc(b.author)+
-      '<span class="sep">•</span>الموضع <bdi>'+AR(h.reference.book)+':'+AR(h.reference.hadith)+'</bdi></div></div>'+
+      (ref?'<span class="sep">•</span>الموضع <bdi>'+ref+'</bdi>':'')+'</div></div>'+
       '<div class="dual"><div class="dcol">'+
       gband+
       (String(h.text||'').trim()
@@ -201,7 +207,9 @@ async function vHadith(k,num){
           '<a href="'+n.href+'">'+esc(n.name)+'</a></span>'+
           (n.sub?'<span class="sub">'+esc(n.sub)+'</span>':'')+'</span></div>';}).join('')+'</div>'+
           '<div class="note">'+(auth?'السلسلة من قاعدة رواة مفهرسة لكل حديث.':'لم تُفهرَس سلسلة هذا الحديث؛ استُخرجت الأسماء آليًّا وقد تنقص.')+'</div>'
-         :'<div class="pane msg">لا سلسلة مفهرسة لهذا الحديث.</div>')+'</div>'+
+         :'<div class="pane msg">'+(b.isnad===false
+            ?'هذا الكتاب منتخَب: يَنسب الحديث إلى صحابيّه ويذكر من أخرجه من الأئمة، ولا يسوق سلسلة إسناده. فالسلسلة تُطلب في الكتاب الذي أخرجه.'
+            :'لا سلسلة مفهرسة لهذا الحديث.')+'</div>')+'</div>'+
       '<div class="panel" data-p="full">'+(String(h.text||'').trim()
         ? '<div class="pane full"><span>'+esc(h.text)+'</span></div>'
         : '<div class="pane msg">لم يرد نصُّ هذا الحديث في المصدر المعتمد للمتون.</div>')+'</div>'+

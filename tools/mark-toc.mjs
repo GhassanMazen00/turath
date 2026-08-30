@@ -40,10 +40,15 @@ for (const col of ["sharh", "sira", "fiqh"]) {
       return [cleanHead(t[0]), t[1], t[2], t[3], t[4], n, hint];
     });
     if (out.length !== toc.length) throw new Error(`${b.slug}: اختلف عددُ العناوين`);
-    fs.writeFileSync(path.join(bd, "toc.json"), JSON.stringify(out), "utf8");
-    const empty = out.filter((x) => !x[5]).length;
-    const bare = out.filter((x) => x[6]).length;
-    console.log(`${b.ar.padEnd(18)} ${out.length} عنوانًا · ${empty} حاويةً · ${bare} بلا ترجمةٍ ضُمّت إليها فاتحتُها`);
+    /* بالقاعدة نفسها التي في buildBook: عنوانٌ بلا اسمٍ ولا فاتحةٍ ولا
+       فقرة لا يحمل شيئًا، وإنّما يُعرض تِيلةً خرساء تُفتح على لا شيء. */
+    const keep = out.filter((x) => x[0] || x[6] || x[5]);
+    const blank = out.length - keep.length;
+    fs.writeFileSync(path.join(bd, "toc.json"), JSON.stringify(keep), "utf8");
+    const empty = keep.filter((x) => !x[5]).length;
+    const bare = keep.filter((x) => x[6]).length;
+    console.log(`${b.ar.padEnd(18)} ${keep.length} عنوانًا · ${empty} حاويةً · ${bare} بلا ترجمةٍ ضُمّت إليها فاتحتُها` +
+                (blank ? ` · طُرح ${blank} خاليًا` : ""));
     done++;
   }
 }

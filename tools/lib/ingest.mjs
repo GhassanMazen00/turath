@@ -26,19 +26,33 @@ export async function get(url) {
 /* عنوانُ الباب كما يُعرض: تُزال علاماتُ المحقّق والمدوّنة ويبقى اللفظ.
    و«PARATEXT|» و«AUTO» و«CHECK» علاماتُ المدوّنة لا من الكتاب، فتُزال. */
 export function cleanHead(t) {
-  const out = String(t || "")
+  let s = String(t || "")
     .replace(/\[|\]/g, " ").replace(/\(¬?\d+\)/g, " ")
     .replace(/\bPARATEXT\s*\|?/gi, " ").replace(/\b(CHECK|AUTO)\b/gi, " ")
-    .replace(/^\d+\s*[-–]\s*/, "")
-    /* طبعاتُ الشروح تُصدّر الترجمة برقمٍ وقوسٍ و«قوله»: «1 ( قوله باب … )».
-       وكان هذا يُنزع عند العرض لا عند البناء، فيُخزَّن العنوانُ بغير صورته
-       التي تُرى — فلا يُعرف العاطلُ منه. فصار النزعُ هنا مرّةً واحدة. */
-    .replace(/^\d+\s*/, "").replace(/^[(]\s*/, "").replace(/\s*[)]\s*$/, "")
-    .replace(/^\d+\s*/, "").replace(/^[(]\s*/, "").replace(/^قوله\s+/, "")
-    .replace(/\s*[)]\s*$/, "")
-    .replace(/^[\s*|:،.-]+/, "").replace(/[\s*|:،.-]+$/, "")
     .replace(/\s+/g, " ").trim();
-  return tidyParens(out);
+  /* يُكرَّر حتى يستقرّ: العنوانُ يحمل أكثرَ من علامةٍ في صدره
+     («1 ( 2002 2003 باب بيان…» في المنهاج)، ونزعُ واحدةٍ يكشف التي تحتها. */
+  let prev;
+  do {
+    prev = s;
+    s = s.replace(/^\d+\s*[-–]\s*/, "")
+      .replace(/^\d+\s*/, "").replace(/^[(]\s*/, "").replace(/^قوله\s+/, "")
+      /* مرقاة المفاتيح تُحيط العنوان برقم عمقه من الطرفين:
+         «1 ( كتاب الإيمان ) 1». الأوّل يُنزع بما سبق، والثاني كان يبقى
+         فيُخزَّن العنوان «كتاب الإيمان ) 1». وهو من المدوّنة لا من الكتاب. */
+      .replace(/\s*\)\s*\d+\s*$/, "")
+      .replace(/^[\s*|:،.-]+/, "").replace(/[\s*|:،.-]+$/, "")
+      .trim();
+    /* القوسُ الطرفيّ لا يُنزع إلا إن كان زائدًا لا نظيرَ له: «( جديدا )»
+       قوسٌ تامٌّ من المحقّق يُترك، و«باب … )» ذيلُ قوسٍ فُتح على العنوان
+       كلِّه فيُنزع. وكان يُنزع دائمًا — فإذا أُعيد التنظيف على عنوانٍ
+       نُظّف (وهو عملُ mark-toc) أكل قوسًا صحيحًا: «( جديدا )» ← «( جديدا». */
+    const cl = (s.match(/\)/g) || []).length, op = (s.match(/\(/g) || []).length;
+    if (cl > op && /\)\s*$/.test(s)) s = s.replace(/\s*\)\s*$/, "");
+    else if (op > cl && /^\(/.test(s)) s = s.replace(/^\(\s*/, "");
+    s = tidyParens(s);
+  } while (s !== prev);
+  return s;
 }
 /* أقواسُ المحقّق تتداخل وتفرغ: «أبواب ( ( شرح ) ) الطهارة». والتداخلُ
    يزيد على طبقةٍ، فيُكرَّر الطيُّ حتى يستقرّ اللفظ. */
@@ -52,11 +66,29 @@ function tidyParens(t) {
 /* عنوانٌ لا يدلّ: «باب» و«فصل» مجرَّدين، أو ما خلا من حرفٍ عربي.
    وهي في المصدر كذلك — أبوابٌ بلا ترجمة — فلا تُغيَّر، وإنّما يُضمّ
    إليها فاتحةُ كلامها لتُعرف. */
-const BARE = /^(باب|فصل|كتاب|أبواب|جماع|تتمة)$/;
+/* «مسألة» و«فرع» و«فرق» من هذا الباب أيضًا: علاماتُ تقسيمٍ لا تراجم.
+   وكتب الفقه المشروحة مبنيّةٌ عليها — في المنتقى للباجي وحده ٣٬٥٩٤ عنوانًا
+   اسمُه «مسألة» و١٬٣٣٠ اسمُه «فرع» — فلو تُركت لخرج فهرسٌ يقول «مسألة»
+   ثلاثةَ آلاف مرّة. فتُضمّ إليها فاتحةُ كلامها كما يُصنع بـ«باب» و«فصل». */
+const BARE = /^(باب|فصل|كتاب|أبواب|جماع|تتمة|مسألة|مسئلة|فرع|فرق)$/;
 export const isBareHead = (t) => { const c = cleanHead(t); return c.length < 3 || BARE.test(c) || !/[ء-ي]/.test(c); };
+
+/* القرارُ التأسيسي: لا نصَّ ممسوحًا ضوئيًّا. ومدوّنةُ OpenITI تُعلن ذلك في
+   بطاقة كل نسخة (90#VERS#ISSUES### : UNCORRECTED_OCR)، فيُقرأ الإعلانُ
+   ويُرفض الكتابُ إن كان ممسوحًا — بدل أن نُصدّق ونحن لا ندري. وإن غابت
+   البطاقةُ قيل ذلك ولم يُسكَت عنه. */
+async function checkNotOCR(b) {
+  let yml;
+  /* بطاقةُ النسخة تُسمّى باسم الملفّ بلا لاحقة .mARkdown */
+  try { yml = await get(b.url.replace(/\.mARkdown$/, "") + ".yml"); }
+  catch (e) { console.log(`   ⚠ ${b.ar}: لا بطاقةَ للنسخة، فلم يُتحقّق من المسح الضوئي.`); return; }
+  if (/UNCORRECTED_OCR/i.test(yml))
+    throw new Error(`${b.ar}: النسخةُ ممسوحةٌ ضوئيًّا (UNCORRECTED_OCR) — تُرفض، والتمس نسخةً مرقونة.`);
+}
 
 export async function buildBook(b, outDir, { minBlocks = 300 } = {}) {
   process.stdout.write(`\n${b.ar} — جلب… `);
+  await checkNotOCR(b);
   const raw = await get(b.url);
   process.stdout.write(`${(raw.length / 1048576).toFixed(1)}م.ب، تفكيك… `);
   const { meta, blocks } = parseOpenITI(raw);
@@ -97,6 +129,12 @@ export async function buildBook(b, outDir, { minBlocks = 300 } = {}) {
     const hint = isBareHead(h.t) ? first.replace(/\s+/g, " ").slice(0, 70).trim() : "";
     toc.push([cleanHead(h.t), at[h.i][0], at[h.i][1], h.v, h.p, n, hint]);
   });
+  /* عنوانٌ ذهب كلُّه بالتنظيف، ولا فقرةَ تحته فلا فاتحةَ تقوم مقامه، ولا
+     عددَ يُعرف به: تِيلةٌ تُعرض بلا اسمٍ وتُفتح على لا شيء. لا يحمل شيئًا
+     فيُطرح — ولا يضيع نصّ: الأجزاء كما هي، وما كان يقع في مداه (وهو صفر
+     فقرة) يعود إلى الباب الذي قبله. */
+  const blank = toc.filter((t) => !t[0] && !t[6] && !t[5]).length;
+  const toc2 = toc.filter((t) => t[0] || t[6] || t[5]);
 
   const inv = new Map();
   chunks.forEach((c, ci) => {
@@ -113,9 +151,12 @@ export async function buildBook(b, outDir, { minBlocks = 300 } = {}) {
   const cap = chunks.length > 2 ? chunks.length * MAXDF : Infinity;
   for (const [w, a] of inv) { if (a.length > cap) { dropped++; continue; } idx[w] = a; }
   fs.writeFileSync(path.join(dir, "idx.json"), JSON.stringify(idx), "utf8");
-  fs.writeFileSync(path.join(dir, "toc.json"), JSON.stringify(toc), "utf8");
+  fs.writeFileSync(path.join(dir, "toc.json"), JSON.stringify(toc2), "utf8");
 
+  /* «on» و«onAr»: الكتابُ الذي يشرحه هذا الشرح. كانا يُمرَّران ولا يُكتبان،
+     فتُصدِر صفحةُ الشرح زرًّا إلى «hadith.html#/undefined». */
   const info = { slug: b.slug, ar: b.ar, full: b.full, author: b.author, died: b.died,
+    on: b.on, onAr: b.onAr, short: b.short,
     note: b.note, madhhab: b.madhhab || "", kind: b.kind || "",
     vols: +(meta.BookVOLS || 0) || Math.max(...blocks.map((x) => x.v)),
     paras: blocks.length, chunks: chunks.length,
@@ -123,7 +164,8 @@ export async function buildBook(b, outDir, { minBlocks = 300 } = {}) {
   fs.writeFileSync(path.join(dir, "meta.json"), JSON.stringify(info), "utf8");
 
   console.log("تمّ.");
-  console.log(`   ${info.paras.toLocaleString()} فقرة · ${info.chunks} جزءًا · ${toc.length} عنوانًا · ${info.vols} مجلّدًا`);
+  console.log(`   ${info.paras.toLocaleString()} فقرة · ${info.chunks} جزءًا · ${toc2.length} عنوانًا · ${info.vols} مجلّدًا` +
+              (blank ? ` (طُرح ${blank} عنوانًا خاليًا)` : ""));
   console.log(`   الفهرس ${kb(zlib.gzipSync(JSON.stringify(idx)).length)} مضغوطًا · ${dropped} كلمة شائعة مستبعَدة`);
   return { info, blocks, at };
 }

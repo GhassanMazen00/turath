@@ -35,8 +35,8 @@
   <section class="band band-tint" id="s-hadith">
     <div class="sect"><div class="l"><div class="k">السنّة النبوية</div>
       <h2>الحديث الشريف</h2>
-      <p>الكتب الستة والموطأ والأربعينات، بترقيمها المعتمد المطبوع. كل حديث يُعرض بحكمه ومعناه، ثم متنه، ثم سلسلة رواته، وتخريجه في بقية الكتب، وشرحه حيث توفّر.</p></div>
-      <a class="more" href="hadith.html"><span class="ml">كل الكتب</span><span class="md">عشرةُ مصنَّفات · ٣٦٬٥١٢ حديثًا</span></a></div>
+      <p>الكتب الستة والموطأ والدارمي، ومنتخَبات مشهورة كرياض الصالحين وبلوغ المرام ومشكاة المصابيح والأدب المفرد والشمائل، والأربعينات — بترقيمها المعتمد المطبوع. كل حديث يُعرض بحكمه ومعناه، ثم متنه، ثم سلسلة رواته، وتخريجه في بقية الكتب، وشرحه حيث توفّر.</p></div>
+      <a class="more" href="hadith.html"><span class="ml">كل الكتب</span><span class="md" id="nH">&nbsp;</span></a></div>
     <div id="dmH"></div>
     <div class="sub-strip"><h3>ابدأ من كتاب</h3></div>
     <div class="car" id="bkH"></div>
@@ -63,8 +63,8 @@
   <section class="band" id="s-sharh">
     <div class="sect"><div class="l"><div class="k">شروح المحدّثين</div>
       <h2>شرح الحديث</h2>
-      <p>أربعة شروحٍ كاملة: فتح الباري لابن حجر، والمنهاج للنووي، وعون المعبود، وتحفة الأحوذي. تُقرأ كتبًا وتُبحث بألفاظها، ويُعرض كل موضعٍ بجزئه وصفحته المطبوعين.</p></div>
-      <a class="more" href="sharh.html"><span class="ml">كل الشروح</span><span class="md">٤ شروح · ٩٢٬٦٣٠ فقرة</span></a></div>
+      <p>شروحٌ كاملة: فتح الباري لابن حجر، والمنهاج للنووي، وعون المعبود، وتحفة الأحوذي، وحاشيتا السندي على النسائي وابن ماجه، والمنتقى للباجي، وجامع العلوم والحكم لابن رجب، وسبل السلام للصنعاني، ومرقاة المفاتيح وجمع الوسائل للقاري، ودليل الفالحين لابن علّان. تُقرأ كتبًا وتُبحث بألفاظها، ويُعرض كل موضعٍ بجزئه وصفحته المطبوعين.</p></div>
+      <a class="more" href="sharh.html"><span class="ml">كل الشروح</span><span class="md" id="nSh">&nbsp;</span></a></div>
     <div id="dmSh"></div>
   </section>
 
@@ -106,7 +106,7 @@
       <div class="it"><span class="n">البحث</span><h3>ابحث في كل شيء</h3>
         <p>شريط البحث في الأعلى يمسح متون الأحاديث وآيات المصحف كاملًا وأسماء السور والأبواب وكتب التفسير. وتحته مرشّحات تحصر البحث في نوعٍ واحد أو في كتابٍ بعينه.</p></div>
       <div class="it"><span class="n">المصادر</span><h3>تحقّق بنفسك</h3>
-        <p>كل نصٍّ يحمل موضعه المطبوع: الكتاب والباب والرقم المعتمد، أو الجزء والصفحة في الشروح. وزرّ «المصادر» في أسفل كل صفحة يعرض كل مصدرٍ بُنيت عليه المنصة برابطه.</p></div>
+        <p>كل نصٍّ يحمل موضعه المطبوع: الكتاب والباب والرقم المعتمد، أو الجزء والصفحة في الشروح. وزرّ «من نحن · مصادرنا» في أسفل كل صفحة يعدّد الكتب التي بُنيت عليها المنصة، ويقول ما نقص منها.</p></div>
     </div>
   </section>
 
@@ -146,8 +146,14 @@ theme(); firstVisitNotice(); document.getElementById('tg').innerHTML=TGL; mountF
  const FQS=await fiqhSummary().catch(()=>({ijmac:0,masail:0}));
  // اختصارات تنزل إلى الأقسام، وتحت كلٍّ منها ما فيه من عدد
  const th=Object.values(B).reduce((a,b)=>a+b.total,0);
- let rn=0; try{ rn=Object.keys(await rijalIndex()).length; }catch(e){}
  const shp=SHB.reduce((a,b)=>a+b.paras,0);
+ /* عددُ الرواة كان يُجلب بإنزال فهرسهم كلِّه (٧٥٢ ك.ب) لرقمٍ واحد */
+ let rn=0; try{ rn=(await api.local('stats.json')).rijal||0; }catch(e){}
+ /* أعدادُ الأقسام تُقرأ من البيانات لا تُكتب باليد، فلا تشيخ إذا زِيد كتاب */
+ const nH=document.getElementById('nH');
+ if(nH) nH.innerHTML='<bdi>'+AR(Object.keys(B).length)+'</bdi> مصنَّفًا <span class="sep">•</span> <bdi>'+ARG(th)+'</bdi> حديثًا';
+ const nSh=document.getElementById('nSh');
+ if(nSh) nSh.innerHTML='<bdi>'+AR(SHB.length)+'</bdi> شرحًا <span class="sep">•</span> <bdi>'+ARG(shp)+'</bdi> فقرة';
  // الاختصار يقول ما في القسم لا اسمَه فقط: الاسمُ وحده لا يدلّ على ما يُنتفع به
  const ICO={
   tafsir:'<path d="M4 5.5h6.5a2 2 0 012 2V19a2.6 2.6 0 00-2-1H4zM20 5.5h-6.5a2 2 0 00-2 2V19a2.6 2.6 0 012-1H20z"/>',
@@ -159,11 +165,11 @@ theme(); firstVisitNotice(); document.getElementById('tg').innerHTML=TGL; mountF
  const ic=(k)=>`<svg class="ji" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">${ICO[k]}</svg>`;
  document.getElementById('jump').innerHTML=[
    ['s-tafsir','tafsir','التفسير',AR(T.length)+' تفسيرًا','للآية الواحدة، من الطبري وابن كثير إلى كتب اليوم، تقرأها جنبًا إلى جنب.'],
-   ['s-hadith','hadith','الحديث',AR(th)+' حديثًا','الكتب الستة والموطأ، مع رواة كل حديث وكلام العلماء في تصحيحه ومواضعه في بقية الكتب.'],
-   ['s-rijal','rijal','الرواة',AR(rn)+' راويًا','لكل راوٍ: زمنه وبلده ومن أخذ عنهم ومن أخذوا عنه، وكم حديثًا روى.'],
-   ['s-sharh','sharh','شرح الحديث',AR(SHB.length)+' شروح','فتح الباري والمنهاج وعون المعبود وتحفة الأحوذي، تبحث فيها بكلمات الحديث.'],
+   ['s-hadith','hadith','الحديث',ARG(th)+' حديثًا','الكتب الستة والموطأ والدارمي ومنتخَبات مشهورة، مع رواة كل حديث وكلام العلماء في تصحيحه ومواضعه في بقية الكتب.'],
+   ['s-rijal','rijal','الرواة',ARG(rn)+' راويًا','لكل راوٍ: زمنه وبلده ومن أخذ عنهم ومن أخذوا عنه، وكم حديثًا روى.'],
+   ['s-sharh','sharh','شرح الحديث',AR(SHB.length)+' شرحًا','فتح الباري والمنهاج وسبل السلام ومرقاة المفاتيح وغيرها، تبحث فيها بكلمات الحديث.'],
    ['s-sira','sira','السيرة',AR(SRE.length)+' حدثًا','لكل حدث ما يثبته: آياته وأحاديثه وما ذكره أهل السيرة.'],
-   ['s-fiqh','fiqh','الفقه',AR(FQS.ijmac+FQS.masail)+' مسألة','ما اتفق عليه العلماء وما اختلفوا فيه، وسبب الخلاف ودليل كل رأي. نعرض ولا نفتي.'],
+   ['s-fiqh','fiqh','الفقه',ARG(FQS.ijmac+FQS.masail)+' مسألة','ما اتفق عليه العلماء وما اختلفوا فيه، وسبب الخلاف ودليل كل رأي. نعرض ولا نفتي.'],
  ].map(([id,k,t,n,d])=>`<a class="jmp" href="#${id}">${ic(k)}<span class="jt"><b>${t}</b>
      <span class="jn"><bdi>${n}</bdi></span></span><span class="jd">${d}</span></a>`).join('');
  // النزول سلسًا مع ترك مسافةٍ للترويسة اللاصقة
@@ -178,26 +184,20 @@ theme(); firstVisitNotice(); document.getElementById('tg').innerHTML=TGL; mountF
  // ── أرقامُ الوصل: ما وُصل لا ما جُمع ──
  (async()=>{
    const el=document.getElementById('lnums'); if(!el)return;
-   let conflict=0;                      // أحاديثُ اختلفت فيها الأحكام
-   try{
-     for(const k of Object.keys(B)){
-       const rows=await loadIdx(k);
-       for(const r of rows){ const g=r[3]||[];
-         if(g.length<2) continue;
-         const kinds=new Set(g.map(x=>gclass(x[1])).filter(x=>x!=='na'));
-         if(kinds.size>1) conflict++; }
-     }
-   }catch(e){}
-   let takh=0; try{ takh=Object.values(await api.local('takhrij.json')).flat().length; }catch(e){}
-   let asb=0; try{ asb=Object.keys(await api.local('asbab.json')).length; }catch(e){}
+   /* كانت هذه الأرقام تُحسب هنا بإنزال فهارس الكتب كلِّها — ثمانيةٌ
+      وثلاثون ميغابايتًا على أوّل زائرٍ يفتح الصفحة — وهي لا تتغيّر إلا
+      بتغيّر البيانات. فصارت تُحسب في tools/build-stats.mjs وتُقرأ من
+      ملفٍّ صغير. (وإن غاب الملفّ لم تُعرض الأرقام ولم تُخترَع.) */
+   let S; try{ S=await api.local('stats.json'); }catch(e){ return; }
+   const conflict=S.conflict, takh=S.takhrij, asb=S.asbab;
    const srLinks=SRE.reduce((a,e)=>a+e.nh,0);
    const rows=[
-     [AR(conflict),'حديثًا اختلف العلماء في حكمه','نعرض كلامهم كله بأسمائهم، ولا نختار بينهم'],
-     [AR(takh),'موضعًا للحديث نفسه في كتب أخرى','تعرف أين ورد الحديث في بقية الكتب'],
-     [AR(srLinks),'حديثًا موصولًا بأحداث السيرة','كل حدث ومعه ما رُوي فيه'],
-     [AR(asb),'آية تعرف سبب نزولها','من كتاب أسباب النزول للواحدي'],
-     [AR(FQS.sabab),'مسألة تعرف لماذا اختلفوا فيها','لا مَن أصاب، بل سبب الخلاف نفسه'],
-     [AR(FQS.ayat+FQS.ahadith),'دليلًا من قرآن وحديث في مسائل الفقه','ما استدلّ به كل رأي، موصولًا بمصدره']];
+     [ARG(conflict),'حديثًا اختلف العلماء في حكمه','نعرض كلامهم كله بأسمائهم، ولا نختار بينهم'],
+     [ARG(takh),'موضعًا للحديث نفسه في كتب أخرى','تعرف أين ورد الحديث في بقية الكتب'],
+     [ARG(srLinks),'حديثًا موصولًا بأحداث السيرة','كل حدث ومعه ما رُوي فيه'],
+     [ARG(asb),'آية تعرف سبب نزولها','من كتاب أسباب النزول للواحدي'],
+     [ARG(FQS.sabab),'مسألة تعرف لماذا اختلفوا فيها','لا مَن أصاب، بل سبب الخلاف نفسه'],
+     [ARG(FQS.ayat+FQS.ahadith),'دليلًا من قرآن وحديث في مسائل الفقه','ما استدلّ به كل رأي، موصولًا بمصدره']];
    el.innerHTML=rows.map(([n,t,d])=>`<div class="lnum"><b><bdi>${n}</bdi></b><span>${esc(t)}</span><i>${esc(d)}</i></div>`).join('');
  })();
 
@@ -297,6 +297,9 @@ theme(); firstVisitNotice(); document.getElementById('tg').innerHTML=TGL; mountF
    {t:'h',b:'bukhari',n:65,note:'تفسير النبي ﷺ للقرآن من صحيح البخاري.'},
    {t:'q',n:36,slug:'ar-tafsir-ibn-kathir',note:'سورة يس، من أكثر السور قراءةً وحفظًا.'},
    {t:'h',b:'muslim',n:4,note:'كتاب الصلاة في صحيح مسلم، مجموع الطرق.'},
+   {t:'h',b:'riyad',n:null,note:'منتخَب النووي في الآداب والأخلاق، مع شرحه دليل الفالحين.'},
+   {t:'h',b:'bulugh',n:1,note:'أحاديث الأحكام مختصرة، مع شرحها سبل السلام للصنعاني.'},
+   {t:'h',b:'shamail',n:null,note:'صفته ﷺ كما رواها أصحابه، مع شرحها للقاري.'},
    {t:'t',slug:'ar-tafseer-tahrir-al-tanwir',note:'أوسع تفسير حديث في البلاغة ونظم القرآن ومقاصده.'},
    {t:'h',b:'malik',n:null,note:'أقدم المصنّفات، ومدخل حسن لعمل أهل المدينة.'}];
  carousel(document.getElementById('carS'),{slides:picks.map(pk=>{

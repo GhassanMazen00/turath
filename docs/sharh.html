@@ -45,8 +45,8 @@ function vBooks(){
   sideBooks();
   app().innerHTML='<nav class="crumb"><span>شروح الحديث</span></nav>'+
    '<section class="ph"><div class="k">شروح المحدّثين</div><h1>شروح الحديث</h1>'+
-   '<div class="m"><bdi>'+AR(BS.length)+' كتب</bdi><span class="sep">•</span>'+
-   '<bdi>'+AR(BS.reduce((a,b)=>a+b.paras,0))+' فقرة</bdi></div></section>'+
+   '<div class="m"><bdi>'+AR(BS.length)+' كتابًا</bdi><span class="sep">•</span>'+
+   '<bdi>'+ARG(BS.reduce((a,b)=>a+b.paras,0))+' فقرة</bdi></div></section>'+
    '<div class="note" style="margin-bottom:1rem">هذه الشروح كتبٌ متّصلة الكلام، لا سجلّاتٌ لكل حديث. '+
    'فتُقرأ وتُبحث كما هي، ولا يُنسَب منها شرحٌ إلى حديثٍ بعينه بغير دليل.</div>'+
    '<div class="bento">'+BS.map(b=>
@@ -54,7 +54,7 @@ function vBooks(){
      '<span class="cn"><bdi>'+AR(b.vols)+'</bdi><small>مجلّدًا</small></span></div>'+
      '<p class="au">'+esc(b.author)+'<span class="sep">•</span>ت'+AR(b.died)+'هـ</p>'+
      '<p>'+esc(b.full)+'</p>'+
-     '<div class="meta"><bdi>'+AR(b.paras)+' فقرة</bdi><span class="go">افتح ←</span></div></a>').join('')+
+     '<div class="meta"><bdi>'+ARG(b.paras)+' فقرة</bdi><span class="go">افتح ←</span></div></a>').join('')+
    '</div>'+FOOT;
   foot(); scrollTo(0,0);
 }
@@ -73,12 +73,12 @@ async function vBook(b){
    '<h1>'+esc(b.ar)+'</h1><div class="m">'+esc(b.full)+'</div></section>'+
    box(b)+
    '<div class="acts"><a class="act" href="#/'+b.slug+'/r/0/0">اقرأ من أوّله</a>'+
-   '<a class="act" href="hadith.html#/'+b.on+'">'+esc(b.onAr)+' ←</a></div>'+
+   (b.on?'<a class="act" href="hadith.html#/'+b.on+'">'+esc(b.onAr||b.on)+' ←</a>':'')+'</div>'+
    '<div class="sh"><h2>الأبواب</h2><span class="cnt" id="tn"></span><span class="ln"></span></div>'+
    '<div id="toc"></div>'+FOOT;
   wire(b); foot(); scrollTo(0,0);
   const toc=await sharhToc(b.slug);
-  document.getElementById('tn').innerHTML='<bdi>'+AR(toc.length)+'</bdi>';
+  document.getElementById('tn').innerHTML='<bdi>'+ARG(toc.length)+'</bdi>';
   document.getElementById('toc').innerHTML=tocGroups(toc,'#/'+b.slug+'/r/');
 }
 async function vSearch(b,q){
