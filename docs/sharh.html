@@ -111,8 +111,8 @@ async function vRead(b,ci,pi,part){
     if(!bb) throw new Error('لا فهرس لهذا الكتاب');
     const base='#/'+b.slug+'/r';
     document.getElementById('ph').innerHTML='<div class="k">'+esc(b.ar)+'<span class="sep">•</span>'+esc(b.author)+'</div>'+
-      '<h1>'+esc(bb.title)+'</h1><div class="m">'+(bb.box&&bb.box.ar?esc(babClean(bb.box.ar))+'<span class="sep">•</span>':'')+'ج'+AR(bb.v)+' ص'+AR(bb.p)+'</div>';
-    if(bb.box){
+      '<h1>'+esc(bb.title)+'</h1><div class="m">'+(bb.within&&bb.within.ar?esc(babClean(bb.within.ar))+'<span class="sep">•</span>':'')+'ج'+AR(bb.v)+' ص'+AR(bb.p)+'</div>';
+    if(bb.kids){
       document.getElementById('body').innerHTML=boxBody(base,bb)+
         '<div class="acts"><a class="act" href="'+base+'/'+bb.kids[0].t[1]+'/'+bb.kids[0].t[2]+'">ابدأ من أوّل أبوابه</a></div>';
       scrollTo(0,0); return;

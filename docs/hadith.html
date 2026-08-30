@@ -19,20 +19,29 @@
 <script>
 theme(); firstVisitNotice(); document.getElementById('tg').innerHTML=TGL; document.getElementById('mnw').innerHTML=MENU;
 mountMenu(document.getElementById('mn'),document.getElementById('side'));
-const PER=15; let B={},TAK={},GDEF={},SHARH={};
+const PER=15; let B={},TAK={},GDEF={},SHARH={},GRADED=new Set(),ISNAD=new Set();
 const app=()=>document.getElementById('app'), side=()=>document.getElementById('side');
 const FOOT='<footer class="foot" id="foot"></footer>';
 function foot(){const f=document.getElementById('foot'); if(f)mountFooter(f);}
 (async()=>{ try{ await searchInit(); B=SEARCH.books;
-    const [tk,gd,sh,shm]=await Promise.all([api.local('takhrij.json').catch(()=>({})),
+    const [gd,sh,shm,st]=await Promise.all([
       api.local('grades.json').catch(()=>({})),api.local('sharh.json').catch(()=>({})),
-      api.local('sharh-manual.json').catch(()=>({}))]);
-    TAK=tk; GDEF=gd;
+      api.local('sharh-manual.json').catch(()=>({})),api.local('stats.json').catch(()=>({}))]);
+    GDEF=gd;
+    // أيُّ الكتب وردت لأحاديثها أحكامٌ وأسانيد — يُقرأ من البيانات لا يُكتب هنا
+    GRADED=new Set(st.gradedBooks||[]); ISNAD=new Set(st.isnadBooks||[]);
     // اليدويّ يعلو على المجلوب آليًّا؛ ومفاتيح الدليل تُتخطّى
     SHARH=Object.assign({},sh);
     for(const k in shm){ if(k.charAt(0)==='_')continue; SHARH[k]=shm[k]; }
   }catch(e){ return failed(app(),e); }
   addEventListener('hashchange',route); route(); })();
+/* تخريجُ الكتاب وحده يُجلب عند فتحه — لا تخريجُ المدوّنة كلِّها */
+const TAKED=new Set();
+async function loadTak(k){
+  if(TAKED.has(k)) return;
+  const d=await api.local('takhrij/'+k+'.json').catch(()=>null);
+  if(d){ Object.assign(TAK,d); TAKED.add(k); }
+}
 function route(){
   const p=location.hash.replace(/^#\/?/,'').split('/').filter(Boolean);
   if(!p.length) return vBooks();
@@ -79,6 +88,7 @@ async function vList(k,sec,page){
    '<div class="m"><bdi>'+AR(s.count)+' حديثًا</bdi></div></div><div id="body"></div>'+FOOT;
   loading(document.getElementById('body'),'جارٍ الجلب…'); foot(); scrollTo(0,0);
   try{
+    await loadTak(k);
     const idx=await loadIdx(k); const rows=idx.filter(r=>r[1]===sec);
     const pages=Math.max(1,Math.ceil(rows.length/PER)); page=Math.min(Math.max(1,page),pages);
     const pg=()=>{const pv=page>1?'#/'+k+'/'+sec+'/'+(page-1):null,nx=page<pages?'#/'+k+'/'+sec+'/'+(page+1):null;
@@ -112,6 +122,7 @@ async function vHadith(k,num){
   app().innerHTML='<div id="body"></div>'+FOOT;
   loading(document.getElementById('body'),'جارٍ جلب الحديث…'); foot(); scrollTo(0,0);
   try{
+    await loadTak(k);
     const idx=await loadIdx(k); const row=idx.find(r=>r[0]===num);
     const sec=row?b.sections.find(x=>x.n===row[1]):null;
     if(sec) sideSections(k,sec.n); else sideBooks(k);
@@ -136,6 +147,10 @@ async function vHadith(k,num){
       return {href:'rijal.html#/r/'+encodeURIComponent('t:'+v),name:v,sub:''};}).filter(Boolean);
     const tak=TAK[k+':'+num]||[];
     const sharh=SHARH[k+':'+num];
+    /* مواضعُ هذا الحديث في كتبٍ وردت لأحاديثها أحكام، ومواضعُه في كتبٍ
+       وردت لها أسانيد — تُستعمل حين يخلو هذا الكتابُ منهما. */
+    const elsewhere=grades.length?[]:tak.filter(r=>GRADED.has(r.split(':')[0])).slice(0,6);
+    const chainAt=raw.length?[]:tak.filter(r=>ISNAD.has(r.split(':')[0])).slice(0,6);
     // الحكم البارز
     const top=grades.length?grades[0]:null;
     const cls=top?gclass(top[1]):'na';
@@ -144,8 +159,20 @@ async function vHadith(k,num){
       '<div class="pane gband"><span class="gbig '+cls+'">'+esc(top[1])+'</span>'+
       '<span class="gdef">'+(gdef(top[1])||'حكمٌ منقول عن أهل الحديث.')+
       '<br><b>'+esc(top[0])+'</b>'+(grades.length>1?'، ووافقه <bdi>'+AR(agree-1)+'</bdi> من <bdi>'+AR(grades.length-1)+'</bdi> من المحدّثين الآخرين المذكورين':'')+'</span></div>'
-      :'<div class="pane gband"><span class="gbig na">بلا حكم مرفق</span><span class="gdef">لم يرد حكم في المصدر لهذا الحديث'+
-       ((k==='bukhari'||k==='muslim')?'؛ وهو من الصحيحين، وأهل العلم على تلقّي ما فيهما بالقبول.':'.')+'</span></div>';
+      :'<div class="pane gband"><span class="gbig na">بلا حكم مرفق</span><span class="gdef">'+
+       /* الفرقُ بين «هذا الحديثُ لم يُحكم عليه» و«هذا الكتابُ لم تُشحن له
+          أحكام» فرقٌ يهمّ القارئ: الأوّل نقصٌ في حديثٍ، والثاني حالُ كتاب. */
+       (GRADED.has(k)
+         ?'لم يرد حكم في المصدر لهذا الحديث'+
+          ((k==='bukhari'||k==='muslim')?'؛ وهو من الصحيحين، وأهل العلم على تلقّي ما فيهما بالقبول.':'.')
+         :'لم ترد لأحاديث هذا الكتاب أحكامٌ منسوبةٌ إلى قائليها في مصادرنا، ولا يُنسب إلى عالمٍ ما لم يقله.')+
+       /* ولا يُترك القارئ عند «لا يوجد»: هذا الكتابُ لم ترد لأحاديثه أحكامٌ
+          في مصادرنا، لكنّ الحديث نفسَه قد يكون في كتابٍ وردت له. فيُدلّ على
+          موضعه هناك — ننقل الموضع ولا ننقل الحكم إليه. */
+       (elsewhere.length?'<br><b>وأخرجه أيضًا:</b> '+elsewhere.map(r=>{const [bb,nn]=r.split(':');
+          return '<a href="#/'+bb+'/h/'+nn+'">'+esc((B[bb]||{}).ar||bb)+' <bdi>'+AR(nn)+'</bdi></a>';}).join(' <span class="sep">•</span> ')+
+          ' — وأحكامُ المحدّثين مشحونةٌ لهذه الكتب، فحكمُه يُنظر في موضعه منها.':'')+
+       '</span></div>';
     // ── الرفّ الجانبي ──
     const first=nodes.length?nodes[0]:null, last=nodes.length?nodes[nodes.length-1]:null;
     const rail=
@@ -209,7 +236,11 @@ async function vHadith(k,num){
           '<div class="note">'+(auth?'السلسلة من قاعدة رواة مفهرسة لكل حديث.':'لم تُفهرَس سلسلة هذا الحديث؛ استُخرجت الأسماء آليًّا وقد تنقص.')+'</div>'
          :'<div class="pane msg">'+(b.isnad===false
             ?'هذا الكتاب منتخَب: يَنسب الحديث إلى صحابيّه ويذكر من أخرجه من الأئمة، ولا يسوق سلسلة إسناده. فالسلسلة تُطلب في الكتاب الذي أخرجه.'
-            :'لا سلسلة مفهرسة لهذا الحديث.')+'</div>')+'</div>'+
+            :'لا سلسلة مفهرسة لهذا الحديث.')+
+            (chainAt.length?'<div class="note" style="margin:.9rem 0 0">وأخرجه بإسناده: '+
+              chainAt.map(r=>{const [bb,nn]=r.split(':');
+                return '<a href="#/'+bb+'/h/'+nn+'">'+esc((B[bb]||{}).ar||bb)+' <bdi>'+AR(nn)+'</bdi></a>';}).join(' <span class="sep">•</span> ')+
+              '</div>':'')+'</div>')+'</div>'+
       '<div class="panel" data-p="full">'+(String(h.text||'').trim()
         ? '<div class="pane full"><span>'+esc(h.text)+'</span></div>'
         : '<div class="pane msg">لم يرد نصُّ هذا الحديث في المصدر المعتمد للمتون.</div>')+'</div>'+

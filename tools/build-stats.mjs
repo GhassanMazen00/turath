@@ -29,9 +29,17 @@ const gclass = (g) => {
 };
 
 const books = rd(path.join(DATA, "books.json"));
+/* الكتبُ التي وردت لأحاديثها أحكامٌ منسوبةٌ إلى المحدّثين، والتي وردت لها
+   سلاسلُ إسناد. يقرؤهما الموقعُ ليقول لقارئ حديثٍ لا حكمَ له: «أخرجه فلانٌ
+   أيضًا، وهناك حكمُه». وتُحسب من البيانات لا تُكتب باليد. */
+const perBook = {};
 let hadiths = 0, gradings = 0, conflict = 0, graded = 0;
 for (const k of Object.keys(books)) {
+  perBook[k] = { n: 0, g: 0, c: 0 };
   for (const r of rd(path.join(DATA, "idx", `${k}.json`))) {
+    perBook[k].n++;
+    if ((r[3] || []).length) perBook[k].g++;
+    if ((r[4] || []).length) perBook[k].c++;
     hadiths++;
     const g = r[3] || [];
     if (!g.length) continue;
@@ -48,9 +56,13 @@ const stats = {
   sharhBooks: shb.length,
   sharhParas: shb.reduce((a, b) => a + b.paras, 0),
   sharhOn: shb.filter((b) => b.on).length,
-  takhrij: Object.values(rd(path.join(DATA, "takhrij.json"))).flat().length,
+  takhrij: fs.readdirSync(path.join(DATA, "takhrij"))
+    .reduce((a, f) => a + Object.values(rd(path.join(DATA, "takhrij", f))).flat().length, 0),
   asbab: Object.keys(rd(path.join(DATA, "asbab.json"))).length,
   rijal: Object.keys(rd(path.join(DATA, "rijal", "index.json"))).length,
+  /* «أكثرُ أحاديثه» حدُّها النصف: كتابٌ دونه لا يُقال لقارئٍ اذهب إليه */
+  gradedBooks: Object.keys(perBook).filter((k) => perBook[k].g / perBook[k].n >= 0.5),
+  isnadBooks: Object.keys(perBook).filter((k) => perBook[k].c / perBook[k].n >= 0.5),
 };
 fs.writeFileSync(path.join(DATA, "stats.json"), JSON.stringify(stats), "utf8");
 console.log(stats);
