@@ -5,7 +5,14 @@
 <link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap"></noscript>
 <link rel="stylesheet" href="assets/app.css">
-<link rel="icon" href="assets/mark.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="assets/mark.svg">
+<link rel="icon" href="assets/mark.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#eef2f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#17191c" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="تُراث">
 
 <script>(function(){var t=localStorage.getItem("turath-theme");if(t)document.documentElement.setAttribute("data-theme",t);})();</script>
 <title>الحديث الشريف · تُراث</title></head><body>
@@ -19,20 +26,30 @@
 <script>
 theme(); firstVisitNotice(); document.getElementById('tg').innerHTML=TGL; document.getElementById('mnw').innerHTML=MENU;
 mountMenu(document.getElementById('mn'),document.getElementById('side'));
-const PER=15; let B={},TAK={},GDEF={},SHARH={},GRADED=new Set(),ISNAD=new Set();
+const PER=15; let B={},TAK={},GDEF={},NOTE={},GRADED=new Set(),ISNAD=new Set();
+const hasNote=(k,n)=>!!(NOTE[k]&&NOTE[k].has(n));
+/* تخريجُ الكتاب المفتوح وحدَه؛ وصفحةُ الكتب لا تحتاجه فلا يُجلب لها */
+const TAKED=new Set();
+async function loadTak(k){
+  if(TAKED.has(k))return;
+  const d=await api.local(`h/${k}/takhrij.json`).catch(()=>null);
+  if(d){ Object.assign(TAK,d); TAKED.add(k); }
+}
+const getNote=(k,n)=>hasNote(k,n)?api.local(`note/${k}/${n}.json`).catch(()=>null):Promise.resolve(null);
 const app=()=>document.getElementById('app'), side=()=>document.getElementById('side');
 const FOOT='<footer class="foot" id="foot"></footer>';
 function foot(){const f=document.getElementById('foot'); if(f)mountFooter(f);}
 (async()=>{ try{ await searchInit(); B=SEARCH.books;
-    const [tk,gd,sh,shm,st]=await Promise.all([api.local('takhrij.json').catch(()=>({})),
-      api.local('grades.json').catch(()=>({})),api.local('sharh.json').catch(()=>({})),
-      api.local('sharh-manual.json').catch(()=>({})),api.local('stats.json').catch(()=>({}))]);
-    TAK=tk; GDEF=gd;
+    const [gd,ni,st]=await Promise.all([
+      api.local('grades.json').catch(()=>({})),api.local('note/index.json').catch(()=>({})),
+      api.local('stats.json').catch(()=>({}))]);
+    GDEF=gd;
     // أيُّ الكتب وردت لأحاديثها أحكامٌ وأسانيد — يُقرأ من البيانات لا يُكتب هنا
     GRADED=new Set(st.gradedBooks||[]); ISNAD=new Set(st.isnadBooks||[]);
-    // اليدويّ يعلو على المجلوب آليًّا؛ ومفاتيح الدليل تُتخطّى
-    SHARH=Object.assign({},sh);
-    for(const k in shm){ if(k.charAt(0)==='_')continue; SHARH[k]=shm[k]; }
+    /* الشروحُ المكتوبة: كانت خريطةً واحدة من ٥٫١ م.ب تُنزَّل عند فتح أيّ
+       صفحة، وفيها ٢٬٣١٦ شرحًا لا يُقرأ منها إلا واحد. فصار يُنزَّل فهرسُ
+       أرقامها (١١ ك.ب)، والشرحُ نفسُه عند فتح حديثٍ له شرح. */
+    for(const k in ni) NOTE[k]=new Set(ni[k]);
   }catch(e){ return failed(app(),e); }
   addEventListener('hashchange',route); route(); })();
 function route(){
@@ -81,7 +98,9 @@ async function vList(k,sec,page){
    '<div class="m"><bdi>'+AR(s.count)+' حديثًا</bdi></div></div><div id="body"></div>'+FOOT;
   loading(document.getElementById('body'),'جارٍ الجلب…'); foot(); scrollTo(0,0);
   try{
-    const idx=await loadIdx(k); const rows=idx.filter(r=>r[1]===sec);
+    await loadTak(k);
+    const gr=await hadSec(k,sec);
+    const rows=(await hadNav(k)).filter(r=>r[1]===sec).map(r=>[r[0],sec,"",(gr[r[0]]||[[],[]])[0]]);
     const pages=Math.max(1,Math.ceil(rows.length/PER)); page=Math.min(Math.max(1,page),pages);
     const pg=()=>{const pv=page>1?'#/'+k+'/'+sec+'/'+(page-1):null,nx=page<pages?'#/'+k+'/'+sec+'/'+(page+1):null;
       return '<div class="pager">'+(pv?'<a href="'+pv+'">‹ السابق</a>':'<span class="off">‹ السابق</span>')+
@@ -114,7 +133,8 @@ async function vHadith(k,num){
   app().innerHTML='<div id="body"></div>'+FOOT;
   loading(document.getElementById('body'),'جارٍ جلب الحديث…'); foot(); scrollTo(0,0);
   try{
-    const idx=await loadIdx(k); const row=idx.find(r=>r[0]===num);
+    await loadTak(k);
+    const row=await hadRow(k,num);
     const sec=row?b.sections.find(x=>x.n===row[1]):null;
     if(sec) sideSections(k,sec.n); else sideBooks(k);
     const d=await api.hadith(k,num); const h=(d.hadiths&&d.hadiths[0])||{};
@@ -122,8 +142,9 @@ async function vHadith(k,num){
     const ref=h.reference&&h.reference.book!=null?AR(h.reference.book)+':'+AR(h.reference.hadith):'';
     const sp=splitIsnad(h.text||'');
     const grades=row?row[3]:[], raw=(row&&row[4])||[];
-    const RI=await rijalIndex();
-    const all=idx.map(r=>r[0]),i=all.indexOf(num);
+    /* أسماءُ رجال هذه السلسلة وحدهم، لا فهرسُ الرواة كلُّه */
+    const RI=await rijalBrief(raw.filter(x=>x[0]==='i').map(x=>x[1]));
+    const all=(await hadNav(k)).map(r=>r[0]),i=all.indexOf(num);
     const prev=i>0?all[i-1]:null,next=i>=0&&i<all.length-1?all[i+1]:null;
     const pg='<div class="pager">'+(prev?'<a href="#/'+k+'/h/'+prev+'">‹ حديث '+AR(prev)+'</a>':'<span class="off">‹</span>')+
       '<span class="mid"><bdi>حديث '+AR(num)+' من '+ARG(b.total)+'</bdi></span>'+
@@ -134,7 +155,7 @@ async function vHadith(k,num){
         sub:[r.g,genAr(r.gen)].filter(Boolean).join('، ')}:null;}
       return {href:'rijal.html#/r/'+encodeURIComponent('t:'+v),name:v,sub:''};}).filter(Boolean);
     const tak=TAK[k+':'+num]||[];
-    const sharh=SHARH[k+':'+num];
+    const sharh=await getNote(k,num);
     /* مواضعُ هذا الحديث في كتبٍ وردت لأحاديثها أحكام، ومواضعُه في كتبٍ
        وردت لها أسانيد — تُستعمل حين يخلو هذا الكتابُ منهما. */
     const elsewhere=grades.length?[]:tak.filter(r=>GRADED.has(r.split(':')[0])).slice(0,6);
@@ -251,15 +272,31 @@ async function vHadith(k,num){
     const root=document.getElementById('body');
     window.showTab=t=>{const btn=root.querySelector('.tab[data-t="'+t+'"]');
       if(btn){btn.click();btn.scrollIntoView({block:'center'});} return false;};
-    root.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
-      root.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected',x===t));
-      root.querySelectorAll('.panel').forEach(p=>p.classList.toggle('on',p.dataset.p===t.dataset.t));
-    });
     const sm=document.getElementById('sharh');
+    /* البحثُ عن الشرح يمسح أجزاءً من كتاب الشرح — مليونَ حرفٍ في الجزء
+       الواحد من فتح الباري. وهو على الحاسوب يُجرى مع فتح الصفحة كما كان،
+       وعلى الهاتف يُؤجَّل إلى أن يُفتح تبويبُ الشرح: القارئُ قد لا يفتحه،
+       فلا يُنزَّل عليه ما لم يطلب. */
+    let seek=null;
     if(sharh) sm.innerHTML='<div class="pane pad prose">'+paras(sharh.t)+'</div>'+
       '<div class="note">المصدر: '+esc(sharh.s)+
       (sharh.u?' <span class="sep">•</span> <a href="'+esc(sharh.u)+'" target="_blank" rel="noopener">الأصل ↗</a>':'')+'</div>';
-    else sharhBlock(sp.matn||h.text,sm,k,nodes.map(n=>n.name));
+    else {
+      const run=()=>{ if(!seek)return; const f=seek; seek=null; f(); };
+      seek=()=>sharhBlock(sp.matn||h.text,sm,k,nodes.map(n=>n.name));
+      if(innerWidth>=760) run();
+      else { sm.innerHTML='<div class="pane msg">شرحُ هذا الحديث يُبحث عنه في كتاب شرح المصنَّف، '+
+        'ويُنزَّل له من الكتاب ما يُبحث فيه.<div class="acts" style="margin-top:1rem">'+
+        '<button class="act" id="goSharh">ابحث عن شرحه</button></div></div>';
+        const gb=document.getElementById('goSharh'); if(gb) gb.onclick=run; }
+      window._sharhRun=run;
+    }
+    if(sharh) window._sharhRun=null;
+    root.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+      root.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected',x===t));
+      root.querySelectorAll('.panel').forEach(p=>p.classList.toggle('on',p.dataset.p===t.dataset.t));
+      if(t.dataset.t==='sharh'&&window._sharhRun) window._sharhRun();
+    });
   }catch(e){ failed(document.getElementById('body'),e); }
 }
 </script></body></html>

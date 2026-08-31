@@ -116,6 +116,33 @@ async function searchInit(){
   const [b,s,t]=await Promise.all([api.local("books.json"),api.local("surahs.json"),api.local("tafsirs.json")]);
   SEARCH.books=b; SEARCH.surahs=s; SEARCH.tafsirs=t; return SEARCH;
 }
+/* ── ما تحتاجه صفحةُ الحديث: بابُ الحديث وأحكامُه وسلسلتُه ──
+ * كان يُنزَّل فهرسُ الكتاب كلُّه (٥٫٦ م.ب في البخاري) لأجل صفٍّ واحد
+ * ولمعرفة رقمَي السابق والتالي. وقد قُطِّع في tools/build-web.mjs:
+ *   h/{كتاب}/nav.json   [رقم، باب] لكل حديثٍ بترتيبه — ٧٢ ك.ب في أكبرها
+ *   h/{كتاب}/{باب}.json  {رقم: [أحكام، سلسلة]} — ١٩٦ ك.ب في أكبرها
+ * والفهرسُ الكامل يبقى لموضعه: البحثُ في المتون.
+ */
+const HN={};
+async function hadNav(k){
+  if(!HN[k]) HN[k]=api.local(`h/${k}/nav.json`).catch(()=>[]);
+  return HN[k];
+}
+const HS={};
+async function hadSec(k,sec){
+  const key=k+":"+sec;
+  if(!HS[key]) HS[key]=api.local(`h/${k}/${sec}.json`).catch(()=>({}));
+  return HS[key];
+}
+/* صفُّ حديثٍ بعينه بالشكل الذي تعرفه الصفحات: [رقم، باب، متن، أحكام، سلسلة].
+   والمتنُ فارغٌ هنا لأنّه للبحث لا للعرض، والعرضُ من واجهة المتون. */
+async function hadRow(k,num){
+  const nav=await hadNav(k);
+  const at=nav.find(x=>x[0]===num); if(!at) return null;
+  const m=await hadSec(k,at[1]);
+  const g=m[num]||[[],[]];
+  return [num,at[1],"",g[0],g[1]];
+}
 async function loadIdx(k,onp){
   if(SEARCH.idx[k])return SEARCH.idx[k];
   const r=await fetch(`data/idx/${k}.json`); const d=await r.json();
@@ -828,13 +855,55 @@ const TAFNOTE={"ar-tafsir-al-mukhtasar": "تفسير موجز بلغة معاص�
 const FOOTER_TAG='<footer class="foot" id="foot"></footer>';
 function mountFooter(el){
   /* زرٌّ واحدٌ يفتح صفحةً كاملة، بدل نافذةٍ صغيرةٍ لا تكفي التعريف */
-  el.innerHTML=`<a class="srcbtn" href="about.html">
+  el.innerHTML=`<span id="pwa"></span><a class="srcbtn" href="about.html">
     <svg viewBox="0 0 24 24" fill="none"><path d="M4 5.5h9a2 2 0 012 2V19H6a2 2 0 01-2-2z" stroke="currentColor" stroke-width="1.5"/><path d="M20 8v11H9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
     من نحن · مصادرنا</a>
     <p>تُعرض النصوص كما وردت في مصادرها بلا تعديل ولا تلخيص.<br>
     تُراث تنقل أقوال أهل العلم ولا ترجّح بينها ولا تُصدر فتوى.</p>
 `;
+  installBtn(el.querySelector("#pwa"));
 }
+
+/* ═══ تثبيتُ الموقع تطبيقًا على الهاتف ═══
+ *
+ * الموقعُ يحمل بطاقةَ تطبيق (manifest.webmanifest) وعاملَ خدمة، فيقبله
+ * أندرويد وiOS إضافةً إلى الشاشة الرئيسية: يُفتح بلا شريط متصفّح، ويعمل
+ * بما حُفظ منه إن انقطعت الشبكة. وليس تطبيقًا يُنزَّل من متجر — هو الموقعُ
+ * نفسه في إطارٍ مستقلّ.
+ *
+ * وأندرويد يُنبئ المتصفّحَ أنّ التثبيت متاح (beforeinstallprompt) فيُعرض
+ * زرٌّ يفتح نافذته. وأمّا iOS فلا يُنبئ ولا يُتيح النافذة، والإضافةُ فيه
+ * بيد القارئ من زرّ المشاركة — فيُقال له ذلك بدل أن يُعرض زرٌّ لا يعمل.
+ * ومن فتح الموقعَ مثبَّتًا أصلًا لا يُعرض له شيء.
+ */
+let _prompt=null;
+addEventListener("beforeinstallprompt",e=>{ e.preventDefault(); _prompt=e;
+  document.querySelectorAll("#pwa").forEach(n=>installBtn(n)); });
+function installBtn(el){
+  if(!el) return;
+  const standalone=matchMedia("(display-mode: standalone)").matches||navigator.standalone;
+  if(standalone){ el.innerHTML=""; return; }
+  /* الدعوةُ للهاتف وحدَه: عرضُ الحاسوب لا يُغيَّر منه شيء */
+  if(innerWidth>=900){ el.innerHTML=""; return; }
+  try{ if(localStorage.getItem("turath-nopwa")){ el.innerHTML=""; return; } }catch(e){}
+  const ios=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;
+  if(!_prompt&&!ios){ el.innerHTML=""; return; }
+  el.innerHTML='<div class="pwa"><b>ثبّته على هاتفك</b>'+
+    '<span>'+(ios
+      ? 'من زرّ المشاركة في أسفل سفاري، اختر «إضافة إلى الشاشة الرئيسية». يُفتح حينها كالتطبيق، ويعمل بما حُفظ منه بلا شبكة.'
+      : 'يُفتح كالتطبيق بلا شريط متصفّح، ويعمل بما حُفظ منه بلا شبكة.')+'</span>'+
+    (ios?'':'<button class="act" id="pwaGo">ثبّت الآن</button>')+
+    '<button class="pwax" id="pwaNo" aria-label="إخفاء">لا، شكرًا</button></div>';
+  const go=el.querySelector("#pwaGo");
+  if(go) go.onclick=async()=>{ if(!_prompt)return; const p=_prompt; _prompt=null;
+    p.prompt(); await p.userChoice.catch(()=>{}); el.innerHTML=""; };
+  el.querySelector("#pwaNo").onclick=()=>{ el.innerHTML="";
+    try{ localStorage.setItem("turath-nopwa","1"); }catch(e){} };
+}
+
+/* عاملُ الخدمة: يُسجَّل بعد اكتمال التحميل فلا يزاحم أوّلَ عرضٍ للصفحة */
+if("serviceWorker" in navigator)
+  addEventListener("load",()=>{ navigator.serviceWorker.register("sw.js").catch(()=>{}); });
 /* ── شرح الحديث: يُجلب من الموسوعة الحديثية (الدرر السنية) عبر وسيط عام.
    لا يُخزَّن عندنا ولا يُختلق؛ فإن تعذّر الاتصال عُرض رابط مباشر للشرح. ── */
 /* وسيط الشرح: الدرر السنية تُخرج الشرح صفحةَ HTML، وسياسة CORS تمنع المتصفح
@@ -1006,6 +1075,20 @@ async function sharhBlock(matn,mount,book,names){
 const RJ={idx:null,sh:{}};
 const shardOf=(n)=>{let h=0;for(let i=0;i<n.length;i++)h=(h*31+n.charCodeAt(i))|0;return Math.abs(h)%24;};
 async function rijalIndex(){ if(!RJ.idx) RJ.idx=await api.local("rijal/index.json"); return RJ.idx; }
+/* اسمُ الراوي وحكمُه وطبقتُه — ما تعرضه سلسلةُ الإسناد لا غير. يُجلب قسمًا
+   قسمًا (١٨ ك.ب لأكبرها) بدل فهرس الرواة كلِّه (٧٤٩ ك.ب) لأجل ثمانية أسماء. */
+const RB={};
+async function rijalBrief(keys){
+  const need=[...new Set((keys||[]).map(shardOf))];
+  await Promise.all(need.map(async i=>{
+    if(!RB[i]) RB[i]=api.local(`rijal/b${i}.json`).catch(()=>({}));
+    return RB[i];
+  }));
+  const out={};
+  for(const k of keys||[]){ const m=await RB[shardOf(k)]; const v=m&&m[k];
+    if(v) out[k]={n:v[0],g:v[1],gen:v[2]}; }
+  return out;
+}
 async function rijalGet(key){
   const i=shardOf(key);
   if(!RJ.sh[i]){const r=await fetch(`data/rijal/n${i}.json`);RJ.sh[i]=await r.json();}
@@ -1217,10 +1300,11 @@ function carousel(root,{slides,interval=4200,arrows=false,full=false}={}){
  * اسم الحدث في المتن — ويُعرض موضعُ الذكر مُبرَزًا مع كل حديث.
  */
 /* أسباب النزول: مفاتيحُها سورةٌ وآية، فتُقرأ بالمفتاح لا بالمطابقة */
-const AS={m:null};
+const AS={m:{}};
+/* سورةً سورة لا المصحفَ كلَّه: كان يُنزَّل مليونُ حرفٍ لأجل آيةٍ واحدة */
 async function asbab(sura,aya){
-  if(!AS.m) AS.m=await api.local("asbab.json").catch(()=>({}));
-  return AS.m[sura+":"+aya]||[];
+  if(!AS.m[sura]) AS.m[sura]=api.local(`asbab/${sura}.json`).catch(()=>({}));
+  return (await AS.m[sura])[sura+":"+aya]||[];
 }
 /* عرضُ سبب النزول — نصًّا كما ورد بجزئه وصفحته، ولا يُلخَّص */
 function asbabBlock(list){
@@ -1229,12 +1313,27 @@ function asbabBlock(list){
     '</bdi></span><span class="ln"></span></div>'+
     '<p class="evlead">من <b>أسباب النزول</b> للواحدي (ت٤٦٨هـ)، وُصل بالآية بمطابقة اللفظ '+
     'الذي اقتبسه بنصّ المصحف. والنصّ كما ورد بجزئه وصفحته.</p>'+
-    list.map(x=>'<div class="ev ev-bab"><div class="evh"><span class="evb">أسباب النزول</span>'+
+    /* الرواياتُ تُساق بأسانيدها فتطول: أربعُ رواياتٍ في آيةٍ واحدة بلغت
+       على الهاتف أربعةَ آلاف بكسل قبل أن يبلغ القارئ التفسيرَ نفسه. فعلى
+       الهاتف تُعرض الأولى ويُطوى ما بعدها خلف زرٍّ يقول عددَه — ولا يُحذف
+       منها حرف. وعلى الحاسوب تُعرض كلُّها كما كانت. */
+    list.map((x,i)=>'<div class="ev ev-bab'+(i?' asbmore':'')+'"><div class="evh"><span class="evb">أسباب النزول</span>'+
       '<span class="evp"><bdi>ج'+AR(x.v)+' ص'+AR(x.p)+'</bdi></span></div>'+
       '<div class="evt amiri" style="border-top:0;padding-top:0">'+paras(x.t)+'</div></div>').join("")+
+    (list.length>1?'<button class="act asbtog" type="button">بقيّة الروايات '+
+      '<bdi>('+AR(list.length-1)+')</bdi></button>':'')+
     '<div class="note">كتابُ أسبابِ نزولٍ يسوق الرواية بإسنادها، وفيه المرسلُ والضعيف. '+
     'يُقرأ على أنّه كذلك، والمنصة تنقل ولا ترجّح.</div>';
 }
+
+/* زرُّ «بقيّة الروايات»: يُصغى له مرّةً على المستند، فلا يُكتب في كل زرّ */
+addEventListener("click",e=>{
+  const b=e.target.closest&&e.target.closest(".asbtog"); if(!b)return;
+  e.preventDefault();
+  const root=b.parentNode||document;
+  root.querySelectorAll(".asbmore").forEach(n=>n.classList.add("on"));
+  b.remove();
+});
 
 /* ── الفقه ──
  * القسمُ خريطةُ خلافٍ لا فتوى. تُعرض المسألةُ بلفظ صاحبها، وتُوسَم بما
@@ -1335,10 +1434,9 @@ const cut=(t,n)=>String(t||"").replace(/\s+/g," ").slice(0,n).trim()+"…";
 
 /* ── حديثٌ اختُلف في حكمه ── */
 async function oneHadith(bk,num){
-  const [d,idx]=await Promise.all([api.hadith(bk,num),loadIdx(bk)]);
+  const [d,row]=await Promise.all([api.hadith(bk,num),hadRow(bk,num)]);
   const h=(d&&d.hadiths&&d.hadiths[0])||{};
   const b=(SEARCH.books||{})[bk]||{};
-  const row=idx.find(r=>r[0]===num);
   /* الأحكامُ من فهرسنا لا من واجهة المتون — وهي خاليةٌ منها. ويُقدَّم
      المكتوبُ بالعربية على المنقول بحروفٍ لاتينية، ولا يُبدَّل حكمُ أحد. */
   const g=((row&&row[3])||[]).filter(x=>x[0]&&x[1]).map(x=>({name:x[0],grade:x[1]}))
@@ -1500,6 +1598,19 @@ const ABOUT_HTML=`
     <p>لا إعلانات، ولا اشتراكات، ولا بيع بيانات، ولا مقابل من أحد. الموقع مجاني بالكامل ولن يتغيّر هذا. وكل ما نرجوه أن ينفع الله به، وأن يكون في ميزان من أعان عليه. فإن انتفعت به فادعُ لمن كتبه ولمن حفظ هذه الكتب قبلنا.</p>
   </div>
   <p>والسبب الثاني أن كتب التراث موجودة على الشابكة لكنها متفرّقة: القرآن في موقع، والتفسير في آخر، والحديث في ثالث، وحكم العلماء عليه في رابع. فيفتح الباحث ستة مواقع ليتحقّق من حديث واحد. القيمة عندنا ليست في امتلاك النصوص — النصوص متاحة — بل في الوصل بينها.</p>
+</section>
+
+<section id="app" class="abs">
+  <h2>تُراث على هاتفك</h2>
+  <p>يمكنك إضافة الموقع إلى شاشة هاتفك الرئيسية فيصير كالتطبيق: يُفتح بأيقونته بلا شريط متصفّح، ويعمل بما حُفظ منه على جهازك حتى لو انقطعت الشبكة. وليس تطبيقًا يُنزَّل من متجر — هو الموقع نفسه، بلا حساب ولا أذونات ولا شيء يُرسل عنك.</p>
+  <div class="abox">
+    <b>على الآيفون</b>
+    <p>افتح الموقع في سفاري، ثم اضغط زرّ المشاركة في الأسفل، ثم اختر «إضافة إلى الشاشة الرئيسية».</p>
+  </div>
+  <div class="abox">
+    <b>على الأندرويد</b>
+    <p>افتح الموقع في كروم، فيظهر لك في أسفل الصفحة زرّ «ثبّت الآن»، أو اخترها من قائمة المتصفّح: «تثبيت التطبيق».</p>
+  </div>
 </section>
 
 <section id="rules" class="abs">

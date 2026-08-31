@@ -910,3 +910,75 @@ dialog.agree::backdrop{background:rgba(0,0,0,.62);backdrop-filter:blur(3px)}
 .aglink:hover{text-decoration:underline}
 @media(max-width:40rem){ .aga{flex-direction:column;align-items:stretch}
   .agbtn{width:100%} .aglink{margin:0;text-align:center} }
+
+/* ═══ الهاتف: القراءةُ نفسُها، والطريقُ إليها أقصر ═══
+ *
+ * قِيست الرئيسية على شاشة ٣٩٠×٨٤٤ فبلغت ١١٬٤١٦ بكسلًا — ثلاثَ عشرةَ شاشةً
+ * ونصفًا قبل أن يبلغ القارئُ أسفلَها. والفقراتُ التي تُقرأ على الحاسوب في
+ * سطرين تصير على الهاتف ثمانية.
+ *
+ * فلا يُحذف من المعنى شيء: ما يُخفى هنا تفصيلٌ يُغني عنه صدرُ الفقرة،
+ * موسومٌ في الصفحات بـ«pc». وكلُّ ما في هذا الباب داخل عتبةٍ واحدة، فلا
+ * يمسّ عرضَ الحاسوب حرفٌ واحد.
+ */
+@media(max-width:44rem){
+  /* ذيلُ الفقرة الذي يُقرأ على الحاسوب ولا يلزم على الهاتف */
+  .pc{display:none}
+
+  /* المسافاتُ بين الأقسام: أربعةٌ وستّة أعشار من الجذر تصير ثلاثة */
+  .band{padding:3rem 0}
+  .sect{margin-bottom:1.15rem;gap:1rem}
+  .sect .l p{font-size:.94rem;line-height:1.85}
+  .hero{padding:1.6rem 0 .4rem}
+  .lede{font-size:1.02rem;line-height:1.85}
+
+  /* اختصاراتُ الأقسام: ستّةٌ في عمودٍ واحد تملأ شاشةً ونصفًا. عمودان،
+     وبلا شرحٍ تحت كلٍّ — الاسمُ والعددُ يكفيان لمن يريد النزول. */
+  .jump{grid-template-columns:repeat(2,1fr);gap:.5rem;margin-top:1.2rem}
+  .jmp{padding:.7rem .8rem;gap:.1rem .5rem}
+  .jmp b{font-size:.92rem}
+  .jd{display:none}
+
+  /* أرقامُ الوصل: عمودان، وشرحُ كلِّ رقمٍ يُطوى */
+  .lnums{grid-template-columns:repeat(2,1fr);gap:.5rem}
+  .lnum{padding:.75rem .8rem}
+  .lnum b{font-size:1.5rem}
+  .lnum span{font-size:.82rem;line-height:1.5}
+  .lnum i{display:none}
+
+  /* «كيف تستعمل المنصة»: خمسةُ بنودٍ بشروحها تبلغ شاشةً وثمانيةَ أعشار */
+  .plain{gap:1.05rem}
+  .plain .it h3{font-size:1.06rem}
+  .plain .it p{font-size:.9rem;line-height:1.8}
+
+  /* «ما نفعله وما لا نفعله»: الصفُّ سطران لا ثلاثة */
+  .rules{gap:.55rem}
+  .rule{padding:.15rem 0}
+  .rule b{font-size:.96rem}
+  .rule span{font-size:.86rem;line-height:1.7}
+
+  /* عناوينُ الأقسام أصغرُ قليلًا، فيدخل العنوانُ وأوّلُ سطرٍ في شاشة */
+  .sect h2{font-size:1.5rem}
+}
+/* الشاشاتُ الضيّقة جدًّا: عمودٌ واحدٌ في الاختصارات وحدها */
+@media(max-width:23.5rem){ .jump{grid-template-columns:1fr} }
+
+/* ── دعوةُ التثبيت على الهاتف، في أسفل الصفحة ── */
+.pwa{display:grid;gap:.45rem;justify-items:center;text-align:center;max-width:30rem;
+  margin:0 auto 1.6rem;padding:1.1rem 1.2rem;border:1px solid var(--hair);
+  border-radius:var(--r2);background:var(--panel)}
+.pwa b{font-size:1rem;color:var(--ink)}
+.pwa span{font-size:.86rem;line-height:1.8;color:var(--mut)}
+.pwa .act{margin-top:.35rem}
+.pwax{background:none;border:0;color:var(--faint);font:inherit;font-size:.8rem;
+  cursor:pointer;padding:.2rem .4rem;text-decoration:underline}
+.pwax:hover{color:var(--ink2)}
+
+/* الرواياتُ التاليةُ في سبب النزول: تُطوى على الهاتف وحده، وتُفتح بزرّها.
+   وعلى الحاسوب تُعرض كلُّها ولا يظهر الزرّ. */
+.asbtog{display:none}
+@media(max-width:44rem){
+  .asbmore{display:none}
+  .asbmore.on{display:block}
+  .asbtog{display:inline-flex;margin:.2rem 0 1rem}
+}

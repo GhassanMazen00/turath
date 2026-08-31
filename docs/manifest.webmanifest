@@ -1,0 +1,25 @@
+{
+  "name": "تُراث — القرآن والسنّة موصولان بمصادرهما",
+  "short_name": "تُراث",
+  "description": "القرآن بتفاسيره، والسنّة بأسانيدها وأحكام المحدّثين عليها، وكلُّ نصٍّ موصولٌ بمصدره وموضعه المطبوع.",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./index.html",
+  "scope": "./",
+  "id": "/",
+  "display": "standalone",
+  "background_color": "#eef2f7",
+  "theme_color": "#eef2f7",
+  "categories": ["books", "education", "reference"],
+  "icons": [
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "الحديث الشريف", "url": "./hadith.html", "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }] },
+    { "name": "التفسير", "url": "./tafsir.html", "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }] },
+    { "name": "السيرة النبوية", "url": "./sira.html", "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }] },
+    { "name": "الفقه", "url": "./fiqh.html", "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }] }
+  ]
+}
