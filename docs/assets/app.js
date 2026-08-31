@@ -855,13 +855,12 @@ const TAFNOTE={"ar-tafsir-al-mukhtasar": "تفسير موجز بلغة معاص�
 const FOOTER_TAG='<footer class="foot" id="foot"></footer>';
 function mountFooter(el){
   /* زرٌّ واحدٌ يفتح صفحةً كاملة، بدل نافذةٍ صغيرةٍ لا تكفي التعريف */
-  el.innerHTML=`<span id="pwa"></span><a class="srcbtn" href="about.html">
+  el.innerHTML=`<a class="srcbtn" href="about.html">
     <svg viewBox="0 0 24 24" fill="none"><path d="M4 5.5h9a2 2 0 012 2V19H6a2 2 0 01-2-2z" stroke="currentColor" stroke-width="1.5"/><path d="M20 8v11H9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
     من نحن · مصادرنا</a>
     <p>تُعرض النصوص كما وردت في مصادرها بلا تعديل ولا تلخيص.<br>
     تُراث تنقل أقوال أهل العلم ولا ترجّح بينها ولا تُصدر فتوى.</p>
 `;
-  installBtn(el.querySelector("#pwa"));
 }
 
 /* ═══ تثبيتُ الموقع تطبيقًا على الهاتف ═══
@@ -871,37 +870,152 @@ function mountFooter(el){
  * بما حُفظ منه إن انقطعت الشبكة. وليس تطبيقًا يُنزَّل من متجر — هو الموقعُ
  * نفسه في إطارٍ مستقلّ.
  *
- * وأندرويد يُنبئ المتصفّحَ أنّ التثبيت متاح (beforeinstallprompt) فيُعرض
- * زرٌّ يفتح نافذته. وأمّا iOS فلا يُنبئ ولا يُتيح النافذة، والإضافةُ فيه
- * بيد القارئ من زرّ المشاركة — فيُقال له ذلك بدل أن يُعرض زرٌّ لا يعمل.
- * ومن فتح الموقعَ مثبَّتًا أصلًا لا يُعرض له شيء.
+ * والدعوةُ شريطٌ تحت الترويسة لا في أسفل الصفحة: من نزل إلى الأسفل قد
+ * وجد ما جاء له، ومن لم ينزل لم يرها أصلًا.
+ *
+ * وأندرويد يُنبئ المتصفّحَ أنّ التثبيت متاح (beforeinstallprompt) فتُفتح
+ * نافذتُه بزرّ. وأمّا iOS فلا يُنبئ ولا يُتيح النافذة، والإضافةُ فيه بيد
+ * القارئ من زرّ المشاركة — فيُرى كيف تُفعل، خطوةً خطوة.
+ *
+ * والصورُ مرسومةٌ هنا لا ملتقَطةٌ من الأجهزة: رسمٌ يُبيّن موضعَ الزرّ
+ * وشكلَه أوضحُ من لقطةِ شاشةٍ تختلف بالطراز والنسخة واللغة.
  */
 let _prompt=null;
-addEventListener("beforeinstallprompt",e=>{ e.preventDefault(); _prompt=e;
-  document.querySelectorAll("#pwa").forEach(n=>installBtn(n)); });
-function installBtn(el){
-  if(!el) return;
-  const standalone=matchMedia("(display-mode: standalone)").matches||navigator.standalone;
-  if(standalone){ el.innerHTML=""; return; }
-  /* الدعوةُ للهاتف وحدَه: عرضُ الحاسوب لا يُغيَّر منه شيء */
-  if(innerWidth>=900){ el.innerHTML=""; return; }
-  try{ if(localStorage.getItem("turath-nopwa")){ el.innerHTML=""; return; } }catch(e){}
-  const ios=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;
-  if(!_prompt&&!ios){ el.innerHTML=""; return; }
-  el.innerHTML='<div class="pwa"><b>ثبّته على هاتفك</b>'+
-    '<span>'+(ios
-      ? 'من زرّ المشاركة في أسفل سفاري، اختر «إضافة إلى الشاشة الرئيسية». يُفتح حينها كالتطبيق، ويعمل بما حُفظ منه بلا شبكة.'
-      : 'يُفتح كالتطبيق بلا شريط متصفّح، ويعمل بما حُفظ منه بلا شبكة.')+'</span>'+
-    (ios?'':'<button class="act" id="pwaGo">ثبّت الآن</button>')+
-    '<button class="pwax" id="pwaNo" aria-label="إخفاء">لا، شكرًا</button></div>';
-  const go=el.querySelector("#pwaGo");
-  if(go) go.onclick=async()=>{ if(!_prompt)return; const p=_prompt; _prompt=null;
-    p.prompt(); await p.userChoice.catch(()=>{}); el.innerHTML=""; };
-  el.querySelector("#pwaNo").onclick=()=>{ el.innerHTML="";
+addEventListener("beforeinstallprompt",e=>{ e.preventDefault(); _prompt=e; installBar(); });
+
+const isIOS=()=>/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;
+const installed=()=>matchMedia("(display-mode: standalone)").matches||navigator.standalone;
+function pwaOff(){ try{ return !!localStorage.getItem("turath-nopwa"); }catch(e){ return false; } }
+
+/* ── الشريطُ العلويّ ── */
+function installBar(){
+  if(installed()||pwaOff()||innerWidth>=900) return;      /* الحاسوبُ لا يُمسّ */
+  if(!_prompt&&!isIOS()) return;                          /* متصفّحٌ لا يقبل التثبيت */
+  if(document.getElementById("ibar")) return;
+  const head=document.querySelector("header.nav"); if(!head) return;
+  const bar=document.createElement("div");
+  bar.id="ibar"; bar.className="ibar";
+  bar.innerHTML='<button class="ibtn" type="button">'+
+      '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="6" y="2.6" width="12" height="18.8" rx="2.6" stroke="currentColor" stroke-width="1.5"/><path d="M12 8v6m0 0l-2.2-2.2M12 14l2.2-2.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'+
+      '<span><b>ثبّت تُراث على شاشتك</b><i>يُفتح كالتطبيق، ويعمل بلا إنترنت</i></span>'+
+      '<span class="igo">كيف؟</span></button>'+
+    '<button class="ixx" type="button" aria-label="إخفاء الدعوة">✕</button>';
+  head.insertAdjacentElement("afterend",bar);
+  bar.querySelector(".ibtn").onclick=()=>installHow();
+  bar.querySelector(".ixx").onclick=()=>{ bar.remove();
     try{ localStorage.setItem("turath-nopwa","1"); }catch(e){} };
 }
 
-/* عاملُ الخدمة: يُسجَّل بعد اكتمال التحميل فلا يزاحم أوّلَ عرضٍ للصفحة */
+/* ── رسومُ الخطوات: هاتفٌ يُبيَّن فيه موضعُ الزرّ ── */
+const _ph=(inner)=>'<svg class="ish" viewBox="0 0 128 176" role="img" aria-hidden="true">'+
+  '<rect x="10" y="4" width="108" height="168" rx="14" class="ifr"/>'+inner+'</svg>';
+/* حلقةٌ تدلّ على الموضع المقصود */
+const _ring=(x,y,r)=>'<circle cx="'+x+'" cy="'+y+'" r="'+r+'" class="irg"/>';
+const _row=(y,w,cls)=>'<rect x="20" y="'+y+'" width="'+w+'" height="7" rx="3.5" class="'+(cls||"ilt")+'"/>';
+
+const STEPS={
+  ios:[
+    ["افتح الموقع في <b>سفاري</b>، ثم اضغط زرّ المشاركة في الشريط السفليّ.",
+     _ph('<rect x="18" y="14" width="92" height="118" rx="5" class="ipg"/>'+
+         _row(28,66)+_row(40,74)+_row(52,56)+_row(64,70)+
+         '<rect x="10" y="140" width="108" height="32" rx="0" class="ibr"/>'+
+         '<path d="M40 156.5h-6M56 156.5h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" class="idim"/>'+
+         '<g class="iac"><path d="M64 149.5v13" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>'+
+         '<path d="M60.4 153.1L64 149.5l3.6 3.6" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" fill="none"/>'+
+         '<path d="M58 156v6.5h12V156" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" fill="none"/></g>'+
+         _ring(64,156,13)+
+         '<path d="M84 156.5h-4M94 156.5h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" class="idim"/>')],
+    ["مرّر في القائمة واختر <b>«إضافة إلى الشاشة الرئيسية»</b>.",
+     _ph('<rect x="18" y="14" width="92" height="40" rx="5" class="ipg2"/>'+
+         _row(24,60)+_row(36,52)+
+         '<rect x="18" y="46" width="92" height="120" rx="8" class="ipg"/>'+
+         '<rect x="52" y="52" width="24" height="3" rx="1.5" class="idim2"/>'+
+         _row(66,58)+_row(80,66)+
+         '<rect x="16" y="90" width="96" height="20" rx="5" class="ihl"/>'+
+         '<rect x="22" y="96" width="8" height="8" rx="2" class="iac2"/>'+
+         '<path d="M26 98v4M24 100h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" class="iacs"/>'+
+         '<rect x="36" y="97.5" width="60" height="5" rx="2.5" class="iacb"/>'+
+         _row(120,52)+_row(134,62)+_row(148,44))],
+    ["تظهر أيقونة <b>تُراث</b> على شاشتك، تفتحها كأيّ تطبيق.",
+     _ph('<rect x="18" y="14" width="92" height="150" rx="6" class="ipg"/>'+
+         '<rect x="26" y="26" width="22" height="22" rx="6" class="idim3"/>'+
+         '<rect x="54" y="26" width="22" height="22" rx="6" class="idim3"/>'+
+         '<g><rect x="82" y="26" width="22" height="22" rx="6" class="iapp"/>'+
+         '<path d="M93 30.4l1.9 1.6 2.5-.25.66 2.4 2.16 1.34-1 2.33 1 2.33-2.16 1.34-.66 2.4-2.5-.25L93 45.6l-1.9-1.6-2.5.25-.66-2.4-2.16-1.34 1-2.33-1-2.33 2.16-1.34.66-2.4 2.5.25z" class="iappm"/>'+
+         '<circle cx="93" cy="38" r="2.6" class="iapph"/></g>'+
+         _ring(93,37,17)+
+         '<rect x="26" y="58" width="22" height="22" rx="6" class="idim3"/>'+
+         '<rect x="54" y="58" width="22" height="22" rx="6" class="idim3"/>'+
+         '<rect x="82" y="58" width="22" height="22" rx="6" class="idim3"/>')],
+  ],
+  and:[
+    ["افتح الموقع في <b>كروم</b>، ثم اضغط النقاط الثلاث في أعلى اليمين.",
+     _ph('<rect x="10" y="4" width="108" height="26" rx="0" class="ibr"/>'+
+         '<rect x="24" y="13" width="58" height="8" rx="4" class="ilt"/>'+
+         '<g class="iac"><circle cx="103" cy="11" r="1.9"/><circle cx="103" cy="17" r="1.9"/><circle cx="103" cy="23" r="1.9"/></g>'+
+         _ring(103,17,12)+
+         '<rect x="18" y="42" width="92" height="120" rx="5" class="ipg"/>'+
+         _row(56,66)+_row(68,74)+_row(80,56)+_row(92,70)+_row(104,60))],
+    ["اختر من القائمة <b>«تثبيت التطبيق»</b>.",
+     _ph('<rect x="10" y="4" width="108" height="26" rx="0" class="ibr"/>'+
+         '<rect x="24" y="13" width="58" height="8" rx="4" class="ilt"/>'+
+         '<rect x="52" y="30" width="60" height="94" rx="7" class="ipg2"/>'+
+         _row(40,40)+_row(54,46)+
+         '<rect x="50" y="64" width="64" height="20" rx="5" class="ihl"/>'+
+         '<g class="iacs"><path d="M60 69v8m0 0l-2.4-2.4M60 77l2.4-2.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></g>'+
+         '<rect x="68" y="71.5" width="40" height="5" rx="2.5" class="iacb"/>'+
+         _row(94,44)+_row(108,50))],
+    ["تظهر أيقونة <b>تُراث</b> على شاشتك، تفتحها كأيّ تطبيق.",
+     _ph('<rect x="18" y="14" width="92" height="150" rx="6" class="ipg"/>'+
+         '<rect x="26" y="26" width="22" height="22" rx="6" class="idim3"/>'+
+         '<rect x="54" y="26" width="22" height="22" rx="6" class="idim3"/>'+
+         '<g><rect x="82" y="26" width="22" height="22" rx="6" class="iapp"/>'+
+         '<path d="M93 30.4l1.9 1.6 2.5-.25.66 2.4 2.16 1.34-1 2.33 1 2.33-2.16 1.34-.66 2.4-2.5-.25L93 45.6l-1.9-1.6-2.5.25-.66-2.4-2.16-1.34 1-2.33-1-2.33 2.16-1.34.66-2.4 2.5.25z" class="iappm"/>'+
+         '<circle cx="93" cy="38" r="2.6" class="iapph"/></g>'+
+         _ring(93,37,17)+
+         '<rect x="26" y="58" width="22" height="22" rx="6" class="idim3"/>'+
+         '<rect x="54" y="58" width="22" height="22" rx="6" class="idim3"/>'+
+         '<rect x="82" y="58" width="22" height="22" rx="6" class="idim3"/>')],
+  ],
+};
+
+/* ── نافذةُ الشرح ── */
+function installHow(plat){
+  const p=plat||(isIOS()?"ios":"and");
+  let d=document.getElementById("idlg");
+  if(!d){ d=document.createElement("dialog"); d.id="idlg"; d.className="agree idlg"; document.body.appendChild(d); }
+  const tab=(k,t)=>'<button type="button" class="itab'+(k===p?" on":"")+'" data-p="'+k+'">'+t+'</button>';
+  d.innerHTML='<div class="agh">'+
+      '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="6" y="2.6" width="12" height="18.8" rx="2.6" stroke="currentColor" stroke-width="1.5"/><path d="M12 8v6m0 0l-2.2-2.2M12 14l2.2-2.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'+
+      '<b>تُراث على شاشتك</b></div>'+
+    '<div class="agb">'+
+      '<p class="agl">أضِف الموقع إلى شاشة هاتفك، فيُفتح بأيقونته كالتطبيق — بلا شريط متصفّح، ويعمل بما حُفظ منه ولو انقطع الإنترنت.</p>'+
+      '<div class="itabs">'+tab("ios","آيفون · آيباد")+tab("and","أندرويد")+'</div>'+
+      '<ol class="isteps">'+STEPS[p].map((x,i)=>
+        '<li><div class="isn">'+AR(i+1)+'</div>'+x[1]+'<p>'+x[0]+'</p></li>').join("")+'</ol>'+
+      (p==="and"&&_prompt?'<p class="inote">أو اضغط الزرّ أدناه ويتولّى كروم الباقي.</p>':"")+
+      '<p class="inote">ليس تطبيقًا من متجر: هو الموقع نفسه. لا حساب ولا أذونات ولا شيء يُرسل عنك.</p>'+
+    '</div>'+
+    '<div class="aga">'+
+      (p==="and"&&_prompt?'<button class="agbtn" id="ipick" type="button">ثبّت الآن</button>':"")+
+      '<button class="agbtn'+(p==="and"&&_prompt?" ghost":"")+'" id="iclose" type="button">تمّ</button>'+
+    '</div>';
+  d.querySelectorAll(".itab").forEach(b=>b.onclick=()=>installHow(b.dataset.p));
+  d.querySelector("#iclose").onclick=()=>d.close();
+  const go=d.querySelector("#ipick");
+  if(go) go.onclick=async()=>{ if(!_prompt)return; const q=_prompt; _prompt=null;
+    d.close(); q.prompt(); await q.userChoice.catch(()=>{});
+    const b=document.getElementById("ibar"); if(b)b.remove(); };
+  if(!d.open) d.showModal();
+}
+
+/* الشريطُ يُركَّب مع اكتمال الصفحة، ويُعاد النظرُ فيه إن دار الجهاز.
+   وإن كان البناءُ قد تمّ قبل أن يُقرأ هذا الملفّ، رُكّب في حينه. */
+if(document.readyState==="loading") addEventListener("DOMContentLoaded",()=>installBar());
+else installBar();
+addEventListener("resize",()=>{ const b=document.getElementById("ibar");
+  if(b&&innerWidth>=900) b.remove(); else installBar(); });
+
 if("serviceWorker" in navigator)
   addEventListener("load",()=>{ navigator.serviceWorker.register("sw.js").catch(()=>{}); });
 /* ── شرح الحديث: يُجلب من الموسوعة الحديثية (الدرر السنية) عبر وسيط عام.
@@ -1603,13 +1717,14 @@ const ABOUT_HTML=`
 <section id="app" class="abs">
   <h2>تُراث على هاتفك</h2>
   <p>يمكنك إضافة الموقع إلى شاشة هاتفك الرئيسية فيصير كالتطبيق: يُفتح بأيقونته بلا شريط متصفّح، ويعمل بما حُفظ منه على جهازك حتى لو انقطعت الشبكة. وليس تطبيقًا يُنزَّل من متجر — هو الموقع نفسه، بلا حساب ولا أذونات ولا شيء يُرسل عنك.</p>
+  <p>وإن فتحت الموقع على هاتفك وجدت تحت شريط العنوان دعوةً إلى تثبيته، وفيها الخطوات مصوَّرة.</p>
   <div class="abox">
     <b>على الآيفون</b>
     <p>افتح الموقع في سفاري، ثم اضغط زرّ المشاركة في الأسفل، ثم اختر «إضافة إلى الشاشة الرئيسية».</p>
   </div>
   <div class="abox">
     <b>على الأندرويد</b>
-    <p>افتح الموقع في كروم، فيظهر لك في أسفل الصفحة زرّ «ثبّت الآن»، أو اخترها من قائمة المتصفّح: «تثبيت التطبيق».</p>
+    <p>افتح الموقع في كروم، ثم اضغط النقاط الثلاث في أعلى اليمين واختر «تثبيت التطبيق».</p>
   </div>
 </section>
 

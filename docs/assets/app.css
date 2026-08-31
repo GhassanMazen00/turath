@@ -963,16 +963,79 @@ dialog.agree::backdrop{background:rgba(0,0,0,.62);backdrop-filter:blur(3px)}
 /* الشاشاتُ الضيّقة جدًّا: عمودٌ واحدٌ في الاختصارات وحدها */
 @media(max-width:23.5rem){ .jump{grid-template-columns:1fr} }
 
-/* ── دعوةُ التثبيت على الهاتف، في أسفل الصفحة ── */
-.pwa{display:grid;gap:.45rem;justify-items:center;text-align:center;max-width:30rem;
-  margin:0 auto 1.6rem;padding:1.1rem 1.2rem;border:1px solid var(--hair);
-  border-radius:var(--r2);background:var(--panel)}
-.pwa b{font-size:1rem;color:var(--ink)}
-.pwa span{font-size:.86rem;line-height:1.8;color:var(--mut)}
-.pwa .act{margin-top:.35rem}
-.pwax{background:none;border:0;color:var(--faint);font:inherit;font-size:.8rem;
-  cursor:pointer;padding:.2rem .4rem;text-decoration:underline}
-.pwax:hover{color:var(--ink2)}
+/* ══ دعوةُ التثبيت: شريطٌ تحت الترويسة، ودليلٌ مصوَّر ══
+   لا يظهر إلا على الهاتف، وفي متصفّحٍ يقبل التثبيت، ولمن لم يُخفِه. */
+.ibar{display:flex;align-items:stretch;gap:0;background:var(--accsoft);
+  border-bottom:1px solid var(--hair);position:relative;z-index:55}
+.ibtn{flex:1;display:flex;align-items:center;gap:.7rem;background:none;border:0;
+  font:inherit;color:var(--ink);cursor:pointer;text-align:start;
+  padding:.62rem 1rem .62rem 1.1rem;min-width:0}
+.ibtn>svg{width:1.45rem;height:1.45rem;flex:0 0 auto;color:var(--acc)}
+.ibtn span{display:grid;min-width:0}
+.ibtn b{font-size:.94rem;font-weight:700;line-height:1.4}
+.ibtn i{font-style:normal;font-size:.76rem;color:var(--mut);line-height:1.4;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ibtn .igo{margin-inline-start:auto;flex:0 0 auto;font-size:.8rem;font-weight:700;
+  color:var(--acc);background:var(--panel);border:1px solid var(--hair2);
+  padding:.3rem .7rem;border-radius:999px;display:block}
+.ixx{background:none;border:0;color:var(--faint);font-size:.9rem;cursor:pointer;
+  padding:0 .9rem;line-height:1}
+.ixx:hover{color:var(--ink2)}
+
+/* نافذةُ الخطوات */
+/* النافذةُ أطولُ من الشاشة (ثلاثُ خطواتٍ برسومها)، و.agree تقصّ ما زاد
+   (overflow:hidden) فتذهب الخطوةُ الثالثة وزرُّ الإغلاق معها. فالمتنُ
+   وحده يُمرَّر، والترويسةُ والأزرارُ ثابتتان. */
+dialog.idlg{max-width:25rem;max-height:88vh;display:flex;flex-direction:column}
+dialog.idlg .agh,dialog.idlg .aga{flex:0 0 auto}
+dialog.idlg .agb{flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch}
+dialog.idlg .aga{border-top:1px solid var(--hair)}
+dialog.idlg .agl{font-size:1rem;line-height:1.85;color:var(--mut)}
+dialog.idlg .agb{padding:1.1rem 1.2rem}
+.itabs{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin:0 0 1rem}
+.itab{font:inherit;font-size:.92rem;font-weight:700;cursor:pointer;padding:.5rem .4rem;
+  border-radius:var(--r2);border:1px solid var(--hair);background:var(--panel);
+  color:var(--mut);transition:.15s}
+.itab.on{background:var(--acc);border-color:var(--acc);color:var(--bg)}
+.isteps{list-style:none;margin:0;padding:0;display:grid;gap:1.1rem}
+.isteps li{display:grid;grid-template-columns:auto 1fr;grid-template-areas:"n p" "g g";
+  gap:.45rem .7rem;align-items:start}
+.isn{grid-area:n;width:1.5rem;height:1.5rem;border-radius:50%;display:grid;place-items:center;
+  background:var(--acc);color:var(--bg);font-weight:700;font-size:.8rem;margin-top:.1rem;
+  font-variant-numeric:tabular-nums}
+.isteps p{grid-area:p;margin:0;color:var(--ink2);font-size:.92rem;line-height:1.75}
+.isteps p b{color:var(--ink)}
+.inote{font-size:.84rem;color:var(--faint);line-height:1.8;margin:1rem 0 0}
+.agbtn.ghost{background:var(--panel);color:var(--ink2);border:1px solid var(--hair2)}
+.agbtn.ghost:hover{background:var(--surf2)}
+
+/* الرسمُ نفسه: هاتفٌ يُبيَّن فيه موضعُ الزرّ. ولا صورةَ تُنزَّل.
+   وألوانُه متغيّراتٌ خاصّة به: ألوانُ اللوحات في الموقع تدرّجاتٌ
+   (linear-gradient)، و«fill» في SVG لا يقبل التدرّج فيسقط إلى الأسود —
+   فخرج الهاتفُ كتلةً سوداء. فهذه ألوانٌ مصمتة، لكلّ وضعٍ نظيرُها. */
+:root{ --iface:#ffffff; --iscr:#eef2f7; --ibar2:#f7f9fc }
+:root[data-theme="dark"]{ --iface:#2a2e33; --iscr:#1c1f23; --ibar2:#23272c }
+.ish{grid-area:g;width:100%;max-width:7.4rem;height:auto;justify-self:center;display:block;
+  margin-top:.15rem}
+.ifr{fill:var(--iface);stroke:var(--hair2);stroke-width:2}
+.ipg,.ipg2{fill:var(--iscr);stroke:var(--hair);stroke-width:1}
+.ibr{fill:var(--ibar2)}
+.ilt{fill:var(--hair2)}
+.idim,.idim2{stroke:var(--faint);fill:var(--faint)}
+.idim3{fill:var(--hair)}
+.iac{color:var(--acc);fill:var(--acc)}
+.iac path{stroke:var(--acc)}
+.irg{fill:none;stroke:var(--acc);stroke-width:1.8;stroke-dasharray:3.5 3;opacity:.85}
+.ihl{fill:var(--accsoft);stroke:var(--acc);stroke-width:1}
+.iac2{fill:var(--acc)}
+.iacs{color:var(--acc)}
+.iacs path{stroke:var(--acc)}
+.iacb{fill:var(--accink)}
+.iapp{fill:var(--accsoft);stroke:var(--acc);stroke-width:1}
+.iappm{fill:var(--acc)}
+.iapph{fill:var(--iface)}
+
+@media(max-width:23.5rem){ .ibtn i{display:none} }
 
 /* الرواياتُ التاليةُ في سبب النزول: تُطوى على الهاتف وحده، وتُفتح بزرّها.
    وعلى الحاسوب تُعرض كلُّها ولا يظهر الزرّ. */
