@@ -180,13 +180,47 @@ theme(); firstVisitNotice(); document.getElementById('tg').innerHTML=TGL; mountF
    ['s-fiqh','fiqh','الفقه',ARG(FQS.ijmac+FQS.masail)+' مسألة','ما اتفق عليه العلماء وما اختلفوا فيه، وسبب الخلاف ودليل كل رأي. نعرض ولا نفتي.'],
  ].map(([id,k,t,n,d])=>`<a class="jmp" href="#${id}">${ic(k)}<span class="jt"><b>${t}</b>
      <span class="jn"><bdi>${n}</bdi></span></span><span class="jd">${d}</span></a>`).join('');
- // النزول سلسًا مع ترك مسافةٍ للترويسة اللاصقة
+ /* النزولُ إلى القسم، مع ملاحقةِ ما ينمو تحت القارئ أثناء نزوله.
+  *
+  * كان يُحسب موضعُ القسم مرّةً عند الضغط ثمّ يُنزَل إليه. ونماذجُ الأقسام
+  * تُجلب حين تقترب من العين لا قبلَها، فتنمو الأقسامُ التي يمرّ بها النزول
+  * ويُدفَع المطلوبُ إلى أسفل — فيقف القارئ حيث كان القسمُ لا حيث صار.
+  * قِيس: ضُغط «السيرة» فاستقرّ على «التفسير»، وبَعُد المطلوبُ ١٬٥٢٠ بكسل.
+  *
+  * فالآن يُعاد الحسابُ حتى يستقرّ: يُنزَل، ثمّ يُراجَع الموضعُ مرّاتٍ على
+  * فتراتٍ قصيرة، فإن زاح صُحّح. ويُترك التصحيحُ فورًا إن حرّك القارئ
+  * الصفحةَ بنفسه — فلا تُنازعه يدُه.
+  */
+ function headOff(){ const h=document.querySelector('header.nav');
+   return (h?h.getBoundingClientRect().height:56)+12; }
+ let _seek=0;
+ function goSection(el){
+   const run=++_seek;
+   let live=true;
+   const aim=()=>Math.max(0,el.getBoundingClientRect().top+scrollY-headOff());
+   const fix=(smooth)=>{
+     if(!live||run!==_seek) return;
+     if(Math.abs(el.getBoundingClientRect().top-headOff())<=2) return;
+     scrollTo({top:aim(),behavior:smooth?'smooth':'auto'});
+   };
+   fix(true);
+   /* المراجعةُ تُربط بنموّ الصفحة لا بمهلةٍ مقدَّرة. جُرّبت المهلة فأخطأت:
+      كان الموضعُ يستقرّ في نصف ثانية فيُكفّ عن المراجعة، ثمّ تصل بقيّةُ
+      ما يُجلب عند الفتح — أشرطةُ الكتب وأرقامُ الوصل — فتطول الصفحةُ
+      ألفًا وأربعمئة بكسل ويُدفَع المطلوبُ من تحت القارئ. فيُرصَد الطولُ
+      نفسُه: كلّما تغيّر أُعيد الضبط. ويُترك ذلك كلُّه إن حرّك القارئ
+      الصفحة بيده — فلا تُنازَع يدُه. */
+   let ro=null;
+   const end=()=>{ live=false; if(ro){ ro.disconnect(); ro=null; } };
+   if('ResizeObserver' in window){ ro=new ResizeObserver(()=>fix(false)); ro.observe(document.body); }
+   ['wheel','touchstart','keydown'].forEach(t=>addEventListener(t,end,{once:true,passive:true}));
+   setTimeout(end,12000);
+ }
  document.getElementById('jump').addEventListener('click',e=>{
    const a=e.target.closest('.jmp'); if(!a)return;
    const el=document.getElementById(a.getAttribute('href').slice(1)); if(!el)return;
    e.preventDefault();
-   const y=el.getBoundingClientRect().top+scrollY-72;
-   scrollTo({top:y,behavior:'smooth'});
+   goSection(el);
    history.replaceState(null,'',a.getAttribute('href'));
  });
  // ── أرقامُ الوصل: ما وُصل لا ما جُمع ──

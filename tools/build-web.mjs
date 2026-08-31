@@ -140,14 +140,6 @@ const rMax = Math.max(...[...rOut.values()].map((v) => Buffer.byteLength(v)));
 console.log(`الرواة: ${Object.keys(RI).length} راويًا في ${rOut.size} قسمًا · ` +
   `أكبرُ قسم ${kb(rMax)} · كان ${mb(fs.statSync(path.join(DATA, "rijal", "index.json")).size)}`);
 
-/* ── ٥. أرقامُ السيرة والفقه في stats، فلا تُجلب ملفّاتُها لأجل عدد ── */
-const ev = rd(path.join(DATA, "sira", "events.json"));
-const stats = rd(path.join(DATA, "stats.json"));
-stats.siraEvents = ev.length;
-stats.siraLinks = ev.reduce((a, e) => a + (e.nh || 0), 0);
-console.log(`السيرة: ${stats.siraEvents} حدثًا · ${stats.siraLinks} حديثًا موصولًا · ` +
-  `(كان يُجلب ${mb(fs.statSync(path.join(DATA, "sira", "events.json")).size)} لأجلهما)`);
-
 if (problems.length) {
   console.error(`\nرُفضت الكتابة — ${problems.length} اختلافًا:`);
   problems.slice(0, 5).forEach((p) => console.error("  ✕ " + p));
@@ -164,5 +156,4 @@ const write = (m) => { for (const [rel, body] of m) {
   fs.writeFileSync(p, body, "utf8");
 } };
 write(hOut); write(nOut); write(aOut); write(rOut);
-fs.writeFileSync(path.join(DATA, "stats.json"), JSON.stringify(stats), "utf8");
 console.log(`\nكُتبت ${hOut.size + nOut.size + aOut.size + rOut.size} شريحة.`);

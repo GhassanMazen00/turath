@@ -51,6 +51,7 @@ for (const k of Object.keys(books)) {
 }
 
 const shb = rd(path.join(DATA, "sharh", "books.json"));
+const sira = rd(path.join(DATA, "sira", "events.json"));
 const stats = {
   books: Object.keys(books).length, hadiths, graded, gradings, conflict,
   sharhBooks: shb.length,
@@ -59,6 +60,11 @@ const stats = {
   takhrij: Object.values(rd(path.join(DATA, "takhrij.json"))).flat().length,
   asbab: Object.keys(rd(path.join(DATA, "asbab.json"))).length,
   rijal: Object.keys(rd(path.join(DATA, "rijal", "index.json"))).length,
+  /* أحداثُ السيرة وما وُصل بها من أحاديث. كانت تُكتب في build-web، وهذا
+     الملفُّ يُعيد بناء stats.json من الصفر — فمن شغّله بعده محاها، فصار
+     اختصارُ السيرة في الرئيسية يقول «٠ حدثًا». فمالكُ الملفّ واحد. */
+  siraEvents: sira.length,
+  siraLinks: sira.reduce((a, e) => a + (e.nh || 0), 0),
   /* «أكثرُ أحاديثه» حدُّها النصف: كتابٌ دونه لا يُقال لقارئٍ اذهب إليه */
   gradedBooks: Object.keys(perBook).filter((k) => perBook[k].g / perBook[k].n >= 0.5),
   isnadBooks: Object.keys(perBook).filter((k) => perBook[k].c / perBook[k].n >= 0.5),
