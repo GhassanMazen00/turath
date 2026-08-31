@@ -1045,3 +1045,5 @@ dialog.idlg .agb{padding:1.1rem 1.2rem}
   .asbmore.on{display:block}
   .asbtog{display:inline-flex;margin:.2rem 0 1rem}
 }
+/* «ثبّت» زرُّ فعلٍ لا سؤال، فيُصبَغ صبغةَ الأزرار */
+.ibtn .igo.now{background:var(--acc);border-color:var(--acc);color:var(--bg)}

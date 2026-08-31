@@ -881,27 +881,53 @@ function mountFooter(el){
  * وشكلَه أوضحُ من لقطةِ شاشةٍ تختلف بالطراز والنسخة واللغة.
  */
 let _prompt=null;
-addEventListener("beforeinstallprompt",e=>{ e.preventDefault(); _prompt=e; installBar(); });
+addEventListener("beforeinstallprompt",e=>{ e.preventDefault(); _prompt=e;
+  /* قد يصل الإذنُ بعد أن رُكّب الشريطُ في وضع «كيف؟»، فيُعاد ليصير «ثبّت» */
+  const b=document.getElementById("ibar"); if(b) b.remove();
+  installBar(); });
 
 const isIOS=()=>/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;
 const installed=()=>matchMedia("(display-mode: standalone)").matches||navigator.standalone;
 function pwaOff(){ try{ return !!localStorage.getItem("turath-nopwa"); }catch(e){ return false; } }
 
 /* ── الشريطُ العلويّ ── */
+/* التثبيتُ بضغطةٍ حيث يُمكن، وبالخطوات حيث لا يُمكن.
+ *
+ * أندرويد (كروم وإيدج) يُعطي الصفحةَ إذنًا تُفتح به نافذةُ التثبيت مباشرةً
+ * — فالزرُّ يُثبّت، لا يشرح.
+ *
+ * وأمّا iOS فلا سبيل: لا تُتيح آبل للصفحة أن تُضيف نفسها إلى الشاشة
+ * الرئيسية، ولا حدثَ ولا دالّةَ لذلك. الإضافةُ من قائمة المشاركة بيد
+ * القارئ لا غير. فمن وعد الآيفونَ بزرٍّ يُثبّت فقد وعد بما لا يكون،
+ * ويبقى الشرحُ المصوَّر هناك هو الطريق.
+ */
+let _howOnly=false;                 /* عُرضت نافذةُ التثبيت فرُدّت */
+async function doInstall(){
+  if(!_prompt) return installHow();
+  const q=_prompt; _prompt=null;
+  q.prompt();
+  const r=await q.userChoice.catch(()=>null);
+  const bar=document.getElementById("ibar"); if(bar) bar.remove();
+  if(r&&r.outcome==="accepted") return;          /* ثُبّت، فلا دعوةَ بعده */
+  _howOnly=true; installBar();                   /* رُدّ: يبقى بابُ الخطوات */
+}
 function installBar(){
   if(installed()||pwaOff()||innerWidth>=900) return;      /* الحاسوبُ لا يُمسّ */
-  if(!_prompt&&!isIOS()) return;                          /* متصفّحٌ لا يقبل التثبيت */
+  const auto=!!_prompt;
+  if(!auto&&!isIOS()&&!_howOnly) return;                  /* متصفّحٌ لا يقبل التثبيت */
   if(document.getElementById("ibar")) return;
   const head=document.querySelector("header.nav"); if(!head) return;
   const bar=document.createElement("div");
   bar.id="ibar"; bar.className="ibar";
   bar.innerHTML='<button class="ibtn" type="button">'+
       '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="6" y="2.6" width="12" height="18.8" rx="2.6" stroke="currentColor" stroke-width="1.5"/><path d="M12 8v6m0 0l-2.2-2.2M12 14l2.2-2.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'+
-      '<span><b>ثبّت تُراث على شاشتك</b><i>يُفتح كالتطبيق، ويعمل بلا إنترنت</i></span>'+
-      '<span class="igo">كيف؟</span></button>'+
+      '<span><b>ثبّت تُراث على شاشتك</b><i>'+
+        (auto?'بضغطة واحدة — يُفتح كالتطبيق ويعمل بلا إنترنت'
+             :'يُفتح كالتطبيق، ويعمل بلا إنترنت')+'</i></span>'+
+      '<span class="igo'+(auto?' now':'')+'">'+(auto?'ثبّت':'كيف؟')+'</span></button>'+
     '<button class="ixx" type="button" aria-label="إخفاء الدعوة">✕</button>';
   head.insertAdjacentElement("afterend",bar);
-  bar.querySelector(".ibtn").onclick=()=>installHow();
+  bar.querySelector(".ibtn").onclick=()=>auto?doInstall():installHow();
   bar.querySelector(".ixx").onclick=()=>{ bar.remove();
     try{ localStorage.setItem("turath-nopwa","1"); }catch(e){} };
 }
@@ -1003,9 +1029,7 @@ function installHow(plat){
   d.querySelectorAll(".itab").forEach(b=>b.onclick=()=>installHow(b.dataset.p));
   d.querySelector("#iclose").onclick=()=>d.close();
   const go=d.querySelector("#ipick");
-  if(go) go.onclick=async()=>{ if(!_prompt)return; const q=_prompt; _prompt=null;
-    d.close(); q.prompt(); await q.userChoice.catch(()=>{});
-    const b=document.getElementById("ibar"); if(b)b.remove(); };
+  if(go) go.onclick=()=>{ d.close(); doInstall(); };
   if(!d.open) d.showModal();
 }
 
@@ -1717,15 +1741,16 @@ const ABOUT_HTML=`
 <section id="app" class="abs">
   <h2>تُراث على هاتفك</h2>
   <p>يمكنك إضافة الموقع إلى شاشة هاتفك الرئيسية فيصير كالتطبيق: يُفتح بأيقونته بلا شريط متصفّح، ويعمل بما حُفظ منه على جهازك حتى لو انقطعت الشبكة. وليس تطبيقًا يُنزَّل من متجر — هو الموقع نفسه، بلا حساب ولا أذونات ولا شيء يُرسل عنك.</p>
-  <p>وإن فتحت الموقع على هاتفك وجدت تحت شريط العنوان دعوةً إلى تثبيته، وفيها الخطوات مصوَّرة.</p>
+  <p>وإن فتحت الموقع على هاتفك وجدت تحت شريط العنوان دعوةً إلى تثبيته: على الأندرويد زرٌّ يُثبّته بضغطة، وعلى الآيفون الخطوات مصوَّرة.</p>
   <div class="abox">
     <b>على الآيفون</b>
     <p>افتح الموقع في سفاري، ثم اضغط زرّ المشاركة في الأسفل، ثم اختر «إضافة إلى الشاشة الرئيسية».</p>
   </div>
   <div class="abox">
     <b>على الأندرويد</b>
-    <p>افتح الموقع في كروم، ثم اضغط النقاط الثلاث في أعلى اليمين واختر «تثبيت التطبيق».</p>
+    <p>اضغط زرّ «ثبّت» في أعلى الصفحة، فيتولّى كروم الباقي بضغطة واحدة. وإن لم يظهر لك الزرّ، فمن النقاط الثلاث في أعلى اليمين: «تثبيت التطبيق».</p>
   </div>
+  <p class="note">وأمّا الآيفون فلا تُتيح آبل للمواقع أن تُضيف نفسها إلى الشاشة الرئيسية، فالخطوات أعلاه هي الطريق الوحيد فيه — وليس ذلك نقصًا في الموقع.</p>
 </section>
 
 <section id="rules" class="abs">
