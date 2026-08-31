@@ -939,29 +939,27 @@ const _ph=(inner)=>'<svg class="ish" viewBox="0 0 128 176" role="img" aria-hidde
 const _ring=(x,y,r)=>'<circle cx="'+x+'" cy="'+y+'" r="'+r+'" class="irg"/>';
 const _row=(y,w,cls)=>'<rect x="20" y="'+y+'" width="'+w+'" height="7" rx="3.5" class="'+(cls||"ilt")+'"/>';
 
+/* أيقونةُ المشاركة في iOS: مربّعٌ مفتوحُ الأعلى وسهمٌ صاعدٌ منه. تُعرض
+   وحدَها بلا هاتفٍ ولا شريط: موضعُها يختلف بالجهاز والنسخة والوضع —
+   أسفلَ الشاشة في الآيفون طولًا، وأعلاها في الآيباد وفي بعض النسخ —
+   فرسمُها في موضعٍ بعينه يدلّ على غير الصواب. والمقصودُ أن تُعرف صورتُها
+   فيبحث عنها القارئ حيث هي عنده. */
+const IOS_SHARE='<div class="iglyph"><svg viewBox="0 0 44 58" role="img" aria-hidden="true">'+
+  '<path d="M15 20H12a6 6 0 00-6 6v20a6 6 0 006 6h20a6 6 0 006-6V26a6 6 0 00-6-6h-3"/>'+
+  '<path d="M22 34V6"/><path d="M14.6 13.4L22 6l7.4 7.4"/></svg></div>';
+
+/* سطرُ «إضافة إلى الشاشة الرئيسية» كما يقع في القائمة: نصُّه واسمُه
+   وأيقونتُه. وكان مكانَه رسمُ هاتفٍ فيه أسطرٌ فارغة، لا يدلّ على شيء. */
+const IOS_ROW='<div class="irow"><span>إضافة إلى الشاشة الرئيسية</span>'+
+  '<svg viewBox="0 0 24 24" role="img" aria-hidden="true">'+
+  '<rect x="3.6" y="3.6" width="16.8" height="16.8" rx="4"/>'+
+  '<path d="M12 8.4v7.2M8.4 12h7.2"/></svg></div>';
+
 const STEPS={
   ios:[
-    ["افتح الموقع في <b>سفاري</b>، ثم اضغط زرّ المشاركة في الشريط السفليّ.",
-     _ph('<rect x="18" y="14" width="92" height="118" rx="5" class="ipg"/>'+
-         _row(28,66)+_row(40,74)+_row(52,56)+_row(64,70)+
-         '<rect x="10" y="140" width="108" height="32" rx="0" class="ibr"/>'+
-         '<path d="M40 156.5h-6M56 156.5h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" class="idim"/>'+
-         '<g class="iac"><path d="M64 149.5v13" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>'+
-         '<path d="M60.4 153.1L64 149.5l3.6 3.6" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" fill="none"/>'+
-         '<path d="M58 156v6.5h12V156" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" fill="none"/></g>'+
-         _ring(64,156,13)+
-         '<path d="M84 156.5h-4M94 156.5h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" class="idim"/>')],
-    ["مرّر في القائمة واختر <b>«إضافة إلى الشاشة الرئيسية»</b>.",
-     _ph('<rect x="18" y="14" width="92" height="40" rx="5" class="ipg2"/>'+
-         _row(24,60)+_row(36,52)+
-         '<rect x="18" y="46" width="92" height="120" rx="8" class="ipg"/>'+
-         '<rect x="52" y="52" width="24" height="3" rx="1.5" class="idim2"/>'+
-         _row(66,58)+_row(80,66)+
-         '<rect x="16" y="90" width="96" height="20" rx="5" class="ihl"/>'+
-         '<rect x="22" y="96" width="8" height="8" rx="2" class="iac2"/>'+
-         '<path d="M26 98v4M24 100h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" class="iacs"/>'+
-         '<rect x="36" y="97.5" width="60" height="5" rx="2.5" class="iacb"/>'+
-         _row(120,52)+_row(134,62)+_row(148,44))],
+    ["افتح الموقع في <b>المتصفّح</b>، ثم اضغط زرّ المشاركة — وهذه صورته. "+
+     "وموضعُه يختلف بالجهاز: في شريط أسفل الشاشة أو أعلاها.", IOS_SHARE],
+    ["تُفتح قائمة، مرّر فيها حتى تجد هذا السطر ثم اضغطه.", IOS_ROW],
     ["تظهر أيقونة <b>تُراث</b> على شاشتك، تفتحها كأيّ تطبيق.",
      _ph('<rect x="18" y="14" width="92" height="150" rx="6" class="ipg"/>'+
          '<rect x="26" y="26" width="22" height="22" rx="6" class="idim3"/>'+
@@ -975,7 +973,7 @@ const STEPS={
          '<rect x="82" y="58" width="22" height="22" rx="6" class="idim3"/>')],
   ],
   and:[
-    ["افتح الموقع في <b>كروم</b>، ثم اضغط النقاط الثلاث في أعلى اليمين.",
+    ["افتح الموقع في <b>كروم</b>، ثم اضغط زرّ القائمة (ثلاث نقاط) في شريط المتصفّح.",
      _ph('<rect x="10" y="4" width="108" height="26" rx="0" class="ibr"/>'+
          '<rect x="24" y="13" width="58" height="8" rx="4" class="ilt"/>'+
          '<g class="iac"><circle cx="103" cy="11" r="1.9"/><circle cx="103" cy="17" r="1.9"/><circle cx="103" cy="23" r="1.9"/></g>'+

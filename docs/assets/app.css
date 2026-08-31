@@ -1047,3 +1047,17 @@ dialog.idlg .agb{padding:1.1rem 1.2rem}
 }
 /* «ثبّت» زرُّ فعلٍ لا سؤال، فيُصبَغ صبغةَ الأزرار */
 .ibtn .igo.now{background:var(--acc);border-color:var(--acc);color:var(--bg)}
+
+/* أيقونةُ المشاركة وحدَها، في إطارٍ يُشبه الزرّ */
+.iglyph{grid-area:g;justify-self:center;margin-top:.35rem;width:4.6rem;height:4.6rem;
+  display:grid;place-items:center;border-radius:16px;background:var(--iscr);
+  border:1px solid var(--hair)}
+.iglyph svg{width:2.5rem;height:auto;fill:none;stroke:var(--acc);stroke-width:2.6;
+  stroke-linecap:round;stroke-linejoin:round}
+
+/* سطرُ القائمة كما يُرى: نصُّه وأيقونتُه */
+.irow{grid-area:g;margin-top:.35rem;display:flex;align-items:center;justify-content:space-between;
+  gap:.8rem;padding:.7rem .9rem;border-radius:12px;background:var(--accsoft);
+  border:1px solid var(--acc);color:var(--ink);font-size:.95rem;font-weight:700}
+.irow svg{width:1.5rem;height:1.5rem;flex:0 0 auto;fill:none;stroke:var(--acc);
+  stroke-width:1.8;stroke-linecap:round}
