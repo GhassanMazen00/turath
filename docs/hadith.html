@@ -2,9 +2,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="light dark">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap"></noscript>
-<link rel="stylesheet" href="assets/app.css">
+<link rel="stylesheet" href="assets/app.css?v=4b720469">
 <link rel="icon" href="assets/mark.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#eef2f7" media="(prefers-color-scheme: light)">
@@ -22,7 +23,7 @@
   <span id="mnw"></span><span id="tg"></span></nav>
 </div></header>
 <div class="shell"><aside class="side" id="side"></aside><main class="main" id="app"></main></div>
-<script src="assets/app.js"></script>
+<script src="assets/app.js?v=4b720469"></script>
 <script>
 theme(); firstVisitNotice(); document.getElementById('tg').innerHTML=TGL; document.getElementById('mnw').innerHTML=MENU;
 mountMenu(document.getElementById('mn'),document.getElementById('side'));
@@ -39,11 +40,22 @@ const getNote=(k,n)=>hasNote(k,n)?api.local(`note/${k}/${n}.json`).catch(()=>nul
 const app=()=>document.getElementById('app'), side=()=>document.getElementById('side');
 const FOOT='<footer class="foot" id="foot"></footer>';
 function foot(){const f=document.getElementById('foot'); if(f)mountFooter(f);}
-(async()=>{ try{ await searchInit(); B=SEARCH.books;
-    const [gd,ni,st]=await Promise.all([
+/* استباقُ الجلب: ما تحتاجه هذه الصفحة معروفٌ من المسار قبل أن تُقرأ
+   الفهارس. والمتنُ يأتي من مدوّنةٍ خارجية، فتصافحُها يبدأ من الآن لا بعد
+   موجتين. والوعودُ محفوظةٌ في المحرّك، فالطلبُ واحدٌ لا يُكرَّر. */
+(function(){ const p=location.hash.replace(/^#\/?/,'').split('/').filter(Boolean);
+  if(!p.length) return;
+  hadNav(p[0]).catch(()=>{}); loadTak(p[0]).catch(()=>{});
+  if(p[1]==='h'&&+p[2]) api.hadith(p[0],+p[2]).catch(()=>{});
+  else if(+p[1]){ hadSec(p[0],+p[1]).catch(()=>{}); api.section(p[0],+p[1]).catch(()=>{}); }
+})();
+/* الفهارسُ الستّةُ معًا: كانت موجتين متتاليتين، وبينهما رحلةٌ كاملة إلى
+   الخادم لا تُغني شيئًا — لا واحدٌ منها يحتاج الآخر. */
+(async()=>{ try{
+    const [,gd,ni,st]=await Promise.all([searchInit(),
       api.local('grades.json').catch(()=>({})),api.local('note/index.json').catch(()=>({})),
       api.local('stats.json').catch(()=>({}))]);
-    GDEF=gd;
+    B=SEARCH.books; GDEF=gd;
     // أيُّ الكتب وردت لأحاديثها أحكامٌ وأسانيد — يُقرأ من البيانات لا يُكتب هنا
     GRADED=new Set(st.gradedBooks||[]); ISNAD=new Set(st.isnadBooks||[]);
     /* الشروحُ المكتوبة: كانت خريطةً واحدة من ٥٫١ م.ب تُنزَّل عند فتح أيّ
@@ -98,9 +110,11 @@ async function vList(k,sec,page){
    '<div class="m"><bdi>'+AR(s.count)+' حديثًا</bdi></div></div><div id="body"></div>'+FOOT;
   loading(document.getElementById('body'),'جارٍ الجلب…'); foot(); scrollTo(0,0);
   try{
-    await loadTak(k);
-    const gr=await hadSec(k,sec);
-    const rows=(await hadNav(k)).filter(r=>r[1]===sec).map(r=>[r[0],sec,"",(gr[r[0]]||[[],[]])[0]]);
+    /* الأربعةُ معًا: التخريجُ والأحكامُ والفهرسُ ومتونُ الباب — ولا واحدٌ
+       منها يحتاج الآخر، فكانت أربعَ رحلاتٍ متتالية بلا سبب. */
+    const [,gr,nav,sd]=await Promise.all([loadTak(k),hadSec(k,sec),hadNav(k),
+      api.section(k,sec).catch(()=>null)]);
+    const rows=nav.filter(r=>r[1]===sec).map(r=>[r[0],sec,"",(gr[r[0]]||[[],[]])[0]]);
     const pages=Math.max(1,Math.ceil(rows.length/PER)); page=Math.min(Math.max(1,page),pages);
     const pg=()=>{const pv=page>1?'#/'+k+'/'+sec+'/'+(page-1):null,nx=page<pages?'#/'+k+'/'+sec+'/'+(page+1):null;
       return '<div class="pager">'+(pv?'<a href="'+pv+'">‹ السابق</a>':'<span class="off">‹ السابق</span>')+
@@ -109,9 +123,7 @@ async function vList(k,sec,page){
 
     // نصّ الباب كما ورد بالتشكيل — الفهرس المحلّي مطبَّعٌ للمطابقة لا للعرض
     let orig={};
-    try{ const sd=await api.section(k,sec);
-      for(const h of (sd.hadiths||[])) orig[h.hadithnumber]=h.text;
-    }catch(e){}
+    for(const h of ((sd&&sd.hadiths)||[])) orig[h.hadithnumber]=h.text;
     const show=(num,txt)=>{const t=orig[num]||txt;
       return esc(t.length>230?t.slice(0,230)+'…':t);};
     document.getElementById('body').innerHTML=pg()+rows.slice((page-1)*PER,page*PER).map(([num,,txt,g])=>{
@@ -133,14 +145,17 @@ async function vHadith(k,num){
   app().innerHTML='<div id="body"></div>'+FOOT;
   loading(document.getElementById('body'),'جارٍ جلب الحديث…'); foot(); scrollTo(0,0);
   try{
-    await loadTak(k);
-    const row=await hadRow(k,num);
+    /* المتنُ والتخريجُ والصفُّ والشرحُ المكتوبُ: أربعةٌ لا يحتاج أحدُها
+       الآخر، فتُطلب معًا. وكانت متتاليةً فكانت الصفحةُ تنتظر أربعَ رحلاتٍ
+       قبل أن يُرسم حرف. */
+    const [,row,sharh]=await Promise.all([loadTak(k),hadRow(k,num),getNote(k,num)]);
+    /* المتنُ من مدوّنةٍ خارجية، وبقيّةُ الصفحة من عندنا. فكان يُنتظر فتقف
+       الصفحةُ كلُّها على رحلةٍ إلى الشبكة: الحكمُ والإسنادُ والتخريجُ
+       والمواضعُ حاضرةٌ ولا تُرى. فصارت تُرسم أوّلًا، ويحلّ المتنُ محلَّه
+       حين يصل. */
+    const matnP=api.hadith(k,num);
     const sec=row?b.sections.find(x=>x.n===row[1]):null;
     if(sec) sideSections(k,sec.n); else sideBooks(k);
-    const d=await api.hadith(k,num); const h=(d.hadiths&&d.hadiths[0])||{};
-    // الموضعُ المطبوع لا يَرِد إلا في الكتب العشرة؛ وما زِيد عليها يُترقَّم برقمه وحده
-    const ref=h.reference&&h.reference.book!=null?AR(h.reference.book)+':'+AR(h.reference.hadith):'';
-    const sp=splitIsnad(h.text||'');
     const grades=row?row[3]:[], raw=(row&&row[4])||[];
     /* أسماءُ رجال هذه السلسلة وحدهم، لا فهرسُ الرواة كلُّه */
     const RI=await rijalBrief(raw.filter(x=>x[0]==='i').map(x=>x[1]));
@@ -155,7 +170,6 @@ async function vHadith(k,num){
         sub:[r.g,genAr(r.gen)].filter(Boolean).join('، ')}:null;}
       return {href:'rijal.html#/r/'+encodeURIComponent('t:'+v),name:v,sub:''};}).filter(Boolean);
     const tak=TAK[k+':'+num]||[];
-    const sharh=await getNote(k,num);
     /* مواضعُ هذا الحديث في كتبٍ وردت لأحاديثها أحكام، ومواضعُه في كتبٍ
        وردت لها أسانيد — تُستعمل حين يخلو هذا الكتابُ منهما. */
     const elsewhere=grades.length?[]:tak.filter(r=>GRADED.has(r.split(':')[0])).slice(0,6);
@@ -190,8 +204,7 @@ async function vHadith(k,num){
           '<dt>الكتاب</dt><dd>'+esc(b.ar)+'</dd>'+
           (sec?'<dt>الباب</dt><dd>'+esc(sec.ar)+'</dd>':'')+
           '<dt>رقم الحديث</dt><dd><bdi>'+AR(num)+'</bdi></dd>'+
-          (ref?'<dt>الموضع المطبوع</dt><dd><bdi>'+ref+'</bdi></dd>':'')+
-        '</dl></div>'+
+        '</dl><dl id="refdl"></dl></div>'+
         (nodes.length?'<div class="rc glass"><h4>الإسناد</h4><dl>'+
           '<dt>عدد الرواة</dt><dd><bdi>'+AR(nodes.length)+'</bdi></dd>'+
           (last?'<dt>الصحابي</dt><dd>'+esc(last.name)+'</dd>':'')+
@@ -219,14 +232,10 @@ async function vHadith(k,num){
       '<span class="sep">›</span><span>حديث '+AR(num)+'</span></nav>'+pg+
       '<div class="ph"><div class="k">'+esc(b.ar)+(sec?'<span class="sep">•</span>'+esc(sec.ar):'')+'</div>'+
       '<h1>حديث '+AR(num)+'</h1><div class="m">'+esc(b.author)+
-      (ref?'<span class="sep">•</span>الموضع <bdi>'+ref+'</bdi>':'')+'</div></div>'+
+      '<span id="refh"></span></div></div>'+
       '<div class="dual"><div class="dcol">'+
       gband+
-      (String(h.text||'').trim()
-        ? '<div class="pane matn"><span>'+esc(sp.matn||h.text)+'</span></div>'
-        : '<div class="pane msg">لم يرد نصُّ هذا الحديث في المصدر المعتمد للمتون.'+
-          '<div class="note" style="margin:.7rem 0 0">رقمُه وبابُه وموضعُه المطبوع ثابتةٌ كما ترى، '+
-          'وإنّما خلا المصدرُ من متنه. ولا نملؤه من عندنا ولا نسكت عنه.</div></div>')+
+      '<div id="matnbox"><div class="pane matn"><span class="spin"></span></div></div>'+
       '<div class="tabs" role="tablist">'+
         '<button class="tab" role="tab" data-t="isnad" aria-selected="true">الإسناد<span class="c">'+AR(nodes.length)+'</span></button>'+
         '<button class="tab" role="tab" data-t="full" aria-selected="false">'+
@@ -248,9 +257,8 @@ async function vHadith(k,num){
               chainAt.map(r=>{const [bb,nn]=r.split(':');
                 return '<a href="#/'+bb+'/h/'+nn+'">'+esc((B[bb]||{}).ar||bb)+' <bdi>'+AR(nn)+'</bdi></a>';}).join(' <span class="sep">•</span> ')+
               '</div>':'')+'</div>')+'</div>'+
-      '<div class="panel" data-p="full">'+(String(h.text||'').trim()
-        ? '<div class="pane full"><span>'+esc(h.text)+'</span></div>'
-        : '<div class="pane msg">لم يرد نصُّ هذا الحديث في المصدر المعتمد للمتون.</div>')+'</div>'+
+      '<div class="panel" data-p="full"><div id="fullbox">'+
+        '<div class="pane full"><span class="spin"></span></div></div></div>'+
       '<div class="panel" data-p="hukm">'+
         (grades.length?'<div class="pane"><table class="t"><tr><th>المحدِّث</th><th>الحكم</th><th>معناه</th></tr>'+
           grades.map(g=>'<tr><td>'+esc(g[0])+'</td><td><span class="g '+gclass(g[1])+'">'+esc(g[1])+'</span></td>'+
@@ -278,24 +286,65 @@ async function vHadith(k,num){
        وعلى الهاتف يُؤجَّل إلى أن يُفتح تبويبُ الشرح: القارئُ قد لا يفتحه،
        فلا يُنزَّل عليه ما لم يطلب. */
     let seek=null;
-    if(sharh) sm.innerHTML='<div class="pane pad prose">'+paras(sharh.t)+'</div>'+
+    if(sharh){ sm.innerHTML='<div class="pane pad prose">'+paras(sharh.t)+'</div>'+
       '<div class="note">المصدر: '+esc(sharh.s)+
       (sharh.u?' <span class="sep">•</span> <a href="'+esc(sharh.u)+'" target="_blank" rel="noopener">الأصل ↗</a>':'')+'</div>';
+      window._sharhRun=null; }
     else {
-      const run=()=>{ if(!seek)return; const f=seek; seek=null; f(); };
-      seek=()=>sharhBlock(sp.matn||h.text,sm,k,nodes.map(n=>n.name));
-      if(innerWidth>=760) run();
-      else { sm.innerHTML='<div class="pane msg">شرحُ هذا الحديث يُبحث عنه في كتاب شرح المصنَّف، '+
-        'ويُنزَّل له من الكتاب ما يُبحث فيه.<div class="acts" style="margin-top:1rem">'+
-        '<button class="act" id="goSharh">ابحث عن شرحه</button></div></div>';
-        const gb=document.getElementById('goSharh'); if(gb) gb.onclick=run; }
+      /* البحثُ عن الشرح يحتاج المتنَ، فلا يبدأ قبل وصوله. وقد يُفتح
+         التبويبُ قبل ذلك، فيُسجَّل الطلبُ ويُنفَّذ عند الوصول. */
+      let want=false;
+      const run=()=>{ want=true; if(seek){ const f=seek; seek=null; f(); } };
       window._sharhRun=run;
+      window._sharhReady=(matn)=>{
+        seek=()=>sharhBlock(matn,sm,k,nodes.map(n=>n.name));
+        if(want||innerWidth>=760) run();
+        else { sm.innerHTML='<div class="pane msg">شرحُ هذا الحديث يُبحث عنه في كتاب شرح المصنَّف، '+
+          'ويُنزَّل له من الكتاب ما يُبحث فيه.<div class="acts" style="margin-top:1rem">'+
+          '<button class="act" id="goSharh">ابحث عن شرحه</button></div></div>';
+          const gb=document.getElementById('goSharh'); if(gb) gb.onclick=run; }
+      };
     }
-    if(sharh) window._sharhRun=null;
     root.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
       root.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected',x===t));
       root.querySelectorAll('.panel').forEach(p=>p.classList.toggle('on',p.dataset.p===t.dataset.t));
       if(t.dataset.t==='sharh'&&window._sharhRun) window._sharhRun();
+    });
+    /* وصولُ المتن: يُوضع نصًّا كما ورد، ويُلحق موضعُه المطبوع، ويبدأ
+       البحثُ عن شرحه. وإن تنقّل القارئُ قبل وصوله لم يُكتب في صفحةٍ
+       أخرى — تُفحص هُويّةُ الموضع. */
+    const mb=document.getElementById('matnbox');
+    const mine=()=>document.getElementById('matnbox')===mb;
+    matnP.then(d=>{
+      if(!mine()) return;
+      const h=(d.hadiths&&d.hadiths[0])||{};
+      const txt=String(h.text||'').trim();
+      const sp=splitIsnad(h.text||'');
+      mb.innerHTML=txt
+        ? '<div class="pane matn"><span>'+esc(sp.matn||h.text)+'</span></div>'
+        : '<div class="pane msg">لم يرد نصُّ هذا الحديث في المصدر المعتمد للمتون.'+
+          '<div class="note" style="margin:.7rem 0 0">رقمُه وبابُه وموضعُه المطبوع ثابتةٌ كما ترى، '+
+          'وإنّما خلا المصدرُ من متنه. ولا نملؤه من عندنا ولا نسكت عنه.</div></div>';
+      const fb=document.getElementById('fullbox');
+      if(fb) fb.innerHTML=txt
+        ? '<div class="pane full"><span>'+esc(h.text)+'</span></div>'
+        : '<div class="pane msg">لم يرد نصُّ هذا الحديث في المصدر المعتمد للمتون.</div>';
+      // الموضعُ المطبوع لا يَرِد إلا في الكتب العشرة؛ وما زِيد عليها يُترقَّم برقمه وحده
+      const ref=h.reference&&h.reference.book!=null?AR(h.reference.book)+':'+AR(h.reference.hadith):'';
+      if(ref){
+        const rh=document.getElementById('refh');
+        if(rh) rh.innerHTML='<span class="sep">•</span>الموضع <bdi>'+ref+'</bdi>';
+        const rd=document.getElementById('refdl');
+        if(rd) rd.innerHTML='<dt>الموضع المطبوع</dt><dd><bdi>'+ref+'</bdi></dd>';
+      }
+      if(window._sharhReady) window._sharhReady(sp.matn||h.text);
+    }).catch(e=>{
+      if(!mine()) return;
+      mb.innerHTML='<div class="pane msg">تعذّر جلب نصّ الحديث من المصدر.'+
+        '<div class="note" style="margin:.7rem 0 0">'+esc(String(e&&e.message||e))+'</div></div>';
+      const fb=document.getElementById('fullbox'); if(fb) fb.innerHTML='';
+      const sm2=document.getElementById('sharh');
+      if(sm2&&!sharh) sm2.innerHTML='<div class="pane msg">لم يُجلب المتن، فلا يُبحث عن شرحه.</div>';
     });
   }catch(e){ failed(document.getElementById('body'),e); }
 }

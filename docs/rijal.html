@@ -4,7 +4,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap"></noscript>
-<link rel="stylesheet" href="assets/app.css">
+<link rel="stylesheet" href="assets/app.css?v=4b720469">
 <link rel="icon" href="assets/mark.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#eef2f7" media="(prefers-color-scheme: light)">
@@ -25,7 +25,7 @@
   <aside class="side" id="side"></aside>
   <main class="main" id="app"></main>
 </div>
-<script src="assets/app.js"></script>
+<script src="assets/app.js?v=4b720469"></script>
 <script>
 theme(); firstVisitNotice(); document.getElementById('tg').innerHTML=TGL; document.getElementById('mnw').innerHTML=MENU;
 mountMenu(document.getElementById('mn'),document.getElementById('side'));
@@ -33,7 +33,7 @@ const app=()=>document.getElementById('app'),side=()=>document.getElementById('s
 const FOOT='<footer class="foot" id="foot"></footer>';
 function foot(){const f=document.getElementById('foot'); if(f)mountFooter(f);}
 let IDX={},KEYS=[];
-(async()=>{ try{ await searchInit(); IDX=await rijalIndex();
+(async()=>{ try{ const [,idx]=await Promise.all([searchInit(),rijalIndex()]); IDX=idx;
   KEYS=Object.keys(IDX).sort((a,b)=>IDX[b].c-IDX[a].c);}catch(e){return failed(app(),e);}
   addEventListener('hashchange',route); route(); })();
 function route(){

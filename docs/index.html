@@ -4,7 +4,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap"></noscript>
-<link rel="stylesheet" href="assets/app.css">
+<link rel="stylesheet" href="assets/app.css?v=4b720469">
 <link rel="icon" href="assets/mark.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#eef2f7" media="(prefers-color-scheme: light)">
@@ -138,20 +138,25 @@
 
   <footer class="foot" id="foot"></footer>
 </div>
-<script src="assets/app.js"></script>
+<script src="assets/app.js?v=4b720469"></script>
 <script>
 theme(); firstVisitNotice(); document.getElementById('tg').innerHTML=TGL; mountFooter(document.getElementById('foot'));
 
  
 (async()=>{
- try{ await searchInit(); }catch(e){ document.getElementById('search').innerHTML='<div class="pane msg">تعذّر تحميل الفهرس.</div>'; return; }
+ /* الفهارسُ كلُّها في موجةٍ واحدة. كانت خمسًا متتاليةً — فهرسُ البحث ثمّ
+    كتبُ الشروح ثمّ الأرقامُ ثمّ كتبُ الفقه ثمّ خلاصتُه — وبين كلّ اثنتين
+    رحلةٌ كاملة إلى الخادم، ولا واحدةٌ منها تحتاج الأخرى. */
+ let SHB,ST,FQB,FQS;
+ try{ [,SHB,ST,FQB,FQS]=await Promise.all([searchInit(),
+   sharhBooks().catch(()=>[]),
+   /* أرقامُ السيرة من stats: كان يُنزَّل ملفُّ الأحداث (٤٠٧ ك.ب) لأجل عددين */
+   api.local('stats.json').catch(()=>({})),
+   fiqhBooks().catch(()=>[]),
+   fiqhSummary().catch(()=>({ijmac:0,masail:0}))]);
+ }catch(e){ document.getElementById('search').innerHTML='<div class="pane msg">تعذّر تحميل الفهرس.</div>'; return; }
  mountSearch(document.getElementById('search'),{});
  const B=SEARCH.books,T=SEARCH.tafsirs,S=SEARCH.surahs;
- const SHB=await sharhBooks().catch(()=>[]);
- /* أرقامُ السيرة من stats: كان يُنزَّل ملفُّ الأحداث (٤٠٧ ك.ب) لأجل عددين */
- const ST=await api.local('stats.json').catch(()=>({}));
- const FQB=await fiqhBooks().catch(()=>[]);
- const FQS=await fiqhSummary().catch(()=>({ijmac:0,masail:0}));
  // اختصارات تنزل إلى الأقسام، وتحت كلٍّ منها ما فيه من عدد
  const th=Object.values(B).reduce((a,b)=>a+b.total,0);
  const shp=SHB.reduce((a,b)=>a+b.paras,0);

@@ -2,9 +2,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="light dark">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap"></noscript>
-<link rel="stylesheet" href="assets/app.css">
+<link rel="stylesheet" href="assets/app.css?v=4b720469">
 <link rel="icon" href="assets/mark.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#eef2f7" media="(prefers-color-scheme: light)">
@@ -25,13 +26,18 @@
   <aside class="side" id="side"></aside>
   <main class="main" id="app"></main>
 </div>
-<script src="assets/app.js"></script>
+<script src="assets/app.js?v=4b720469"></script>
 <script>
 theme(); firstVisitNotice(); document.getElementById('tg').innerHTML=TGL; document.getElementById('mnw').innerHTML=MENU;
 mountMenu(document.getElementById('mn'),document.getElementById('side'));
 let S=[],T=[]; const app=()=>document.getElementById('app'),side=()=>document.getElementById('side');
 const FOOT='<footer class="foot" id="foot"></footer>';
 function foot(){const f=document.getElementById('foot'); if(f)mountFooter(f);}
+/* الآيةُ وتفسيرُها وسببُ نزولها تُطلب من المسار قبل أن تُقرأ قوائمُ السور:
+   هي من مدوّنةٍ خارجية، فتصافحُها وجلبُها يجريان مع قراءة الصفحة. */
+(function(){ const p=location.hash.replace(/^#\/?/,'').split('/').filter(Boolean);
+  if(p.length>=3&&+p[0]&&+p[2]){ api.ayah(+p[0],+p[2]).catch(()=>{});
+    api.tafsir(p[1],+p[0],+p[2]).catch(()=>{}); asbab(+p[0],+p[2]).catch(()=>{}); } })();
 (async()=>{ try{ await searchInit(); S=SEARCH.surahs; T=SEARCH.tafsirs; }catch(e){ return failed(app(),e); }
   addEventListener('hashchange',route); route(); })();
 function route(){
@@ -110,15 +116,25 @@ async function vAyah(n,slug,a){
    '<div class="m">'+esc(t.author)+'</div></section>'+pg()+
    '<div class="dual"><div class="dcol" id="body"></div>'+rail+'</div>'+
    '<div id="botpg"></div>'+FOOT;
-  loading(document.getElementById('body'),'جارٍ الجلب…'); foot(); scrollTo(0,0);
-  try{
-    const [av,tf,sb]=await Promise.all([api.ayah(n,a),api.tafsir(slug,n,a),asbab(n,a)]);
-    document.getElementById('body').innerHTML=
-      '<div class="pane ayah"><span class="tx">'+esc(av.text)+'<span class="an">'+AR(a)+'</span></span></div>'+
-      asbabBlock(sb)+
-      '<div class="sh"><h2>'+esc(t.ar)+'</h2><span class="ln"></span></div>'+
-      '<div class="pane pad prose">'+paras(tf.text)+'</div>';
-    document.getElementById('botpg').innerHTML=pg();
-  }catch(e){ failed(document.getElementById('body'),e); }
+  foot(); scrollTo(0,0);
+  /* الآيةُ وتفسيرُها من مدوّنةٍ خارجية، وسببُ النزول من عندنا. فلا تقف
+     الصفحةُ كلُّها على رحلةٍ واحدة: يُرسم الهيكلُ وسببُ النزول أوّلًا،
+     ويحلُّ كلُّ نصٍّ محلَّه حين يصل، ولكلٍّ خطؤه إن تعذّر. */
+  const body=document.getElementById('body');
+  body.innerHTML='<div id="ayabox"><div class="pane ayah"><span class="spin"></span></div></div>'+
+    '<div id="asbbox"></div>'+
+    '<div class="sh"><h2>'+esc(t.ar)+'</h2><span class="ln"></span></div>'+
+    '<div id="tfbox"><div class="pane pad"><span class="spin"></span></div></div>';
+  document.getElementById('botpg').innerHTML=pg();
+  const mine=(id)=>document.getElementById(id);
+  const fail=(id,e)=>{const n=mine(id); if(n)n.innerHTML='<div class="pane msg">تعذّر الجلب من المصدر.'+
+    '<div class="note" style="margin:.7rem 0 0">'+esc(String(e&&e.message||e))+'</div></div>';};
+  api.ayah(n,a).then(av=>{const q=mine('ayabox'); if(q)q.innerHTML=
+    '<div class="pane ayah"><span class="tx">'+esc(av.text)+'<span class="an">'+AR(a)+'</span></span></div>';
+    }).catch(e=>fail('ayabox',e));
+  api.tafsir(slug,n,a).then(tf=>{const q=mine('tfbox');
+    if(q)q.innerHTML='<div class="pane pad prose">'+paras(tf.text)+'</div>';
+    }).catch(e=>fail('tfbox',e));
+  asbab(n,a).then(sb=>{const q=mine('asbbox'); if(q)q.innerHTML=asbabBlock(sb);}).catch(()=>{});
 }
 </script></body></html>

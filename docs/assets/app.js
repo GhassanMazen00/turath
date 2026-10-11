@@ -7,18 +7,27 @@ const REF={quran:"6be8e17f2a0c13b1f33b1c3057f73cb28d5e848e",
 const HOSTS=[(r,f,p)=>`https://cdn.jsdelivr.net/gh/${r}@${f}/${p}`,
              (r,f,p)=>`https://raw.githubusercontent.com/${r}/${f}/${p}`];
 const _c=new Map();
-async function grab(repo,ref,path){
-  const k=repo+ref+path; if(_c.has(k))return _c.get(k);
-  let err;
-  for(const h of HOSTS){
-    try{const r=await fetch(h(repo,ref,path)); if(!r.ok){err=new Error("HTTP "+r.status);continue;}
-      const d=await r.json(); _c.set(k,d); return d;}catch(e){err=e;}
-  }
-  throw err||new Error("تعذّر الجلب");
+/* يُحفظ الوعدُ لا نتيجتُه. وفائدتُه أنّ الصفحةَ تستطيع أن تستبق الجلبَ
+   قبل أن تكون مستعدّةً للعرض: طلبٌ واحد يُرسل، ويُنتظر مرّةً واحدة، وإن
+   طُلب مرّتين في آنٍ واحد. والساقطُ يُنسى فلا يُسدّ بابُ المحاولة. */
+function keep(k,make){
+  if(_c.has(k)) return _c.get(k);
+  const p=make(); _c.set(k,p); p.catch(()=>{ if(_c.get(k)===p) _c.delete(k); });
+  return p;
+}
+function grab(repo,ref,path){
+  return keep(repo+ref+path,async()=>{
+    let err;
+    for(const h of HOSTS){
+      try{const r=await fetch(h(repo,ref,path)); if(!r.ok){err=new Error("HTTP "+r.status);continue;}
+        return await r.json();}catch(e){err=e;}
+    }
+    throw err||new Error("تعذّر الجلب");
+  });
 }
 const api={
-  local:(f)=>{const k="L"+f; if(_c.has(k))return _c.get(k);
-    const p=fetch("data/"+f).then(r=>r.json()); _c.set(k,p); return p;},
+  local:(f)=>keep("L"+f,()=>fetch("data/"+f).then(r=>{
+    if(!r.ok) throw new Error("HTTP "+r.status); return r.json();})),
   ayah:(s,a)=>grab("fawazahmed0/quran-api",REF.quran,`editions/ara-quransimple/${s}/${a}.json`),
   tafsir:(e,s,a)=>grab("spa5k/tafsir_api",REF.tafsir,`tafsir/${e}/${s}/${a}.json`),
   hadith:(b,n)=>grab("fawazahmed0/hadith-api",REF.hadith,`editions/ara-${b}/${n}.json`),
@@ -532,17 +541,25 @@ async function sharhMeta(slug){
   const bs=await sharhBooks(); return bs.find(b=>b.slug===slug);
 }
 async function sharhIdx(slug){
-  if(!SH.idx[slug]) SH.idx[slug]=await api.local(`${bookDir(slug)}/${slug}/idx.json`);
+  if(!SH.idx[slug]) SH.idx[slug]=api.local(`${bookDir(slug)}/${slug}/idx.json`);
   return SH.idx[slug];
 }
 async function sharhToc(slug){
   const k="toc:"+slug;
-  if(!SH.idx[k]) SH.idx[k]=await api.local(`${bookDir(slug)}/${slug}/toc.json`);
+  if(!SH.idx[k]) SH.idx[k]=api.local(`${bookDir(slug)}/${slug}/toc.json`);
   return SH.idx[k];
+}
+/* استباقُ الجلب من المسار: فهرسُ الكتاب وجزؤه أكبرُ ما يُنزَّل في صفحة
+   القراءة، ورقمُهما في العنوان نفسه. فيبدأ جلبُهما مع قراءة الصفحة لا بعد
+   قائمةِ الكتب — والوعودُ محفوظة، فلا يُرسل الطلبُ مرّتين. */
+function warmBook(col,slug,ci){
+  if(!/^[a-z0-9-]+$/.test(slug||"")) return;
+  api.local(`${col}/${slug}/toc.json`).catch(()=>{});
+  api.local(`${col}/${slug}/c${ci|0}.json`).catch(()=>{});
 }
 async function sharhChunk(slug,n){
   const k=slug+":"+n;
-  if(!SH.chunk[k]) SH.chunk[k]=await api.local(`${bookDir(slug)}/${slug}/c${n}.json`);
+  if(!SH.chunk[k]) SH.chunk[k]=api.local(`${bookDir(slug)}/${slug}/c${n}.json`);
   return SH.chunk[k];
 }
 /* ── القراءة بابًا بابًا ──
@@ -578,8 +595,12 @@ function boxKids(toc,k){
   return out;
 }
 async function readBab(slug,ci,pi,part){
-  const toc=await sharhToc(slug);
-  const meta=await sharhMeta(slug);
+  /* الجزءُ يُطلب قبل انتظار الفهرس: رقمُه في المسار نفسه، وهما أكبرُ ما
+     يُنزَّل في هذه الصفحة، فلا يُقعِد أحدُهما الآخر. والجزءُ المطلوب
+     داخلٌ في مدى الباب يقينًا: البابُ يبدأ عنده أو قبله وينتهي عنده أو
+     بعده. */
+  sharhChunk(slug,ci).catch(()=>{});
+  const [toc,meta]=await Promise.all([sharhToc(slug),sharhMeta(slug)]);
   if(!toc||!toc.length) return null;
   let k=0;
   for(let j=0;j<toc.length;j++){ const t=toc[j];
@@ -602,13 +623,14 @@ async function readBab(slug,ci,pi,part){
   const cur=toc[k], nxt=toc[k+1];
   const from={c:cur[1],i:cur[2]};
   const to=nxt?{c:nxt[1],i:nxt[2]}:{c:meta.chunks-1,i:Infinity};
+  const span=[]; for(let c=from.c;c<=to.c;c++) span.push(c);
+  const got=await Promise.all(span.map(c=>sharhChunk(slug,c)));
   const rows=[];
-  for(let c=from.c;c<=to.c;c++){
-    const r=await sharhChunk(slug,c);
+  span.forEach((c,ix)=>{ const r=got[ix];
     const a=(c===from.c)?from.i:0;
     const b=(c===to.c)?Math.min(to.i,r.length):r.length;
     for(let x=a;x<b;x++) rows.push(r[x]);
-  }
+  });
   /* الظرفُ الذي يقع فيه الباب، يُعرض فوق عنوانه */
   let within=null;
   for(let j=k-1;j>=0;j--) if(isBox(toc[j])){ within={ar:tocName(toc[j]),c:toc[j][1],i:toc[j][2]}; break; }
