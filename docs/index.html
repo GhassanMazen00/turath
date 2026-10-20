@@ -4,7 +4,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap"></noscript>
-<link rel="stylesheet" href="assets/app.css?v=64604b77">
+<link rel="stylesheet" href="assets/app.css?v=6ef4e7de">
 <link rel="icon" href="assets/mark.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#eef2f7" media="(prefers-color-scheme: light)">
@@ -136,13 +136,40 @@
     </div>
   </section>
 
+  <section class="band band-tint" id="s-made">
+    <div class="sect"><div class="l"><div class="k">خلف الموقع</div>
+      <h2>من بناه</h2>
+      <p>فردٌ واحد: <b>غسّان</b>. لا فريق ولا مؤسّسة ولا جهة ولا تمويل.<span class="pc"> الفكرة والبرمجة والتصميم وجمع البيانات ومراجعتها، كلّها من يدٍ واحدة، وما يزال يُبنى.</span></p></div>
+      <a class="more" href="https://www.instagram.com/ghassan.shk/" target="_blank" rel="noopener">
+        <span class="ml">راسلني</span><span class="md">إنستغرام · <bdi>@ghassan.shk</bdi></span></a></div>
+    <div class="abox wide">
+      <b>وجدت خطأً؟ أخبرني.</b>
+      <p>نصٌّ ناقص، أو حكمٌ منسوب إلى غير قائله، أو بابٌ لا يُفتح، أو رابطٌ لا يعمل — الخبرُ به إحسان، وتصحيحُه أولى من السكوت عنه. ولأنّ خلف هذا شخصًا واحدًا، فما لا تخبرني به قد لا أراه.</p>
+    </div>
+  </section>
+
+  <section class="band" id="s-give">
+    <div class="sect"><div class="l"><div class="k">خارج المنصّة</div>
+      <h2>أبوابُ خير</h2>
+      <p>تُراث لا تطلب منك شيئًا ولا تأخذه.<span class="pc"> وهذه جهاتُ إغاثة تعمل حيث الحاجة، نضع روابط مواقعها الرسمية لمن أراد — والدالُّ على الخير كفاعله.</span></p></div>
+      <a class="more" href="about.html#give"><span class="ml">تفصيل ذلك</span><span class="md">كيف اختيرت وكيف تتحقّق</span></a></div>
+    <div class="abox wide">
+      <b>قبل أن تتبرّع.</b>
+      <p>لا صلة بيننا وبين هذه الجهات: لا اتفاق ولا شراكة ولا عمولة، ولا يصل إلينا من تبرّعك شيء ولا نعلم أنّك تبرّعت. ومع كلٍّ منها قيدها ورقمه لتتحقّق بنفسك في السجلّ الرسمي قبل أن تدفع. ولا نصف جهةً منها بمذهب، ولا في ذكرها ترتيبٌ ولا تفضيل.</p>
+    </div>
+    <div id="giveList"></div>
+  </section>
+
   <footer class="foot" id="foot"></footer>
 </div>
-<script src="assets/app.js?v=64604b77"></script>
+<script src="assets/app.js?v=6ef4e7de"></script>
 <script>
 theme(); firstVisitNotice(); document.getElementById('tg').innerHTML=TGL; mountFooter(document.getElementById('foot'));
 
  
+/* جهاتُ الخير: بياناتُها في المحرّك، فتُرسم بلا انتظار جلبٍ ولا فهرس */
+document.getElementById('giveList').innerHTML=giveCards();
+
 (async()=>{
  /* الفهارسُ كلُّها في موجةٍ واحدة. كانت خمسًا متتاليةً — فهرسُ البحث ثمّ
     كتبُ الشروح ثمّ الأرقامُ ثمّ كتبُ الفقه ثمّ خلاصتُه — وبين كلّ اثنتين

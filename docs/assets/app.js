@@ -1848,6 +1848,17 @@ const GIVE=[
   ""],
 ];
 
+/* بطاقاتُ الجهات مرسومةٌ هنا لا في الصفحتين: تُعرض في الرئيسية وفي صفحة
+   التعريف، فإن زِيدت جهةٌ أو صُحّح قيدٌ تغيّر الموضعان معًا. */
+function giveCards(){
+  return `<div class="gives">`+GIVE.map(([ar,en,url,what,reg,src])=>`<div class="giv">
+      <div class="givh"><b>${esc(ar)}</b><span class="en">${esc(en)}</span></div>
+      <p>${esc(what)}</p>
+      <p class="givr">${esc(reg)}${src?` <span class="sep">•</span> <a href="${esc(src)}" target="_blank" rel="noopener">السجلّ الرسمي ↗</a>`:""}</p>
+      <a class="act" href="${esc(url)}" target="_blank" rel="noopener">الموقع الرسمي ↗</a>
+    </div>`).join("")+`</div>`;
+}
+
 const ABOUT_HTML=`
 <section id="who" class="abs">
   <h2>من نحن</h2>
@@ -1887,14 +1898,7 @@ const ABOUT_HTML=`
     <p>لا صلة بيننا وبين هذه الجهات: لا اتفاق ولا شراكة ولا عمولة، ولا يصل إلينا من تبرّعك شيء ولا نعلم أنّك تبرّعت. والروابط تذهب إلى مواقعها هي مباشرة. وقد ذكرنا لكلٍّ منها قيدها ورقمه لتتحقّق بنفسك في السجلّ الرسمي قبل أن تدفع — والتحقّق من المتبرّع لا منّا.</p>
   </div>
   <p class="note">ولا نصف جهةً منها بمذهب: هذه منظّمات إغاثة عامّة يعمل أكثرها في بلاد المسلمين، ولا نُلحق بها وصفًا لم تقله عن نفسها. وليس في ذكرها ترتيبٌ ولا تفضيل، ولا هي كلّ ما في الباب.</p>
-  <div class="gives">
-    ${GIVE.map(([ar,en,url,what,reg,src])=>`<div class="giv">
-      <div class="givh"><b>${esc(ar)}</b><span class="en">${esc(en)}</span></div>
-      <p>${esc(what)}</p>
-      <p class="givr">${esc(reg)}${src?` <span class="sep">•</span> <a href="${esc(src)}" target="_blank" rel="noopener">السجلّ الرسمي ↗</a>`:""}</p>
-      <a class="act" href="${esc(url)}" target="_blank" rel="noopener">الموقع الرسمي ↗</a>
-    </div>`).join("")}
-  </div>
+  ${giveCards()}
 </section>
 
 <section id="made" class="abs">

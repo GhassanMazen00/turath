@@ -1084,13 +1084,19 @@ dialog.idlg .agb{padding:1.1rem 1.2rem}
 .foot p a:hover{color:var(--accink);border-bottom-color:var(--acc)}
 
 /* ═══ أبوابُ خير: بطاقةُ جهة ═══ */
-.gives{display:grid;gap:.8rem;margin:1.3rem 0}
+/* عمودان حيث تتّسع الشاشة، وعمودٌ على الهاتف */
+.gives{display:grid;gap:.8rem;margin:1.3rem 0;
+  grid-template-columns:repeat(auto-fit,minmax(20rem,1fr))}
+/* صندوقُ تنبيهٍ في قسمٍ من أقسام الرئيسية: لا يرث عرضَ صفحة التعريف */
+.abox.wide{max-width:var(--measure);margin-bottom:1.3rem}
 .giv{border:1px solid var(--hair);border-inline-start:3px solid var(--ok);
-  border-radius:var(--r2);padding:1.1rem 1.25rem;background:var(--surf2)}
+  border-radius:var(--r2);padding:1.1rem 1.25rem;background:var(--surf2);
+  display:flex;flex-direction:column}
 .givh{display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap;margin-bottom:.45rem}
 .givh b{font-size:1.12rem;color:var(--ink)}
 .givh .en{font-size:.82rem;color:var(--faint);direction:ltr}
 .giv p{margin:0 0 .55rem;color:var(--ink2);line-height:1.95}
 .giv .givr{font-size:.84rem;color:var(--mut)}
 .giv .givr a{color:var(--acc)}
-.giv .act{margin-top:.3rem}
+/* الزرُّ في قاع البطاقة، فتستوي الأزرارُ وإن تفاوتت الأوصاف طولًا */
+.giv .act{margin-top:auto;align-self:flex-start;padding-top:.55rem}
