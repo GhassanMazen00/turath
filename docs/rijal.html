@@ -4,7 +4,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;500;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap"></noscript>
-<link rel="stylesheet" href="assets/app.css?v=4b720469">
+<link rel="stylesheet" href="assets/app.css?v=64604b77">
 <link rel="icon" href="assets/mark.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#eef2f7" media="(prefers-color-scheme: light)">
@@ -25,7 +25,7 @@
   <aside class="side" id="side"></aside>
   <main class="main" id="app"></main>
 </div>
-<script src="assets/app.js?v=4b720469"></script>
+<script src="assets/app.js?v=64604b77"></script>
 <script>
 theme(); firstVisitNotice(); document.getElementById('tg').innerHTML=TGL; document.getElementById('mnw').innerHTML=MENU;
 mountMenu(document.getElementById('mn'),document.getElementById('side'));
@@ -149,10 +149,20 @@ async function vOne(key,book){
       const NP=48, pno=Math.min(Math.max(1,+(location.hash.split('/p/')[1]||1)),Math.ceil(nums.length/NP));
       loading(holder,'جارٍ جلب الأبواب…');
       try{
-        const idx=await loadIdx(book);
-        const meta={}; for(const r of idx) meta[r[0]]=r;
-        const secOf={}; for(const sc of (bk.sections||[])) secOf[sc.n]=sc.ar;
+        /* البابُ والحكمُ لأحاديث هذه الصفحة وحدَها. وكان يُنزَّل فهرسُ
+           البحث كلُّه (١٫٠٩ م.ب في البخاري) لأجل ثمانيةٍ وأربعين رقمًا،
+           وهو فهرسُ متونٍ لا يُقرأ منه هنا متن. فصار من فهرس الأرقام
+           (١٤ ك.ب) ومن ملفّات الأبواب المطلوبة وحدها. */
         const pages=Math.ceil(nums.length/NP);
+        const shown=nums.slice((pno-1)*NP,pno*NP);
+        const nav=await hadNav(book);
+        const secBy={}; for(const r of nav) secBy[r[0]]=r[1];
+        const gmap={};
+        await Promise.all([...new Set(shown.map(n=>secBy[n]).filter(x=>x!=null))]
+          .map(async sc=>{ gmap[sc]=await hadSec(book,sc); }));
+        const secOf={}; for(const sc of (bk.sections||[])) secOf[sc.n]=sc.ar;
+        const gradeOf=(n)=>{ const sc=secBy[n], m=sc!=null?gmap[sc]:null;
+          const g=m&&m[n]&&m[n][0]; return (g&&g.length)?g[0][1]:''; };
         const base='#/r/'+encodeURIComponent(key)+'/b/'+book;
         const pg=()=>'<div class="pager">'+
           (pno>1?'<a href="'+base+'/p/'+(pno-1)+'">‹ السابق</a>':'<span class="off">‹ السابق</span>')+
@@ -161,10 +171,10 @@ async function vOne(key,book){
         holder.innerHTML=
           '<div class="sh"><h2>'+esc(bk.ar||book)+'</h2><span class="cnt"><bdi>'+AR(nums.length)+'</bdi></span>'+
           '<span class="ln"></span><a class="tag" href="#/r/'+encodeURIComponent(key)+'">إغلاق ×</a></div>'+
-          pg()+'<div class="tiles">'+nums.slice((pno-1)*NP,pno*NP).map(n=>{
-            const r=meta[n], g=r&&r[3]&&r[3].length?r[3][0][1]:'';
+          pg()+'<div class="tiles">'+shown.map(n=>{
+            const g=gradeOf(n);
             return '<a class="tile wrap" href="hadith.html#/'+book+'/h/'+n+'">'+
-              '<span class="n">'+AR(n)+'</span><span class="t"><b>'+esc((r&&secOf[r[1]])||bk.ar||'')+'</b>'+
+              '<span class="n">'+AR(n)+'</span><span class="t"><b>'+esc(secOf[secBy[n]]||bk.ar||'')+'</b>'+
               (g?'<span class="g '+gclass(g)+'" style="margin-top:.25rem;display:inline-block">'+esc(g)+'</span>':
                   '<span>حديث '+AR(n)+'</span>')+'</span></a>';}).join('')+'</div>'+pg();
       }catch(e){ failed(holder,e); }

@@ -1061,3 +1061,36 @@ dialog.idlg .agb{padding:1.1rem 1.2rem}
   border:1px solid var(--acc);color:var(--ink);font-size:.95rem;font-weight:700}
 .irow svg{width:1.5rem;height:1.5rem;flex:0 0 auto;fill:none;stroke:var(--acc);
   stroke-width:1.8;stroke-linecap:round}
+
+/* ═══ «عرض التفاصيل» في نتائج البحث ═══
+ * بطاقةُ النتيجة كلُّها رابط، ولا يظهر ذلك — فتُقرأ خبرًا لا بابًا يُفتح.
+ * فيُرسم فيها زرٌّ ظاهر. ومن التنسيق لا من القوالب: النتائجُ تُبنى في
+ * ستّة مواضع (أسماءٌ وآياتٌ وأسبابُ نزولٍ ومسائلُ فقه…)، فيشملها كلَّها
+ * سطرٌ واحد ولا يُنسى موضعٌ منها.
+ * والزرُّ آخرَ البطاقة بـorder، فلذلك صارت عمودًا مرنًا.
+ */
+.sres a.hit{display:flex;flex-direction:column}
+.sres a.hit::before{content:"عرض التفاصيل ←";order:9;align-self:flex-start;
+  margin-top:.9rem;font-family:"Reem Kufi",sans-serif;font-size:.82rem;font-weight:500;
+  color:var(--acc);border:1px solid var(--hair);border-radius:10px;
+  padding:.4rem .85rem;background:var(--accsoft);transition:.15s}
+.sres a.hit:hover::before{border-color:var(--acc);color:var(--accink)}
+/* ومجموعةُ المتن ليست رابطًا، وإنّما الكتبُ تحتها — فيُقال ذلك */
+.grp-lead{align-self:center;font-size:.8rem;color:var(--faint);margin-inline-end:.15rem}
+
+/* ═══ ذيلُ الصفحة: أزرارُ التعريف ═══ */
+.footb{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center}
+.foot p a{color:var(--acc);border-bottom:1px solid var(--accsoft)}
+.foot p a:hover{color:var(--accink);border-bottom-color:var(--acc)}
+
+/* ═══ أبوابُ خير: بطاقةُ جهة ═══ */
+.gives{display:grid;gap:.8rem;margin:1.3rem 0}
+.giv{border:1px solid var(--hair);border-inline-start:3px solid var(--ok);
+  border-radius:var(--r2);padding:1.1rem 1.25rem;background:var(--surf2)}
+.givh{display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap;margin-bottom:.45rem}
+.givh b{font-size:1.12rem;color:var(--ink)}
+.givh .en{font-size:.82rem;color:var(--faint);direction:ltr}
+.giv p{margin:0 0 .55rem;color:var(--ink2);line-height:1.95}
+.giv .givr{font-size:.84rem;color:var(--mut)}
+.giv .givr a{color:var(--acc)}
+.giv .act{margin-top:.3rem}

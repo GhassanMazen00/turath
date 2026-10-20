@@ -152,10 +152,41 @@ async function hadRow(k,num){
   const g=m[num]||[[],[]];
   return [num,at[1],"",g[0],g[1]];
 }
-async function loadIdx(k,onp){
-  if(SEARCH.idx[k])return SEARCH.idx[k];
-  const r=await fetch(`data/idx/${k}.json`); const d=await r.json();
-  SEARCH.idx[k]=d; if(onp)onp(); return d;
+/* ── فهرسُ البحث في المتون، قطعًا ──
+ * كان فهرسُ الكتاب ملفًّا واحدًا — ١٫٠٩ م.ب مضغوطةً في البخاري، و٤٫٩ م.ب
+ * للكتب العشرة — يُنزَّل كلُّه قبل أن يرى القارئُ نتيجةً واحدة. والبحثُ
+ * يقف عند ستّين موضعًا، فأكثرُ ما نُزّل لا يُقرأ منه حرف. فصار قطعًا
+ * تُجلب واحدةً بعد واحدة، فإذا تمّ العددُ وقف الجلب. */
+let IDXN=null;
+function idxCounts(){ if(!IDXN) IDXN=api.local("idx/shards.json").catch(()=>({})); return IDXN; }
+const idxPart=(k,i)=>api.local(`idx/${k}/s${i}.json`).catch(()=>[]);
+
+/* ── ترشيحُ القطع بالثلاثيّات ──
+ * اللفظُ الشائع يوجد في أوّل قطعة فيقف البحث. وأمّا من يبحث بعبارةٍ
+ * يذكرها من حديث — وهو أكثرُ ما يُبحث به — فيجدها في موضعين، فتُمسح
+ * القطعُ الثلاثُ والأربعون كلُّها لأجلهما.
+ * ومن حوى عبارةً فقد حوى كلَّ ثلاثيّاتها من الحروف بالضرورة. فيُجلب دليلٌ
+ * (٨٨ ك.ب) فيه لكلّ ثلاثيّةٍ قناعُ القطع التي وردت فيها، فتُضرب أقنعةُ
+ * ثلاثيّات العبارة ولا يُجلب إلا ما بقي. وهو ترشيحٌ لا حكم: ما بقي يُمسح
+ * نصُّه كما كان، فلا يتغيّر ما يُعرض — ولا يسقط موضعٌ صحيح. */
+let TRI=null;
+function triIdx(){ if(!TRI) TRI=api.local("idx/tri.json").catch(()=>null); return TRI; }
+const b36=(s)=>{ let v=0n; for(const c of s) v=v*36n+BigInt(parseInt(c,36)); return v; };
+async function triShards(n){
+  if(n.length<3) return null;                 // أقصرُ من ثلاثيّة: لا ترشيح
+  let d=null; try{ d=await triIdx(); }catch(e){}
+  if(!d||!d.s||!d.t) return null;             // لا دليل: يُمسح الكلُّ كما كان
+  let mask=null;
+  for(let i=0;i+3<=n.length;i++){
+    const v=d.t[n.slice(i,i+3)];
+    if(v==null) return new Set();             // ثلاثيّةٌ لم ترد في كتابٍ أصلًا
+    mask=mask===null?b36(v):(mask&b36(v));
+    if(mask===0n) return new Set();
+  }
+  if(mask===null) return null;
+  const out=new Set();
+  for(let b=0;b<d.s.length;b++) if((mask>>BigInt(b))&1n) out.add(d.s[b]);
+  return out;
 }
 /* المصحف كاملًا — يُحمَّل عند أول بحث في القرآن فقط */
 async function loadQuran(){
@@ -217,6 +248,7 @@ async function searchNeeds(kind){
   if(all||kind==="asbab") jobs.push(loadAsbabIdx());
   if(all||kind==="sharh"||kind==="sira"||kind==="fiqh") jobs.push(loadColBooks());
   if(all||kind==="fiqh") jobs.push(loadFiqhMasail());
+  if(all||kind==="hadith") jobs.push(triIdx().catch(()=>null));
   await Promise.all(jobs);
 }
 /* أسبابُ النزول: بحثٌ في نصّها، ومفتاحُها سورةٌ وآية */
@@ -288,23 +320,42 @@ function quickHits(q,kind){
 async function textHits(q,scope,onprog,limit=60){
   const n=norm(q); if(n.length<2)return[];
   const keys=scope==="all"?Object.keys(SEARCH.books):[scope];
+  const [counts,only]=await Promise.all([idxCounts(),triShards(n)]);
+  const want=(k,j)=>!only||only.has(k+"/"+j);
+  const parts=Object.fromEntries(keys.map(k=>{
+    const np=counts[k]||1, l=[];
+    for(let j=0;j<np;j++) if(want(k,j)) l.push(j);
+    return [k,l];
+  }));
+  const total=keys.reduce((a,k)=>a+parts[k].length,0)||1;
   const res=[]; let done=0;
+  /* القطعُ تُجلب أربعًا أربعًا وتُمسح بترتيبها. ولو جُلبت واحدةً بعد
+     واحدة لكان لكلٍّ رحلةٌ إلى الخادم: ثلاثٌ وأربعون قطعةً في بحثٍ عن
+     لفظٍ نادر = ستُّ ثوانٍ انتظارًا محضًا قبل أيّ تنزيل. وثمنُه أن تُجلب
+     قطعٌ ثلاثٌ لا تُقرأ إن تمّ العددُ في أوّل الموجة، وهو أهونُ. */
+  const LANE=4;
   for(const k of keys){
-    const idx=await loadIdx(k);
-    const b=SEARCH.books[k];
-    for(const [num,sec,txt,grades] of idx){
-      const at=txt.indexOf(n);
-      if(at<0)continue;
-      const st=Math.max(0,at-45), sn=txt.slice(st,at+n.length+90);
-      const scn=b.sections.find(x=>x.n===sec);
-      res.push({kind:"حديث",num,book:k,bookAr:b.ar,sec:scn?scn.ar:"",
-        snippet:(st?"…":"")+sn+"…",q:n,grades,
-        sig:txt.slice(at,at+80),                 // ما بعد اللفظ — مشترك بين الكتب
-        href:`hadith.html#/${k}/h/${num}`});
-      if(res.length>=limit)break;
+    const b=SEARCH.books[k]; const list=parts[k];
+    let full=false;
+    for(let i=0;i<list.length&&!full;i+=LANE){
+      const got=await Promise.all(list.slice(i,i+LANE).map(j=>idxPart(k,j)));
+      for(const part of got){
+        for(const [num,sec,txt,grades] of part){
+          const at=txt.indexOf(n);
+          if(at<0)continue;
+          const st=Math.max(0,at-45), sn=txt.slice(st,at+n.length+90);
+          const scn=b.sections.find(x=>x.n===sec);
+          res.push({kind:"حديث",num,book:k,bookAr:b.ar,sec:scn?scn.ar:"",
+            snippet:(st?"…":"")+sn+"…",q:n,grades:grades||[],
+            sig:txt.slice(at,at+80),             // ما بعد اللفظ — مشترك بين الكتب
+            href:`hadith.html#/${k}/h/${num}`});
+          if(res.length>=limit){ full=true; break; }
+        }
+        done++; if(onprog)onprog(done,total,res.length);
+        if(full)break;
+      }
     }
-    done++; if(onprog)onprog(done,keys.length,res.length);
-    if(res.length>=limit)break;
+    if(full)break;
   }
   return res;
 }
@@ -400,8 +451,10 @@ function mountSearch(root,{autofocus=false}={}){
           const gr=(h.grades&&h.grades.length)?`<span class="g ${gclass(h.grades[0][1])}">${esc(h.grades[0][1])}</span>`:"";
           return `<a class="bchip" href="${h.href}"><b>${esc(h.bookAr)}</b><span class="n">${AR(h.num)}</span>${gr}</a>`;
         }).join("");
+        /* المجموعةُ نفسُها ليست رابطًا — الروابطُ هي الكتب تحتها. فيُقال
+           ذلك صراحةً بدل أن يُترك للقارئ أن يحزره. */
         return `<div class="grp"><div class="grp-t">${hl(g.snippet,g.q)}</div>
-          <div class="grp-b">${chips}</div></div>`;}).join("");
+          <div class="grp-b"><span class="grp-lead">عرض التفاصيل في:</span>${chips}</div></div>`;}).join("");
       const abh=(kind==="all"?asbabHits(q,4):[]).map(({key,it})=>{
         const [sn,av]=key.split(":").map(Number);
         const su=SEARCH.surahs.find(x=>x.n===sn);
@@ -875,13 +928,27 @@ const BOOKNOTE={bukhari:'أصحّ الكتب بعد كتاب الله، جمعه
 const TAFNOTE={"ar-tafsir-al-mukhtasar": "تفسير موجز بلغة معاصرة، يعطي المعنى الإجمالي للآية.","ar-tafsir-muyassar": "أوجز التفاسير وأيسرها عبارةً؛ مناسب لأول قراءة.","ar-tafsir-ibn-kathir": "تفسير بالمأثور: يفسّر القرآن بالقرآن ثم بالسنة وأقوال السلف.","ar-tafsir-al-tabari": "أمّ كتب التفسير بالمأثور، يسوق أقوال السلف بأسانيدها.","ar-tafseer-al-qurtubi": "يُعنى باستنباط الأحكام الفقهية من الآيات.","ar-tafsir-al-baghawi": "مختصر من تفسير الثعلبي، جامع للمأثور بعبارة سهلة.","ar-tafsir-as-saadi": "يُبرز المقاصد والفوائد التربوية بأسلوب واضح.","ar-tafsir-al-jalalayn": "غاية الإيجاز: كلمة بكلمة، بحجم المتن نفسه.","ar-tafsir-al-wasit": "تفسير معاصر متوسّط الحجم، يجمع بين المعنى واللغة.","tafsir-al-baydawi": "يُعنى بالبلاغة ووجوه الإعراب والاشتقاق.","tafsir-al-alusi": "موسوعة تجمع اللغة والقراءات وأقوال المفسّرين قبله.","al-bahr-al-muhit": "عمدة في الإعراب والنحو ووجوه القراءات.","fath-al-qadir-al-shawkani": "يجمع بين الرواية والدراية: المأثور مع النظر اللغوي.","tafsir-ibn-uthaymeen": "تفسير معاصر يستخرج الفوائد والأحكام مسألةً مسألة.","ar-tafseer-tahrir-al-tanwir": "أوسع تفسير حديث في البلاغة ونظم القرآن ومقاصده.","tafsir-al-razi": "يُعنى بالمسائل العقلية والكلامية ومناسبات الآيات.","al-muharrar-al-wajiz-ibn-atiyyah": "محرَّر في نقل الأقوال، مع ترجيح لغوي دقيق.","tafsir-ibn-al-jawzi": "يجمع وجوه التفسير المنقولة في الآية ويعدّدها."};
 
 const FOOTER_TAG='<footer class="foot" id="foot"></footer>';
+/* علامةُ إنستغرام مرسومةٌ هنا، فلا يُجلب من موقعهم شيءٌ ولا يُتعقَّب القارئ */
+const IG_SVG=`<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+  <rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5" stroke="currentColor" stroke-width="1.6"/>
+  <circle cx="12" cy="12" r="4.1" stroke="currentColor" stroke-width="1.6"/>
+  <circle cx="17.1" cy="6.9" r="1.15" fill="currentColor"/></svg>`;
+const DEV_URL="https://www.instagram.com/ghassan.shk/";
+const HEART_SVG=`<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 20.4S4.6 15.8 4.6 11A4.1 4.1 0 0112 8.8a4.1 4.1 0 017.4 2.2c0 4.8-7.4 9.4-7.4 9.4z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>`;
+const DEV_BTN=`<a class="srcbtn" href="${DEV_URL}" target="_blank" rel="noopener">${IG_SVG}غسّان · <bdi>@ghassan.shk</bdi></a>`;
+
 function mountFooter(el){
-  /* زرٌّ واحدٌ يفتح صفحةً كاملة، بدل نافذةٍ صغيرةٍ لا تكفي التعريف */
-  el.innerHTML=`<a class="srcbtn" href="about.html">
+  /* زرٌّ يفتح صفحةً كاملة، بدل نافذةٍ صغيرةٍ لا تكفي التعريف. ومعه من
+     بناه وبابُ الخير — والذيلُ في كلّ صفحة، فيُرى من كلّ مكان. */
+  el.innerHTML=`<div class="footb"><a class="srcbtn" href="about.html">
     <svg viewBox="0 0 24 24" fill="none"><path d="M4 5.5h9a2 2 0 012 2V19H6a2 2 0 01-2-2z" stroke="currentColor" stroke-width="1.5"/><path d="M20 8v11H9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
     من نحن · مصادرنا</a>
+    <a class="srcbtn" href="about.html#give">${HEART_SVG}أبوابُ خير</a>
+    ${DEV_BTN}</div>
     <p>تُعرض النصوص كما وردت في مصادرها بلا تعديل ولا تلخيص.<br>
-    تُراث تنقل أقوال أهل العلم ولا ترجّح بينها ولا تُصدر فتوى.</p>
+    تُراث تنقل أقوال أهل العلم ولا ترجّح بينها ولا تُصدر فتوى.<br>
+    بناه ويبنيه <b>فردٌ واحد</b>: <a href="${DEV_URL}" target="_blank" rel="noopener">غسّان</a> —
+    لا مؤسّسةَ وراءه ولا جهة.</p>
 `;
 }
 
@@ -1742,6 +1809,45 @@ const SRCBOOKS=[
  ]],
 ];
 
+/* ═══ أبوابُ خير ═══
+ * جهاتُ إغاثةٍ وتنمية يُوصَل إليها بموقعها الرسمي. والقواعدُ هنا كالقواعد
+ * في سائر الموقع:
+ *   • لا يُنسب إلى جهةٍ مذهبٌ ولا وصفٌ لم تقله عن نفسها. وهذه منظّماتُ
+ *     إغاثةٍ عامّة يعمل أكثرُها في بلاد المسلمين، لا «جمعياتُ مذهب».
+ *   • لا معلومة بلا مصدر: يُذكر قيدُ الجهة ورقمُه ويُوصَل بسجلّه الرسمي،
+ *     فيتحقّق القارئ بنفسه قبل أن يدفع.
+ *   • وتُراث لا تجمع تبرّعًا ولا تأخذ منه شيئًا، ولا بينها وبين هذه
+ *     الجهات صلةٌ ولا اتفاقٌ ولا عمولة. روابطُ مجرّدة لا غير.
+ * والوصلُ إلى الصفحة الرئيسة لا إلى صفحة دفعٍ بعينها: مسارات الدفع تتغيّر،
+ * والرئيسةُ ثابتة، والمتبرّعُ يرى الموقعَ كلَّه قبل أن يدفع.
+ */
+const GIVE=[
+ ["الإغاثة الإسلامية عبر العالم","Islamic Relief Worldwide","https://www.islamic-relief.org/",
+  "منظّمة إغاثة وتنمية تعمل في عشرات الدول: إغاثة المنكوبين، والماء والإصحاح، والصحّة، وكفالة الأيتام، وتوزيع الزكاة والأضاحي.",
+  "مقيَّدة في سجلّ الجمعيات الخيرية بإنجلترا وويلز برقم ٣٢٨١٥٨",
+  "https://register-of-charities.charitycommission.gov.uk/en/charity-search/-/charity-details/328158"],
+ ["مسلم هاندز","Muslim Hands","https://muslimhands.org.uk/",
+  "إغاثة وتعليم: مدارس وآبار وكفالة أيتام وإفطار صائم، ومشاريع في آسيا وأفريقيا والشام.",
+  "مقيَّدة في سجلّ الجمعيات الخيرية بإنجلترا وويلز برقم ١١٠٥٠٥٦",
+  "https://register-of-charities.charitycommission.gov.uk/en/charity-search/-/charity-details/4009565"],
+ ["مسلم إيد","Muslim Aid","https://www.muslimaid.org/",
+  "إغاثة طارئة وتنمية طويلة الأمد: غذاء وماء ومأوى وسبل عيش، في مناطق النزاع والكوارث.",
+  "مقيَّدة في سجلّ الجمعيات الخيرية بإنجلترا وويلز برقم ١١٧٦٤٦٢",
+  "https://register-of-charities.charitycommission.gov.uk/en/charity-search/-/charity-details/5103301"],
+ ["هيومن أبيل","Human Appeal","https://humanappeal.org.uk/",
+  "إغاثة وتنمية: استجابة للطوارئ، وصحّة وتعليم، وماء، وكفالة أيتام.",
+  "مقيَّدة في سجلّ الجمعيات الخيرية بإنجلترا وويلز برقم ١١٥٤٢٨٨",
+  "https://register-of-charities.charitycommission.gov.uk/en/charity-search/-/charity-details/5038915"],
+ ["قطر الخيرية","Qatar Charity","https://www.qcharity.org/",
+  "منظّمة إنسانية قطرية: إغاثة وكفالة أيتام ومشاريع ماء وتعليم وصحّة ووقف.",
+  "منظّمة غير ربحية مرخَّصة من وزارة التنمية الاجتماعية في قطر، كما تذكر عن نفسها",
+  ""],
+ ["منصّة إحسان","Ehsan","https://ehsan.sa/",
+  "المنصّة الوطنية السعودية للعمل الخيري: يُتبرَّع فيها لجهاتٍ مرخَّصة في أبواب التعليم والصحّة والإسكان والغذاء وغيرها.",
+  "منصّة حكومية تشرف عليها جهات رسمية سعودية، وتُشغَّل عبر «سدايا»",
+  ""],
+];
+
 const ABOUT_HTML=`
 <section id="who" class="abs">
   <h2>من نحن</h2>
@@ -1764,13 +1870,42 @@ const ABOUT_HTML=`
   <p>وإن فتحت الموقع على هاتفك وجدت تحت شريط العنوان دعوةً إلى تثبيته: على الأندرويد زرٌّ يُثبّته بضغطة، وعلى الآيفون الخطوات مصوَّرة.</p>
   <div class="abox">
     <b>على الآيفون</b>
-    <p>افتح الموقع في سفاري، ثم اضغط زرّ المشاركة في الأسفل، ثم اختر «إضافة إلى الشاشة الرئيسية».</p>
+    <p>افتح الموقع في المتصفّح، ثم اضغط زرّ المشاركة — وموضعه يختلف بالجهاز: في شريط أسفل الشاشة أو أعلاها — ثم اختر «إضافة إلى الشاشة الرئيسية».</p>
   </div>
   <div class="abox">
     <b>على الأندرويد</b>
-    <p>اضغط زرّ «ثبّت» في أعلى الصفحة، فيتولّى كروم الباقي بضغطة واحدة. وإن لم يظهر لك الزرّ، فمن النقاط الثلاث في أعلى اليمين: «تثبيت التطبيق».</p>
+    <p>اضغط زرّ «ثبّت» في أعلى الصفحة، فيتولّى كروم الباقي بضغطة واحدة. وإن لم يظهر لك الزرّ، فمن زرّ القائمة (ثلاث نقاط) في شريط المتصفّح: «تثبيت التطبيق».</p>
   </div>
   <p class="note">وأمّا الآيفون فلا تُتيح آبل للمواقع أن تُضيف نفسها إلى الشاشة الرئيسية، فالخطوات أعلاه هي الطريق الوحيد فيه — وليس ذلك نقصًا في الموقع.</p>
+</section>
+
+<section id="give" class="abs">
+  <h2>أبوابُ خير</h2>
+  <p>ليس في تُراث بابٌ للتبرّع لها — فهي لا تأخذ شيئًا ولا تطلبه. وإنّما هذه جهات إغاثة تعمل حيث الحاجة، نضع روابط مواقعها الرسمية لمن أراد. والدالُّ على الخير كفاعله.</p>
+  <div class="abox">
+    <b>قبل أن تتبرّع، اقرأ هذا.</b>
+    <p>لا صلة بيننا وبين هذه الجهات: لا اتفاق ولا شراكة ولا عمولة، ولا يصل إلينا من تبرّعك شيء ولا نعلم أنّك تبرّعت. والروابط تذهب إلى مواقعها هي مباشرة. وقد ذكرنا لكلٍّ منها قيدها ورقمه لتتحقّق بنفسك في السجلّ الرسمي قبل أن تدفع — والتحقّق من المتبرّع لا منّا.</p>
+  </div>
+  <p class="note">ولا نصف جهةً منها بمذهب: هذه منظّمات إغاثة عامّة يعمل أكثرها في بلاد المسلمين، ولا نُلحق بها وصفًا لم تقله عن نفسها. وليس في ذكرها ترتيبٌ ولا تفضيل، ولا هي كلّ ما في الباب.</p>
+  <div class="gives">
+    ${GIVE.map(([ar,en,url,what,reg,src])=>`<div class="giv">
+      <div class="givh"><b>${esc(ar)}</b><span class="en">${esc(en)}</span></div>
+      <p>${esc(what)}</p>
+      <p class="givr">${esc(reg)}${src?` <span class="sep">•</span> <a href="${esc(src)}" target="_blank" rel="noopener">السجلّ الرسمي ↗</a>`:""}</p>
+      <a class="act" href="${esc(url)}" target="_blank" rel="noopener">الموقع الرسمي ↗</a>
+    </div>`).join("")}
+  </div>
+</section>
+
+<section id="made" class="abs">
+  <h2>من بناه</h2>
+  <p>بناه ويبنيه فرد واحد: <b>غسّان</b>. لا فريق ولا مؤسّسة ولا جهة ولا تمويل. الفكرة والبرمجة والتصميم وجمع البيانات والمراجعة، كلّها من يد واحدة، وما يزال يُبنى.</p>
+  <p>وإن وجدت خطأً — نصًّا ناقصًا أو حكمًا منسوبًا إلى غير قائله أو رابطًا لا يفتح — فالخبر به إحسان، وتصحيحه أولى من السكوت عنه.</p>
+  <div class="abox">
+    <b>للتواصل</b>
+    <p>على إنستغرام: <a href="${DEV_URL}" target="_blank" rel="noopener">@ghassan.shk</a></p>
+    <p style="margin-top:.8rem">${DEV_BTN}</p>
+  </div>
 </section>
 
 <section id="rules" class="abs">

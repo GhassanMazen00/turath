@@ -35,9 +35,9 @@
  * ويُحدُّ المحفوظُ بعددٍ فلا يمتلئ جهازُ القارئ من تصفّحٍ طويل.
  */
 /* هذه السطورُ يكتبها tools/stamp.mjs من محتوى الملفّات — لا تُحرَّر يدًا */
-const V = "turath-cc578b98";
-const AV = "4b720469";
-const DV = "a411dfc6";
+const V = "turath-a7bfc545";
+const AV = "64604b77";
+const DV = "6e487403";
 
 const SHELL = V + "-shell";       // صفحاتٌ وشيفرةٌ وتنسيق: زوجٌ لا يُفرَّق
 const RUN = "turath-" + DV + "-run";   // بياناتٌ تُجلب عند الحاجة
