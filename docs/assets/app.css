@@ -1100,3 +1100,10 @@ dialog.idlg .agb{padding:1.1rem 1.2rem}
 .giv .givr a{color:var(--acc)}
 /* الزرُّ في قاع البطاقة، فتستوي الأزرارُ وإن تفاوتت الأوصاف طولًا */
 .giv .act{margin-top:auto;align-self:flex-start;padding-top:.55rem}
+
+/* ═══ الصفحاتُ الثابتة (hadith/ و quran/) ═══
+ * لا رفَّ جانبيًّا فيها، فتأخذ عرضَ الهيكل كلَّه. وزرُّ السمة فيها علامةٌ
+ * واحدة لا شمسٌ وقمر: يُكرَّر في ثلاثةٍ وأربعين ألف ملفّ. */
+.main.wide{grid-column:1/-1}
+.tgl.flat .moon,.tgl.flat svg{display:block}
+.brand img{width:1.38rem;height:1.38rem;display:block}

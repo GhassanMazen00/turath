@@ -35,8 +35,8 @@
  * ويُحدُّ المحفوظُ بعددٍ فلا يمتلئ جهازُ القارئ من تصفّحٍ طويل.
  */
 /* هذه السطورُ يكتبها tools/stamp.mjs من محتوى الملفّات — لا تُحرَّر يدًا */
-const V = "turath-95e50b2c";
-const AV = "6ef4e7de";
+const V = "turath-1098efa6";
+const AV = "bc7c4fea";
 const DV = "6e487403";
 
 const SHELL = V + "-shell";       // صفحاتٌ وشيفرةٌ وتنسيق: زوجٌ لا يُفرَّق
@@ -117,10 +117,15 @@ self.addEventListener("fetch", (e) => {
   if (url.protocol !== "https:" && url.protocol !== "http:") return;
 
   /* صفحةٌ يفتحها القارئ: من المحفوظ بلا انتظار ولا سؤال.
-     والمطابقةُ بلا استعلام: «index.html?x» صفحةٌ واحدة. */
+     والمطابقةُ بلا استعلام: «index.html?x» صفحةٌ واحدة.
+     وصفحاتُ /hadith/ و/quran/ الثابتة ثلاثةٌ وأربعون ألفًا، فلا تُخلط
+     بالهيكل: تُحفظ في محفوظ البيانات المحدودِ عددُه، فلا يمتلئ الجهازُ
+     من تصفّحٍ طويل. */
   if (req.mode === "navigate") {
+    const deep = /^\/(hadith|quran)\//.test(url.pathname);
     e.respondWith((async () => {
-      const res = await cacheFirst(req, SHELL, { ignoreSearch: true });
+      const res = deep ? await cacheFirst(req, RUN, { max: RUN_MAX, ignoreSearch: true })
+                       : await cacheFirst(req, SHELL, { ignoreSearch: true });
       if (res.status !== 504) return res;
       return (await caches.match("./index.html")) ||
         new Response("لا اتصال، ولم تُحفظ هذه الصفحة بعد.", { status: 503, headers: { "content-type": "text/plain; charset=utf-8" } });

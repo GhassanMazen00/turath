@@ -566,6 +566,10 @@ function mountSearch(root,{autofocus=false}={}){
     }catch(e){ if(my===seq)draw(`<div class="sstat">تعذّر البحث</div>`,[],[]); }
   };
   inp.addEventListener("input",()=>{clearTimeout(tmr);tmr=setTimeout(run,240);});
+  /* «?q=» ليس زينةً: بطاقةُ الموقع تُعلن لمحرّكات البحث أنّ البحث فيه
+     يكون بهذا المدخل (SearchAction)، فلا يُعلَن ما لا يعمل. */
+  const pre=new URLSearchParams(location.search).get("q");
+  if(pre){ inp.value=pre; run(); }
   if(autofocus)setTimeout(()=>inp.focus(),300);
 }
 
@@ -945,7 +949,9 @@ function mountFooter(el){
     من نحن · مصادرنا</a>
     <a class="srcbtn" href="about.html#give">${HEART_SVG}أبوابُ خير</a>
     ${DEV_BTN}</div>
-    <p>تُعرض النصوص كما وردت في مصادرها بلا تعديل ولا تلخيص.<br>
+    <p>تصفُّحٌ مباشر: <a href="/hadith/">كل الأحاديث</a> <span class="sep">•</span>
+    <a href="/quran/">كل الآيات</a><br>
+    تُعرض النصوص كما وردت في مصادرها بلا تعديل ولا تلخيص.<br>
     تُراث تنقل أقوال أهل العلم ولا ترجّح بينها ولا تُصدر فتوى.<br>
     بناه ويبنيه <b>فردٌ واحد</b>: <a href="${DEV_URL}" target="_blank" rel="noopener">غسّان</a> —
     لا مؤسّسةَ وراءه ولا جهة.</p>

@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /data/
+Disallow: /sw.js
+
+Sitemap: https://turath.space/sitemap.xml
